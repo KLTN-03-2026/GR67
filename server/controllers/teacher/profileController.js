@@ -7,8 +7,8 @@ const getProfile = async (req, res) => {
     try {
         // req.user được gán từ authMiddleware (protect)
         const gv = await GiangVien.findOne({
-            MaTaiKhoan: req.user._id
-        }).populate("MaTaiKhoan", "email");
+            userId: req.user._id
+        }).populate("userId", "email hovaten soDienThoai diachi ngaysinh gioiTinh role");
 
         if (!gv) {
             return res.status(404).json({ message: "Không tìm thấy thông tin giảng viên" });
@@ -24,27 +24,25 @@ const getProfile = async (req, res) => {
 // UPDATE PROFILE
 const updateProfile = async (req, res) => {
     try {
-        // Lấy dữ liệu từ body và map lại cho đúng Schema
-        const updateData = {
-            hoTen: req.body.hoTen,
-            soDienThoai: req.body.soDienThoai,
-            ngaySinh: req.body.ngaySinh,
-            diaChi: req.body.diaChi,
-            gioiTinh: req.body.gioiTinh,
-            trinhDo: req.body.trinhDo,
-            kinhNghiem: req.body.kinhNghiem,
-            chuyenMon: req.body.chuyenMon
-        };
+        const { hoTen, soDienThoai, ngaySinh, diaChi, gioiTinh, trinhDo, kinhNghiem, chuyenMon } = req.body;
 
-        const gv = await GiangVien.findOneAndUpdate(
-            { MaTaiKhoan: req.user._id },
-            updateData, // Sử dụng object đã map đúng tên trường
+        // Cập nhật NguoiDung (User)
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user._id,
+            { hovaten: hoTen, soDienThoai: soDienThoai, ngaysinh: ngaySinh, diachi: diaChi, gioitinh: gioiTinh === 'male' },
             { new: true, runValidators: true }
         );
 
-        if (!gv) {
-            return res.status(404).json({ message: "Không tìm thấy để cập nhật" });
+        if (!updatedUser) {
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
+
+        // Cập nhật GiangVien
+        const gv = await GiangVien.findOneAndUpdate(
+            { userId: req.user._id },
+            { TrinhDoHocVan: trinhDo, kinhnghiem: kinhNghiem, chuyenmon: chuyenMon },
+            { new: true, runValidators: true }
+        ).populate("userId");
 
         res.json(gv);
     } catch (err) {
@@ -62,16 +60,15 @@ const changePassword = async (req, res) => {
             return res.status(404).json({ message: "Người dùng không tồn tại" });
         }
 
-        const isMatch = await bcrypt.compare(matKhauHienTai, user.hashpassword);
+        // Compare
+        const isMatch = await bcrypt.compare(matKhauHienTai, user.password);
 
         if (!isMatch) {
             return res.status(400).json({ message: "Mật khẩu hiện tại không chính xác" });
         }
 
-        // Mã hóa mật khẩu mới trước khi lưu (Quan trọng!)
-        const salt = await bcrypt.genSalt(10);
-        user.hashpassword = await bcrypt.hash(matKhauMoi, salt);
-
+        // Đổi mật khẩu - hook pre-save của model NguoiDung sẽ tự hash
+        user.password = matKhauMoi;
         await user.save();
         res.json({ message: "Đổi mật khẩu thành công" });
 
