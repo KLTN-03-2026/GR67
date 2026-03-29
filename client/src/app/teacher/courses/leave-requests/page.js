@@ -249,58 +249,7 @@ export default function LeaveRequests() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Thống kê theo loại đơn</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Việc riêng:</span>
-              <span className="font-semibold">2</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Ốm đau:</span>
-              <span className="font-semibold">1</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Thi cử:</span>
-              <span className="font-semibold">1</span>
-            </div>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Đơn gần đây</h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-medium text-gray-900">Phạm Thị Dung</div>
-                <div className="text-xs text-gray-500">21/01/2024</div>
-              </div>
-              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                Chờ duyệt
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-medium text-gray-900">Nguyễn Văn An</div>
-                <div className="text-xs text-gray-500">20/01/2024</div>
-              </div>
-              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                Chờ duyệt
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-medium text-gray-900">Trần Thị Bình</div>
-                <div className="text-xs text-gray-500">19/01/2024</div>
-              </div>
-              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                Đã duyệt
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

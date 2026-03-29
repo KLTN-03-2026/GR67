@@ -65,11 +65,10 @@ export default function Students() {
                     <div className="text-sm text-gray-500">{student.phone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      student.status === 'active'
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${student.status === 'active'
                         ? 'bg-green-100 text-green-800'
                         : 'bg-red-100 text-red-800'
-                    }`}>
+                      }`}>
                       {student.status === 'active' ? 'Đang học' : 'Tạm nghỉ'}
                     </span>
                   </td>
@@ -78,21 +77,17 @@ export default function Students() {
                       <span className="mr-2">{student.attendance}%</span>
                       <div className="w-16 h-2 bg-gray-200 rounded-full">
                         <div
-                          className={`h-2 rounded-full ${
-                            student.attendance >= 90 ? 'bg-green-600' :
-                            student.attendance >= 80 ? 'bg-yellow-600' : 'bg-red-600'
-                          }`}
+                          className={`h-2 rounded-full ${student.attendance >= 90 ? 'bg-green-600' :
+                              student.attendance >= 80 ? 'bg-yellow-600' : 'bg-red-600'
+                            }`}
                           style={{ width: `${student.attendance}%` }}
                         ></div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 mr-3">
-                      Xem chi tiết
-                    </button>
-                    <button className="text-green-600 hover:text-green-900">
-                      Liên hệ
+                    <button className="px-3 py-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 transition">
+                      Xóa
                     </button>
                   </td>
                 </tr>

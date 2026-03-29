@@ -118,11 +118,10 @@ export default function TeacherLayout({ children }) {
           <SidebarLink href="/teacher" text="Tổng quan" icon={<IconHome />} />
 
           <CollapsibleMenu text="Khóa Học" icon={<IconBook />} baseRoute="/teacher/courses">
-            <SidebarLink href="/teacher/courses/overview" text="Tổng quan" />
-            <SidebarLink href="/teacher/courses/students" text="DS Học viên" />
-            <SidebarLink href="/teacher/courses/lessons" text="Buổi học" />
-            <SidebarLink href="/teacher/courses/assignments" text="Bài tập" />
-            <SidebarLink href="/teacher/courses/leave-requests" text="Nghỉ phép" />
+            <SidebarLink href="/teacher/courses/students" text="Quản lý học viên" />
+            <SidebarLink href="/teacher/courses/lessons" text="Quản lý bài học" />
+            <SidebarLink href="/teacher/courses/assignments" text="Quản lý bài tập" />
+            <SidebarLink href="/teacher/courses/leave-requests" text="Quản lý nghỉ phép" />
           </CollapsibleMenu>
 
           <SidebarLink href="/teacher/schedule" text="Lịch dạy" icon={<IconCalendar />} />

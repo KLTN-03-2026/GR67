@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/NguoiDung');
 
 const protect = async (req, res, next) => {
   let token;
@@ -14,7 +14,7 @@ const protect = async (req, res, next) => {
 
       // Lấy thông tin user từ token và gắn vào request
       req.user = await User.findById(decoded.id).select('-hashpassword');
-      
+
       if (!req.user) {
         return res.status(401).json({ success: false, message: 'Không được phép, user không tồn tại' });
       }

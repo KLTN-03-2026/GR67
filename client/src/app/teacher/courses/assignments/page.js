@@ -1,5 +1,5 @@
 "use client";
-
+import Link from "next/link";
 export default function Assignments() {
   const assignments = [
     {
@@ -116,9 +116,11 @@ export default function Assignments() {
             <h1 className="text-2xl font-bold text-gray-800 mb-2">Quản Lý Bài Tập</h1>
             <p className="text-gray-600">Tạo và theo dõi các bài tập, bài kiểm tra của học viên</p>
           </div>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            + Tạo bài tập mới
-          </button>
+          <Link href="/teacher/courses/add-ass">
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              + Tạo bài tập mới
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -160,11 +162,10 @@ export default function Assignments() {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${
-                      assignment.status === 'completed' ? 'bg-gray-600' :
+                    className={`h-2 rounded-full ${assignment.status === 'completed' ? 'bg-gray-600' :
                       assignment.submitted === assignment.total ? 'bg-green-600' :
-                      assignment.submitted > 0 ? 'bg-blue-600' : 'bg-gray-400'
-                    }`}
+                        assignment.submitted > 0 ? 'bg-blue-600' : 'bg-gray-400'
+                      }`}
                     style={{ width: `${(assignment.submitted / assignment.total) * 100}%` }}
                   ></div>
                 </div>
@@ -174,16 +175,29 @@ export default function Assignments() {
                 <div className="text-sm text-gray-600">
                   <span className="font-medium">{getTypeText(assignment.type)}</span>
                 </div>
-                <div className="flex space-x-2">
-                  <button className="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                    Xem chi tiết
+                <div className="flex space-x-10">
+                  <button className="text-red-600 hover:text-red-900 text-sm font-medium">
+                    Xóa
                   </button>
-                  <button className="text-green-600 hover:text-green-900 text-sm font-medium">
-                    Chấm điểm
-                  </button>
-                  <button className="text-gray-600 hover:text-gray-900 text-sm font-medium">
-                    Chỉnh sửa
-                  </button>
+                  <Link href="/teacher/courses/grade-ass">
+                    <button className="text-green-600 hover:text-green-900 text-sm font-medium">
+                      Chấm điểm
+                    </button>
+                  </Link>
+
+                  <Link href="/teacher/courses/edit-ass">
+                    <button className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+                      Chỉnh sửa
+                    </button>
+                  </Link>
+                  <Link href="/teacher/courses/detail-ass">
+                    <button className="text-blue-600 hover:text-blue-900 text-sm font-medium">
+                      Xem chi tiết
+                    </button>
+                  </Link>
+
+
+
                 </div>
               </div>
             </div>
@@ -246,38 +260,7 @@ export default function Assignments() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Bài tập mẫu</h3>
-            <div className="space-y-3">
-              <div className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-pointer">
-                <h4 className="font-medium text-gray-900 mb-1">Bài tập ngữ pháp cơ bản</h4>
-                <p className="text-sm text-gray-600">Mẫu bài tập về thì hiện tại đơn</p>
-                <div className="flex items-center mt-2 text-xs text-gray-500">
-                  <span>50 câu hỏi</span>
-                  <span className="mx-2">•</span>
-                  <span>100 điểm</span>
-                </div>
-              </div>
-              <div className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-pointer">
-                <h4 className="font-medium text-gray-900 mb-1">Bài tập từ vựng Unit 1</h4>
-                <p className="text-sm text-gray-600">Ôn tập từ vựng về gia đình</p>
-                <div className="flex items-center mt-2 text-xs text-gray-500">
-                  <span>30 từ</span>
-                  <span className="mx-2">•</span>
-                  <span>50 điểm</span>
-                </div>
-              </div>
-              <div className="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 transition-colors cursor-pointer">
-                <h4 className="font-medium text-gray-900 mb-1">Bài tập nghe hiểu</h4>
-                <p className="text-sm text-gray-600">Luyện nghe đoạn hội thoại</p>
-                <div className="flex items-center mt-2 text-xs text-gray-500">
-                  <span>10 câu hỏi</span>
-                  <span className="mx-2">•</span>
-                  <span>75 điểm</span>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>

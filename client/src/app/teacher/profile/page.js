@@ -7,7 +7,7 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [personalInfo, setPersonalInfo] = useState({
-    fullName: 'Nguyễn Văn Tèo',
+    fullName: '',
     email: 'nguyenvanteo@teacher.edu.vn',
     phone: '0987654321',
     dateOfBirth: '1985-05-15',
@@ -83,21 +83,19 @@ export default function Profile() {
           <nav className="flex">
             <button
               onClick={() => setActiveTab('personal')}
-              className={`px-6 py-4 text-sm font-medium border-b-2 ${
-                activeTab === 'personal'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+              className={`px-6 py-4 text-sm font-medium border-b-2 ${activeTab === 'personal'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
             >
               Thông tin cá nhân
             </button>
             <button
               onClick={() => setActiveTab('password')}
-              className={`px-6 py-4 text-sm font-medium border-b-2 ${
-                activeTab === 'password'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
+              className={`px-6 py-4 text-sm font-medium border-b-2 ${activeTab === 'password'
+                ? 'border-blue-500 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
             >
               Đổi mật khẩu
             </button>
@@ -111,11 +109,10 @@ export default function Profile() {
                 <h3 className="text-lg font-semibold text-gray-800">Thông tin cá nhân</h3>
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    isEditing
-                      ? 'bg-gray-600 text-white hover:bg-gray-700'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium ${isEditing
+                    ? 'bg-gray-600 text-white hover:bg-gray-700'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
                 >
                   {isEditing ? 'Hủy' : 'Chỉnh sửa'}
                 </button>

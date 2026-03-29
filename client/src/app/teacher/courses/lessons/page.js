@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function Lessons() {
   const lessons = [
     {
@@ -93,9 +95,7 @@ export default function Lessons() {
             <h1 className="text-2xl font-bold text-gray-800 mb-2">Quản Lý Bài Học</h1>
             <p className="text-gray-600">Theo dõi và quản lý các bài học trong khóa học</p>
           </div>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            + Thêm bài học mới
-          </button>
+
         </div>
       </div>
 
@@ -169,17 +169,13 @@ export default function Lessons() {
                   )}
 
                   <div className="flex space-x-2">
-                    <button className="text-blue-600 hover:text-blue-900 text-sm font-medium">
-                      Chỉnh sửa
-                    </button>
-                    <button className="text-green-600 hover:text-green-900 text-sm font-medium">
-                      Xem chi tiết
-                    </button>
-                    {lesson.status === 'scheduled' && (
-                      <button className="text-red-600 hover:text-red-900 text-sm font-medium">
-                        Hủy bài học
+
+                    <Link href="/teacher/courses/lessons/detail-lessons">
+                      <button className="text-green-600 hover:text-green-900 text-sm font-medium">
+                        Xem chi tiết
                       </button>
-                    )}
+                    </Link>
+
                   </div>
                 </div>
               ))}
@@ -224,23 +220,7 @@ export default function Lessons() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Tài liệu mẫu</h3>
-            <div className="space-y-2">
-              <button className="w-full text-left p-2 rounded hover:bg-gray-50 transition-colors">
-                <div className="text-sm font-medium text-gray-900">Mẫu bài giảng ngữ pháp</div>
-                <div className="text-xs text-gray-500">PDF • 2.3 MB</div>
-              </button>
-              <button className="w-full text-left p-2 rounded hover:bg-gray-50 transition-colors">
-                <div className="text-sm font-medium text-gray-900">Bài tập từ vựng</div>
-                <div className="text-xs text-gray-500">DOCX • 1.1 MB</div>
-              </button>
-              <button className="w-full text-left p-2 rounded hover:bg-gray-50 transition-colors">
-                <div className="text-sm font-medium text-gray-900">Video hướng dẫn phát âm</div>
-                <div className="text-xs text-gray-500">MP4 • 15.2 MB</div>
-              </button>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
