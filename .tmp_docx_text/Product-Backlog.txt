@@ -1,0 +1,679 @@
+﻿BỘ GIÁO DỤC VÀ ĐÀO TẠO
+TRƯỜNG ĐẠI HỌC DUY TÂN
+Tên đề tài:
+THIẾT KẾ VÀ PHÁT TRIỂN HỆ THỐNG QUẢN LÝ TRUNG TÂM TIẾNG ANH TÍCH HỢP ĐIỂM DANH NHẬN DIỆN KHUÔN MẶT BẰNG AI
+PRODUCT BACKLOG
+GVHD: Phan Long
+Nhóm SVTH:
+Phan Thanh Chiến	28211151053
+Trịnh Quang Công	28211101087
+Lê Trần Bình An	28211150401
+Bùi Nguyễn Ngọc Thạch	28211104344
+Nguyễn Hoàng Thông	28210201094
+Đà Nẵng, tháng 03 năm 2026
+THÔNG TIN DỰ ÁN
+Dự án viết tắt
+EMC
+Tên dự án
+Thiết kế và phát triển Hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Ngày bắt đầu
+12/03/2026
+Ngày bắt đầu
+12/03/2026
+Nơi thực hiện
+Khoa Công nghệ thông tin – Đại học Duy Tân
+Mentor
+ThS.Phan Long
+Email: phanlong92@gmail.com
+Phone: 0903333080
+Chủ sở hữu
+(Product Owner)
+Trịnh Quang Công
+Email: trinhcong1120@gmail.com
+Tel: 0342613349
+Quản lý dự án (Scrum Master)
+Phan Thanh Chiến
+chiendtr0@gmail.com
+0705294925
+Thành viên trong đội
+Trịnh Quang Công
+trinhcong1120@gmail.com
+0342613349
+Lê Trần Bình An
+lean5076@gmail.com
+0918355753
+Bùi Nguyễn Ngọc Thạch
+thachbui283@gmail.com
+0906479546
+Nguyễn Hoàng Thông
+thong2882004@gmail.com
+0856102428
+THÔNG TIN TÀI LIỆU
+Tên dự án
+Thiết kế và phát triển Hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Tiêu đề tài liệu
+User story Document
+Người thực hiện
+Lê Trần Bình An
+LỊCH SỬ CHỈNH CẬP NHẬT TÀI LIỆU
+Phiên bản
+Người chỉnh cập nhật
+Ngày
+Ghi chú
+1.0
+Lê Trần Bình An
+01/10/2024
+Bản nháp
+1.1
+Lê Trần Bình An
+02/10/2024
+Bản chính thức
+PHÊ DUYỆT TÀI LIỆU
+Người hướng dẫn
+Phan Long
+Chữ ký
+Ngày
+…./…./2026
+Chủ sở hữu
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Quản lý dự án
+Phan Thanh Chiến
+Chữ ký
+Ngày
+…./…./2026
+Thành viên
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Lê Trần Bình An
+Chữ ký
+Ngày
+…./…./2026
+Bùi Nguyễn Ngọc Thạch
+Chữ ký
+Ngày
+…./…./2026
+Nguyễn Hoàng Thông
+Chữ ký
+Ngày
+…./…./2026
+MỤC LỤC
+TOC \o "1-3" \h \z \u MỤC LỤC	 PAGEREF _Toc224743775 \h 5
+1. GIỚI THIỆU	 PAGEREF _Toc224743776 \h 6
+1.1. Mục đích.	 PAGEREF _Toc224743777 \h 6
+1.2. Phạm vi.	 PAGEREF _Toc224743778 \h 6
+1.3. Tài liệu tham khảo.	 PAGEREF _Toc224743779 \h 6
+2.1. Mô tả Product Backlog	 PAGEREF _Toc224743780 \h 7
+2.1.1 PB01 - Đăng nhập	 PAGEREF _Toc224743781 \h 7
+2.1.2 PB02 - Đăng xuất	 PAGEREF _Toc224743782 \h 8
+2.1.3 PB03 – Quên mật khẩu	 PAGEREF _Toc224743783 \h 8
+2.1.4 PB04 - Quản lý cơ sở	 PAGEREF _Toc224743784 \h 9
+2.1.5 PB05 - Quản lý Loại Khóa học	 PAGEREF _Toc224743785 \h 10
+2.1.6 PB06 - Quản lý Người dùng	 PAGEREF _Toc224743786 \h 11
+2.1.7 PB07 - Quản lý Khóa học	 PAGEREF _Toc224743787 \h 12
+2.1.8 PB08 - Báo cáo thống kê	 PAGEREF _Toc224743788 \h 12
+2.1.09 PB09 – Quản lý đề thi mẫu	 PAGEREF _Toc224743789 \h 13
+2.1.10 PB10 – Quản lý luyện tập	 PAGEREF _Toc224743790 \h 14
+2.1.11 PB11 - Quản lý Lớp Học	 PAGEREF _Toc224743791 \h 16
+2.1.12 PB12 - Xem Lịch Dạy	 PAGEREF _Toc224743792 \h 17
+2.1.13 PB13 - Quản lý thông tin giảng viên	 PAGEREF _Toc224743793 \h 18
+2.1.14 PB14 - Quản lý thông tin cá nhân học viên	 PAGEREF _Toc224743794 \h 18
+2.1.15 PB15 - Xem lịch học	 PAGEREF _Toc224743795 \h 19
+2.1.16 PB16 - Quản lý khóa học	 PAGEREF _Toc224743796 \h 20
+2.1.17 PB17 - Điểm danh bằng nhận diện khuôn mặt	 PAGEREF _Toc224743797 \h 21
+2.1.18 PB18 – Ôn tập	 PAGEREF _Toc224743798 \h 21
+2.1.19 PB19 – Luyện đề	 PAGEREF _Toc224743799 \h 22
+2.1.20 PB20 – Xem thông báo	 PAGEREF _Toc224743800 \h 23
+2.2.Ưu tiên và ước tính	 PAGEREF _Toc224743801 \h 24
+2.3. Chia theo từng Sprirnt	 PAGEREF _Toc224743802 \h 26
+1. GIỚI THIỆU
+Đây là tài liệu Product Backlog trong quy trình Scrum. Nó bao gồm danh sách tất cả các tính năng được ưu tiên và các mô tả cho từng tính năng của sản phẩm cần phải hoàn thành trong dự án. Thông thường, Product Backlog chứa các User Story, nhưng đôi khi cũng có thể có các yêu cầu chức năng, yêu cầu phi chức năng, bugs và một số vấn đề khác.
+Product Backlog trong Scrum cũng chấp nhận việc thay đổi và tăng thêm trong quá trình dự án tùy theo sự thay đổi yêu cầu của Product Owner.
+1.1. Mục đích.
+Tài liệu này thể hiện các yêu cầu cấp cao trong quan điểm của người dùng cuối. Những yêu cầu của người dùng sẽ được chia thành nhiều nhiệm vụ để phân công cho nhóm phát triển. Ngoài ra, tài liệu này cũng có các tiêu chuẩn chấp nhận, hữu ích cho người kiểm tra để tạo kế hoạch kiểm tra và kiểm thử.
+1.2. Phạm vi.
+Các user story trong dự án
+Các yêu cầu chức năng và phi chức năng
+Sơ đồ Use case
+Biểu đồ hoạt động
+1.3. Tài liệu tham khảo.
+Bảng  SEQ Bảng \* ARABIC 1: Tài liệu tham khảo
+No
+Reference
+Note
+1
+http://agilebench.com/blog/the-product-backlog-for-agile-teams
+Cách tạo Product Backlog
+2
+http://www.mountaingoatsoftware.com/agile/scrum/product-backlog/example/
+Ví dụ về Product Backlog
+3
+KLTN-SE.01.Product Proposal.docx
+Proposal Document
+2.1. Mô tả Product Backlog
+2.1.1 PB01 - Đăng nhập
+ID
+PB01
+Tác nhân
+Người dùng (Admin, giảng viên, học viên)
+Mô tả
+Người dùng đăng nhập vào hệ thống
+Tiêu chí chấp nhận
+1. Người dùng truy cập vào trang chủ của hệ thống
+3. Nhập Email. (Nhập vào [Email] TextBox).
+4. Nhập Mật khẩu (Nhập vào [Password] TextBox).
+5. Gửi yêu cầu đăng nhập (Nhấn chọn [Đăng Nhập] Button).
+6. Kiểm tra đăng nhập:
+6.1. Kiểm tra Email. Nếu nhập sai Email, hệ thống hiển thị thông báo “Bạn nhập sai Email hoặc Password”.
+6.2. Kiểm tra Mật khẩu. Nếu nhập sai Mật khẩu, hệ thống hiển thị thông báo “Bạn nhập sai Email hoặc Password”.
+6.3. Nếu đăng nhập thành công, hệ thống hiển thị thông báo và chuyển sang trang thông tin người dùng.
+Điều kiện trước
+Tài khoản của người dùng phải tồn tại trong hệ thống (Password và Email đã được cấp mặc định)
+Điều kiện ràng buộc
+1. Hệ thống phải có kết nối với cơ sở dữ liệu để xác thực thông tin đăng nhập.
+2. Password phải được mã hóa trước khi gửi đi để đảm bảo tính bảo mật.
+2.1.2 PB02 - Đăng xuất
+ID
+PB02
+Tác nhân
+Người dùng (Admin, giảng viên, học viên)
+Mô tả
+Người dùng đăng xuất khỏi hệ thống
+Tiêu chí chấp nhận
+1. Người dùng nhấn vào nút [Đăng Xuất].
+2. Hệ thống hiện thông báo xác nhận “Bạn có chắc chắn muốn đăng xuất không?”.
+3. Nếu chọn “Có”, hệ thống đăng xuất người dùng và quay về trang đăng nhập.
+4. Nếu chọn “Không”, hệ thống giữ nguyên trạng thái đăng nhập và hiển thị lại trang người dùng.
+Điều kiện trước
+1. Tất cả các hoạt động hoặc thao tác chưa được lưu trước khi đăng xuất sẽ không được ghi nhận.
+2. Đảm bảo hệ thống không cho phép truy cập trở lại vào các trang yêu cầu quyền đăng nhập sau khi đã đăng xuất.
+2.1.3 PB03 – Quên mật khẩu
+ID
+PB03
+Tác nhân
+Người dùng (Admin, giảng viên, học viên)
+Mô tả
+Cho phép người dùng đặt lại mật khẩu tài khoản của mình trong hệ thống.
+Tiêu chí chấp nhận
+1. Người dùng chọn chức năng Quên mật khẩu từ giao diện tài khoản cá nhân.
+2. Người dùng Nhập Email và nhấn nút [Nhận mã OTP]
+3. Hệ thống kiểm tra, tạo OTP, sau đó gửi đến email người dùng
+4. Người dùng nhập OTP (Nhập vào [OTP] TextBox)
+5. Hệ thống thực hiện kiểm tra
+5.1. Nếu OTP là đúng chuyển đến trang đổi mật khẩu, và đến bước 6.
+5.2. Nếu OTP là sai, hệ thống hiển thị thông báo “Mã OTP không chính xác”.
+6. người dùng nhập mật khẩu (Nhập vào [mật khẩu mới] TextBox) và xác nhận mật khẩu (Nhập vào [nhập lại mật khẩu] TextBox) và nhấn [lưu]
+7. hệ thống kiểm tra mật khẩu:
+7.1. nếu mật khẩu hợp lệ. mã hóa mật khẩu và lưu vào hệ thống. chuyển đến trang đăng nhập
+7.2. nếu mật khẩu không hợp lệ thì ưu cầu nhập lại mật khẩu
+Điều kiện trước
+Người dùng phải có tài khoản trong hệ thống
+Điều kiện ràng buộc
+OTP phải được mã hóa trước khi lưu vào cơ sở dữ liệu
+OTP phải hết hạn sau thời gian 1p
+Email phải tồn tại trong hệ thống
+2.1.4 PB04 - Quản lý cơ sở
+ID
+PB04
+Tác nhân
+Admin
+Mô tả
+Thêm, cập nhật, xóa thông tin về các cơ sở trong hệ thống
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "Quản lý cơ sở".
+2. Thực hiện các thao tác sau:
+Thêm mới: Người dùng chọn Tạo mới, nhập thông tin (tên cơ sở, địa chỉ, ghi chú,...), và nhấn Tạo. sau khi tạo cơ sở xong hệ thống chuyển đến giao diện quản lý cơ sở người dùng thực hiện thêm phòng học cho cơ sở
+• Cập nhật: Người dùng chọn cơ sở cần cập nhật tiến hành cập nhật thông tin hoặc thêm, xóa, sửa các phòng trong cơ sở sau đó nhấn lưu
+• Xóa: Người dùng chọn cơ sở cần xóa và nhấn Xóa, hệ thống hiển thị thông báo xác nhận. Nếu người dùng đồng ý, cơ sở sẽ bị xóa khỏi hệ thống.
+3. Hệ thống xử lý yêu cầu và hiển thị thông báo kết quả (Thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Admin
+Điền kiện ràng buộc
+1. Tên cơ sở phải là duy nhất trong hệ thống.
+2. Không thể xóa cơ sở đã được liên kết với khóa học thực tế, trừ khi không còn tài liệu nào liên quan.
+2.1.5 PB05 - Quản lý Loại Khóa học
+ID
+PB05
+Tác nhân
+Admin
+Mô tả
+Thêm, cập nhật, xóa thông tin về loại khóa học trong hệ thống
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "Quản lý Loại Khóa học ".
+2. Thực hiện các thao tác sau:
+• Thêm mới: Người dùng chọn Tạo mới, nhập thông tin (Tên đơn vị, Địa chỉ,v.v.), và nhấn Lưu. Sau khi lưu xong hệ thống chuyển đến trang chi tiết khóa học, người dùng thực hiện thêm mới chương trình học và kho bài tập
+• Cập nhật: Người dùng chọn loại khóa học cần chỉnh sửa, cập nhật thông tin hoặc thực hiên thao toán với chương trình học và kho bài tập (thêm, xóa, sửa) và nhấn Lưu.
+• Xóa: Người dùng chọn Loại khóa học cần xóa và nhấn Xóa, hệ thống hiển thị thông báo xác nhận. Nếu người dùng đồng ý, Loại khóa học sẽ bị xóa khỏi hệ thống.
+3. Hệ thống xử lý yêu cầu và hiển thị thông báo kết quả (Thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Admin
+Điều kiện  ràng buộc
+1. Tên loại khóa học phải là duy nhất trong hệ thống.
+2. Không thể xóa loại khóa học đã liên kết với khóa học thực tế.
+3. Không thể chỉnh sửa chương trình học khi Loại khóa học đã được liên kết với khóa học thực tế.
+2.1.6 PB06 - Quản lý Người dùng
+ID
+PB06
+Tác nhân
+Admin
+Mô tả
+Thêm, cập nhật, xóa thông tin về người dùng hệ thống
+Tiêu chí chấp nhận
+1. Admin truy cập mục " Quản lý Người dùng ".
+2. Thực hiện các thao tác sau:
+• Thêm mới: Admin chọn vai trò của người dùng cần thêm mới, nhấn tạo mới, nhập thông tin và nhấn Lưu
+• Cập nhật: Admin chọn vai trò của người dùng, sau đó chọn người dùng cần chỉnh sửa, cập nhật thông tin và nhấn Lưu.
+• Xóa: Người dùng chọn vai trò của người dùng, sau đó chọn người dùng cần xóa và nhấn Xóa, hệ thống hiển thị thông báo xác nhận. Nếu người dùng đồng ý, Người dùng sẽ bị xóa khỏi hệ thống.
+3. Hệ thống xử lý yêu cầu và hiển thị thông báo kết quả (Thành công hoặc lỗi).
+Điều kiện trước
+1. Email phải là duy nhất trong hệ thống
+2. Không thể xóa người dùng đã liên kết với các khóa học,
+3. Mã hóa mật khẩu trước khi lưu vào hệ thống
+2.1.7 PB07 - Quản lý Khóa học
+ID
+PB07
+Tác nhân
+Admin
+Mô tả
+Thêm, cập nhật, xóa thông tin về các Khóa học trong hệ thống
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "Quản lý Khóa học ".
+2. Thực hiện các thao tác sau:
+• Thêm mới: Người dùng chọn Tạo mới, nhập thông tin (Tên khóa học, loại khóa học,...), và nhấn Lưu.
+• Cập nhật: Người dùng chọn khóa học cần chỉnh sửa, thực hiện thay đổi thông tin khóa học hoặc điều chỉnh danh sách học viên tham gia (thêm hoặc loại bỏ học viên), sau đó nhấn Lưu.
+• Xóa: Người dùng chọn Khóa học cần xóa và nhấn Xóa, hệ thống hiển thị thông báo xác nhận. Nếu người dùng đồng ý, Khóa học sẽ bị xóa khỏi hệ thống.
+3. Hệ thống xử lý yêu cầu và hiển thị thông báo kết quả (Thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Admin
+2.1.8 PB08 - Báo cáo thống kê
+ID
+PB08
+Tác nhân
+Admin
+Mô tả
+xem và quản lý các báo cáo thống kê về hoạt động của trung tâm như số lượng học viên, khóa học, lớp học, tình trạng điểm danh và các thông tin liên quan khác. Hệ thống hỗ trợ lọc dữ liệu theo khoảng thời gian và xuất báo cáo khi cần thiết.
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục " Báo cáo thống kê".
+2. Thực hiện các thao tác sau:
+• Xem thống kê: Hệ thống hiển thị các dữ liệu thống kê như số lượng học viên, khóa học, lớp học, tình trạng điểm danh.
+• Lọc dữ liệu: Người dùng có thể chọn khoảng thời gian (ngày, tháng, năm hoặc khoảng thời gian tùy chọn) để xem dữ liệu tương ứng.
+• Xuất báo cáo: gười dùng có thể chọn xuất báo cáo ra các định dạng như PDF hoặc Excel.
+3. Hệ thống xử lý yêu cầu và hiển thị thông báo kết quả (Thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Admin
+Điều kiện ràng buộc
+1. Dữ liệu thống kê phải được lấy từ dữ liệu hiện có trong hệ thống.
+2. Dữ liệu xuất ra phải đảm bảo đúng và đầy đủ theo kết quả hiển thị.
+2.1.09 PB09 – Quản lý đề thi mẫu
+ID
+PB09
+Tác nhân
+Admin
+Mô tả
+Admin quản lý các đề thi mẫu trong hệ thống, bao gồm tạo mới, chỉnh sửa, xóa và phân loại đề thi nhằm phục vụ cho chức năng luyện đề của học viên.
+Tiêu chí chấp nhận
+1. Người dùng truy cập vào mục “Quản lý đề thi mẫu”.
+2. Hệ thống hiển thị danh sách đề thi bao gồm:
+• Tên đề thi
+• Khóa học
+• Cấp độ (dễ, trung bình, khó)
+• Thời gian làm bài
+• Số lượng câu hỏi
+3. Người dùng có thể thực hiện các chức năng sau:
+• Thêm đề thi mới:Người dùng nhập thông tin(tên đề,mô tả,thời gian làm bài,cấp độ…).
+• Chỉnh sửa đề thi:Người dùng cập nhật thông tin đề,thêm/sửa/xóa câu hỏi,cập nhật đáp án.
+• Xóa đề thi: Người dùng thực hiện xóa đề thi(thực hiện xác nhận khi xóa)
+• Tìm kiếm và lọc:Người dùng tìm kiếm theo tên đề thi,lọc đề theo khóa,lọc theo cấp độ.
+Điều kiện trước
+1.Người dùng đã đăng nhập thành công hệ thống với vai trò admin.
+2. Hệ thống đã có dữ liệu khóa học
+Điều kiện ràng buộc
+1. Chỉ Admin được phép quản lý đề thi
+2. Mỗi đề phải có ít nhất 1 câu hỏi.
+3. Thông tin đề thi phải đầy đủ trước khi lưu.
+2.1.10 PB10 – Quản lý luyện tập
+ID
+PB10
+Tác nhân
+Admin
+Mô tả
+Admin quản lý các nội dung luyện tập trong hệ thống (quiz, bài tập, flashcard) nhằm phục vụ cho chức năng ôn tập và hỗ trợ học viên củng cố kiến thức.
+Tiêu chí chấp nhận
+1. Người dùng truy cập vào mục “Quản lý luyện tập”.
+2. Hệ thống hiển thị danh sách nội dung luyện tập bao gồm:
+• Tên bài luyện tập
+• Loại (quiz, flashcard, bài tập)
+• Khóa học
+• Số lượng câu hỏi
+• Ngày tạo
+3. Người dùng có thể thực hiện các chức năng sau:
+• Thêm bài luyện tập:Người dùng nhập thông tin(tên,mô tả,thời gian làm bài,loại…).
+• Chỉnh sửa bài luyện tập:Người dùng cập nhật thông tin bài,thêm/sửa/xóa câu hỏi,cập nhật đáp án.
+• Xóa bài luyện tập: Người dùng thực hiện xóa bài(thực hiện xác nhận khi xóa)
+• Tìm kiếm và lọc:Người dùng tìm kiếm theo tên,lọc đề theo khóa,lọc theo loại bài.
+Điều kiện trước
+1.Người dùng đã đăng nhập thành công hệ thống với vai trò admin.
+2. Hệ thống đã có dữ liệu khóa học
+Điều kiện ràng buộc
+1. Chỉ Admin được phép quản lý đề thi
+2. Mỗi đề phải có ít nhất 1 câu hỏi hoặc 1 flashcard.
+3. Thông tin đề thi phải đầy đủ trước khi lưu.
+2.1.11 PB11 - Quản lý Lớp Học
+ID
+PB11
+Tác nhân
+Giảng viên
+Mô tả
+Giảng viên quản lý các lớp/khóa học được phân công giảng dạy để theo dõi thông tin lớp học, thực hiện điểm danh và quản lý bài tập của học viên.
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "Lớp học".
+2. Hệ thống hiển thị danh sách các lớp/khóa học mà giảng viên được phân công giảng dạy.
+3. Thực hiện các thao tác sau:
+• Xem chi tiết: Giảng viên chọn lớp/khóa học để xem thông tin chi tiết (lịch học, chương trình học, danh sách học viên).
+• Điểm danh: Giảng viên chọn buổi học và thực hiện điểm danh học viên tham gia theo kiểu thủ công.
+• Quản lý bài tập: Giảng viên xem danh sách bài tập của học viên, theo dõi và quản lý việc nộp bài.
+• Quản lý nghỉ phép và học bù: Giảng viên xem danh sách các yêu cầu nghỉ phép của học viên.Duyệt hoặc từ chối yêu cầu nghỉ phép.
+•  Trừ điểm uy tín học tập: giảng viên thực hiện việc trừ điểm uy tín của học sinh phạm lỗi (không làm bài tâp, đi trễ, quên mang sách,….)
+4. Hệ thống xử lý yêu cầu và hiển thị thông báo kết quả (Thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Giảng viên
+Điều kiện ràng buộc
+1.Giảng viên chỉ được xem và quản lý các lớp/khóa học được phân công giảng dạy.
+2.Tài khoản giảng viên phải tồn tại trong hệ thống.
+3.Các thao tác điểm danh và quản lý bài tập chỉ được thực hiện trong các lớp/khóa học thuộc quyền giảng dạy của giảng viên.
+2.1.12 PB12 - Xem Lịch Dạy
+ID
+PB12
+Tác nhân
+Giảng viên
+Mô tả
+Giảng viên xem lịch giảng dạy của mình để biết thời gian, phòng học và các lớp/khóa học được phân công giảng dạy.
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "lịch dạy".
+2. Hệ thống hiển thị lịch giảng dạy của giảng viên.
+3. Thực hiện các thao tác sau:
+• Xem theo ngày: Hiển thị các buổi học của giảng viên trong ngày.
+• Xem theo tuần: Hiển thị lịch giảng dạy trong tuần.
+• Xem chi tiết buổi học: Hiển thị thông tin lớp học, phòng học và thời gian của buổi học.
+3. Hệ thống xử lý yêu cầu và hiển thị thông báo kết quả (Thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Giảng viên.
+Điều kiện ràng buộc
+1.Giảng viên chỉ được xem lịch giảng dạy của các lớp/khóa học được phân công.
+2.Tài khoản giảng viên phải tồn tại trong hệ thống.
+2.1.13 PB13 - Quản lý thông tin giảng viên
+ID
+PB13
+Tác nhân
+Giảng viên
+Mô tả
+Giảng viên quản lý thông tin cá nhân để bổ sung hoặc cập nhật thông tin khi cần thiết.
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục " Thông tin cá nhân".
+2. Hệ thống hiển thị thông tin cá nhân hiện tại của giảng viên.
+3. Người dùng có thể thực hiện thao tác thêm các thông tin còn thiếu hoặc cập nhật các thông tin cần thay đổi và nhấn Lưu
+4. Hệ thống kiểm tra dữ liệu nhập vào và thực hiện cập nhật thông tin.
+5. Hệ thống hiển thị thông báo kết quả (thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Giảng viên
+Điều kiện ràng buộc
+1. Tài khoản giảng viên phải tồn tại trong hệ thống.
+2. Giảng viên chỉ được chỉnh sửa thông tin cá nhân của chính mình.
+3. Các thông tin bắt buộc (ví dụ: họ tên, email, số điện thoại) phải được nhập đầy đủ và hợp lệ.
+2.1.14 PB14 - Quản lý thông tin cá nhân học viên
+ID
+PB14
+Tác nhân
+Học Viên
+Mô tả
+Học viên quản lý thông tin cá nhân của bản thân để xem, bổ sung hoặc cập nhật thông tin khi cần thiết.
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "Thông tin cá nhân".
+2. Hệ thống hiển thị thông tin cá nhân hiện tại của học viên.
+3. Thực hiện các thao tác sau:
+• Xem thông tin: Hệ thống hiển thị đầy đủ thông tin cá nhân của học viên.
+• Bổ sung thông tin: Học viên nhập các thông tin còn thiếu và nhấn Lưu.
+• Cập nhật thông tin: Học viên chỉnh sửa thông tin cá nhân và nhấn Lưu.
+4. Hệ thống kiểm tra dữ liệu nhập vào và cập nhật thông tin tương ứng.
+5. Hệ thống hiển thị thông báo kết quả (thành công hoặc lỗi).
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Học viên
+Điều kiện ràng buộc
+1. Tài khoản học viên phải tồn tại trong hệ thống.
+2. Học viên chỉ được xem và chỉnh sửa thông tin cá nhân của chính mình.
+4. Các thông tin bắt buộc (ví dụ: họ tên, email, số điện thoại) phải được nhập đầy đủ và hợp lệ.
+2.1.15 PB15 - Xem lịch học
+ID
+PB15
+Tác nhân
+Học Viên
+Mô tả
+Học viên xem lịch học để biết thông tin thời gian, địa điểm các buổi học cần tham gia.
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "Lịch học".
+2. Hệ thống hiển thị thông tin thời gian, địa điểm các buổi học.
+3. Thực hiện thao tác:
+• Xem theo ngày: Hệ thống hiển thị đầy đủ thông tin thời gian, địa điểm các buổi học trong ngày.
+• Xem theo tuần: Hệ thống hiển thị đầy đủ thông tin thời gian, địa điểm các buổi học trong tuần.
+• Xem theo tháng: Hệ thống hiển thị đầy đủ thông tin thời gian, địa điểm các buổi học trong tháng.
+Điều kiện trước
+Người dùng đã đăng nhập thành công với tư cách Học viên
+Điều kiện ràng buộc
+Tài khoản học viên phải tồn tại trong hệ thống.
+2.1.16 PB16 - Quản lý khóa học
+ID
+PB16
+Tác nhân
+Học Viên
+Mô tả
+Học viên quản lý các khóa học mà mình tham gia nhằm theo dõi quá trình học tập, xem nội dung bài học, nộp bài tập, gửi yêu cầu nghỉ phép và nhận thông báo từ giảng viên hoặc trợ giảng.
+Tiêu chí chấp nhận
+1. Người dùng truy cập mục "Khóa học của tôi".
+2. Hệ thống hiển thị danh sách các khóa học mà học viên đang tham gia.
+3.Người dùng chọn 1 trong các thao tác:
+• Xem thông tin khóa học: Hệ thống hiển thị đầy đủ thông tin danh sách buổi học, nội dung chi tiết từng buổi học, lịch học.
+• Gửi yêu cầu nghỉ phép:Người dùng chọn buổi học cần nghỉ, nhập lý do nghỉ, gửi yêu cầu. Hệ thống ghi nhận trạng thái (chờ duyệt / đã duyệt / từ chối)
+• Nộp bài tập: Người dùng xem danh sách bài tập được giao, tải file bài tập lên hệ thống, xác nhận nộp bài.
+• Xem kết quả bài tập: Hệ thống hiển thị điểm số,nhận xét của giảng viên/trợ giảng.
+• Xem thông báo: Hệ thống hiển thị đầy đủ thông báo của trung tâm,giảng viên.
+Điều kiện trước
+1.Người dùng đã đăng nhập thành công với tư cách Học viên.
+2.Học viên đã được đăng ký vào ít nhất một khóa học.
+Điều kiện ràng buộc
+1. Tài khoản học viên phải tồn tại trong hệ thống.
+2. Yêu cầu nghỉ phép phải được gửi trước thời gian diễn ra buổi học.
+3. Học viên chỉ được xem và thao tác trên các khóa học mà mình tham gia.
+2.1.17 PB17 - Điểm danh bằng nhận diện khuôn mặt
+ID
+PB17
+Tác nhân
+Học Viên
+Mô tả
+Học viên sử dụng hệ thống kiosk tích hợp công nghệ nhận diện khuôn mặt để thực hiện điểm danh khi tham gia lớp học.
+Tiêu chí chấp nhận
+1. Học viên đứng trước thiết bị kiosk nhận diện khuôn mặt tại lớp học.
+2. Hệ thống hiển thị thông tin học viên và thông tin buổi học đang tham gia.
+3.Người dùng chọn Xác nhận.
+4.Hệ thống thực hiện lưu thông tin và hiển thị thông báo điểm danh thành công.
+Điều kiện trước
+1.Người dùng đã đăng nhập thành công với tư cách Học viên.
+2. Dữ liệu khuôn mặt của học viên đã được đăng ký trước.
+3. Thiết bị kiosk hoạt động và có kết nối hệ thống.
+Điều kiện ràng buộc
+1. Chỉ điểm danh khi khuôn mặt được nhận diện chính xác.
+2. Chỉ cho phép điểm danh trong khung giờ của buổi học.
+3. Học viên chỉ được điểm danh cho lớp mình tham gia.
+4. Dữ liệu khuôn mặt phải được bảo mật.
+2.1.18 PB18 – Ôn tập
+ID
+PB18
+Tác nhân
+Học Viên
+Mô tả
+Học viên thực hiện ôn tập kiến thức của khóa học thông qua các hình thức như flashcard, quiz nhằm củng cố từ vựng và nội dung bài học, giúp nâng cao khả năng ghi nhớ và cải thiện kết quả học tập.
+Tiêu chí chấp nhận
+1. Người dùng truy cập vào mục “Ôn tập”.
+2. Hệ thống hiển thị danh sách các bài ôn tập theo:
+• Khóa học
+• Chủ đề / bài học
+• Loại bài tập (flashcard, quiz,...)
+3. Học viên thực hiện các bước sau:
+4. Chọn nội dung ôn tập:Người dùng chọn khóa học,chọn bài học hoặc chủ đề cần ôn tập.
+5. Thực hiện ôn tập:Người dùng làm bài flashcard (lật thẻ học từ vựng), làm quiz trắc nghiệm,trả lời câu hỏi.
+6. Xem kết quả:Hệ thống hiển thị điểm,số đáp án đúng
+Điều kiện trước
+1.Người dùng đã đăng nhập thành công với tư cách Học viên.
+2. Học viên đã tham gia ít nhất một khóa học.
+3. Hệ thống đã có dữ liệu bài ôn tập.
+Điều kiện ràng buộc
+1. Học viên chỉ được ôn tập các nội dung thuộc khóa học của mình.
+2. Dữ liệu câu hỏi và đáp án phải chính xác.
+3. Không cho phép chỉnh sửa kết quả sau khi đã hoàn thành bài.
+2.1.19 PB19 – Luyện đề
+ID
+PB19
+Tác nhân
+Học Viên
+Mô tả
+Học viên thực hiện luyện các đề thi mẫu trong hệ thống nhằm kiểm tra kiến thức, rèn luyện kỹ năng làm bài và nâng cao kết quả học tập.
+Tiêu chí chấp nhận
+1. Người dùng truy cập vào mục “Luyện đề”.
+2. Hệ thống hiển thị danh sách các đề luyện theo:
+• Khóa học
+• Cấp độ (dễ, trung bình, khó)
+• Loại đề (full test, từng kỹ năng: nghe, nói, đọc, viết)
+3. Học viên thực hiện các bước sau:
+4. Chọn đề luyện:Người dùng chọn  đề theo khóa học,chọn loại đề hoặc kỹ năng cần luyện.
+5.Thực hiện làm bài:Người dùng làm bài trắc nghiệm hoặc tự luận, hệ thống hiển thị thời gian làm bài,người dùng có thể chuyển qua lại giữa các câu hỏi.
+6. Nộp bài :Người dùng nhấn “Nộp bài” khi hoàn thành, hệ thống tự động nộp khi hết thời gian.
+7. Xem kết quả:Hệ thống hiển thị điểm số, số câu đúng / sai, đáp án chi tiết.
+Điều kiện trước
+1.Người dùng đã đăng nhập thành công với tư cách Học viên.
+2. Học viên đã tham gia ít nhất một khóa học.
+3. Hệ thống đã có ngân hàng đề thi.
+Điều kiện ràng buộc
+1. Học viên chỉ được luyện các đề thuộc khóa học của mình.
+2. Mỗi đề có thời gian làm bài giới hạn.
+3. Không cho phép sửa bài sau khi đã nộp.
+4. Hệ thống phải đảm bảo xử lý nhanh khi nộp bài.
+2.1.20 PB20 – Xem thông báo
+ID
+PB20
+Tác nhân
+Học viên, Giảng viên
+Mô tả
+Người dùng (học viên, giảng viên) xem các thông báo từ hệ thống, giảng viên hoặc trung tâm để cập nhật thông tin liên quan đến lớp học, khóa học và các hoạt động khác.
+Tiêu chí chấp nhận
+1. Người dùng truy cập vào mục “Thông báo”.
+2. Hệ thống hiển thị danh sách thông báo bao gồm:
+• Tiêu đề thông báo
+• Thời gian gửi
+• Người gửi
+• Trạng thái (đã đọc / chưa đọc)
+3. Người dùng có thể thực hiện các chức năng sau:
+• Xem danh sách thông báo:Hệ thống hiển thị danh sách thông báo theo thứ tự thời gian (mới nhất trước)
+• Xem chi tiết thông báo:Hệ thống hiển thị nội dung đầy đủ của thông báo, hiển thị thông tin người gửi và thời gian.
+• Tìm kiếm và lọc thông báo: Người dùng tìm kiếm theo tiêu đề, lọc theo thời gian (ngày, tuần, tháng).
+Điều kiện trước
+Người dùng đã đăng nhập thành công hệ thống.
+Điều kiện ràng buộc
+1. Người dùng chỉ được xem thông báo gửi đến mình hoặc thuộc lớp/khóa học của mình.
+2. Thông báo phải hiển thị đúng và đầy đủ nội dung.
+3. Hệ thống phải đảm bảo tải nhanh danh sách thông báo.
+2.2.Ưu tiên và ước tính
+Bảng xx: Bảng mức độ ưu tiên
+Mức độ ưu tiên
+Mức độ ảnh hưởng
+Ký hiệu
+Rất cao
+Ảnh hưởng nghiêm trọng
+1
+Cao
+Ảnh hưởng nghiêm trọng
+2
+Trung bình
+Có ảnh hưởng
+3
+Thấp
+Không ảnh hưởng
+4
+ID
+Chủ đề
+Sự ưu tiên
+PB01
+Đăng nhập
+1
+PB02
+Đăng xuất
+2
+PB03
+Quên mật khẩu
+2
+PB04
+Quản lý cơ sở
+2
+PB05
+Quản lý loại khóa học
+1
+PB06
+Quản lý người dùng
+1
+PB07
+Quản lý khóa học
+1
+PB08
+Báo cáo thống kê
+3
+PB09
+Quản lý đề thi mẫu
+3
+PB10
+Quản lý luyện tập
+3
+PB11
+Quản lý lớp học
+1
+PB12
+Xem lịch dạy
+2
+PB13
+Quản lý thông tin giảng viên
+1
+PB14
+Quản lý thông tin cá nhân học viên
+1
+PB15
+Xem lịch học
+2
+PB16
+Quản lý khóa học(học viên)
+1
+PB17
+Điểm danh bằng nhận diện khuôn mặt
+4
+PB18
+Ôn tập
+3
+PB19
+Luyện đề
+3
+PB20
+Xem thông báo
+4
+2.3. Chia theo từng Sprirnt
+Sprint
+Function
+Started Date
+Due Date
+Sprint 1
+PB01,PB02,PB03,PB04,PB05,PB06,PB07,PB11,PB13,PB16
+22/03/2026
+17/04/2026
+Sprirnt 2
+PB08,PB09,PB10,PB12,PB14,PB15,PB17,PB18,PB19,PB20
+18/04/2026
+10/05/2026

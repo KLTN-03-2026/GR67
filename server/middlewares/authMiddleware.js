@@ -39,4 +39,20 @@ const admin = (req, res, next) => {
   }
 };
 
-module.exports = { protect, admin };
+const teacher = (req, res, next) => {
+  if (req.user && req.user.role === 'teacher') {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: 'Không được phép, yêu cầu quyền giảng viên' });
+  }
+};
+
+const student = (req, res, next) => {
+  if (req.user && req.user.role === 'student') {
+    next();
+  } else {
+    res.status(403).json({ success: false, message: 'Không được phép, yêu cầu quyền học viên' });
+  }
+};
+
+module.exports = { protect, admin, teacher, student };

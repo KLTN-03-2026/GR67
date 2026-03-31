@@ -154,11 +154,11 @@ export default function TeacherLayout({ children }) {
             </button>
 
             <div className="text-right">
-              <p className={`text-sm font-medium ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{user?.FullName || user?.name}</p>
+              <p className={`text-sm font-medium ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{user?.hovaten}</p>
               <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>{user?.email}</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg border border-blue-200">
-              {user?.name?.charAt(0).toUpperCase()}
+              {user?.hovaten?.charAt(0).toUpperCase()}
             </div>
           </div>
         </header>

@@ -14,6 +14,10 @@ const cosoSchema = new mongoose.Schema({
   mota: {
     type: String,
     trim: true
+  },
+  trangThaiHoatDong: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

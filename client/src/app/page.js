@@ -96,10 +96,11 @@ export default function LoginPage() {
 
         {/* Left Panel - Branding */}
         <div className="w-1/2 flex flex-col items-center justify-center p-10 border-r border-gray-100">
-          {/* Logo placeholder - thay thế bằng ảnh của bạn */}
-          <div className="w-20 h-20 mb-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm border-2 border-dashed border-gray-300">
-            Logo
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="EMC Logo" 
+            className="w-24 h-24 mb-4 object-contain" 
+          />
 
           {/* Brand name */}
           <p className="text-2xl font-extrabold text-[#1a73b5] tracking-wide mb-3">

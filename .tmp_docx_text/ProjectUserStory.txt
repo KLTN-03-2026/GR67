@@ -1,0 +1,419 @@
+﻿BỘ GIÁO DỤC VÀ ĐÀO TẠO
+TRƯỜNG ĐẠI HỌC DUY TÂN
+Tên đề tài:
+THIẾT KẾ VÀ PHÁT TRIỂN HỆ THỐNG QUẢN LÝ TRUNG TÂM TIẾNG ANH TÍCH HỢP ĐIỂM DANH NHẬN DIỆN KHUÔN MẶT BẰNG AI
+USER STORY DOCUMENT
+GVHD: Phan Long
+Nhóm SVTH:
+Phan Thanh Chiến	28211151053
+Trịnh Quang Công	28211101087
+Lê Trần Bình An	28211150401
+Bùi Nguyễn Ngọc Thạch	28211104344
+Nguyễn Hoàng Thông	28210201094
+Đà Nẵng, tháng 03 năm 2026
+THÔNG TIN DỰ ÁN
+Dự án viết tắt
+EMC
+Tên dự án
+Thiết kế và phát triển Hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Ngày bắt đầu
+12/03/2026
+Ngày kết thúc
+15/5/2026
+Nơi thực hiện
+Khoa Công nghệ thông tin – Đại học Duy Tân
+Mentor
+ThS.Phan Long
+Email: phanlong92@gmail.com
+Phone: 0903333080
+Chủ sở hữu
+(Product Owner)
+Trịnh Quang Công
+Email: trinhcong1120@gmail.com
+Tel: 0342613349
+Quản lý dự án (Scrum Master)
+Phan Thanh Chiến
+chiendtr0@gmail.com
+0705294925
+Thành viên trong đội
+Trịnh Quang Công
+trinhcong1120@gmail.com
+0342613349
+Lê Trần Bình An
+lean5076@gmail.com
+0918355753
+Bùi Nguyễn Ngọc Thạch
+thachbui283@gmail.com
+0906479546
+Nguyễn Hoàng Thông
+thong2882004@gmail.com
+0856102428
+THÔNG TIN TÀI LIỆU
+Tên dự án
+Thiết kế và phát triển Hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Tiêu đề tài liệu
+User story Document
+Người thực hiện
+Trịnh Quang Công
+LỊCH SỬ CHỈNH SỬA TÀI LIỆU
+Phiên bản
+Người chỉnh sửa
+Ngày
+Ghi chú
+1.0
+Trịnh Quang Công
+15/03/2024
+Bản nháp
+1.1
+Trịnh Quang Công
+17/03/2024
+Bản chính thức
+PHÊ DUYỆT TÀI LIỆU
+Người hướng dẫn
+Phan Long
+Chữ ký
+Ngày
+…./…./2026
+Chủ sở hữu
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Quản lý dự án
+Phan Thanh Chiến
+Chữ ký
+Ngày
+…./…./2026
+Thành viên
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Lê Trần Bình An
+Chữ ký
+Ngày
+…./…./2026
+Bùi Nguyễn Ngọc Thạch
+Chữ ký
+Ngày
+…./…./2026
+Nguyễn Hoàng Thông
+Chữ ký
+Ngày
+…./…./2026
+MỤC LỤC
+TOC \o "1-3" \h \z \u 1.	MỤC ĐÍCH TÀI LIÊU	 PAGEREF _Toc224738249 \h 4
+2.	MỤC TIÊU HỆ THỐNG	 PAGEREF _Toc224738250 \h 5
+3.	RÀNG BUỘC	 PAGEREF _Toc224738251 \h 5
+4.	CÔNG CỤ VÀ PHƯƠNG PHÁP QUẢN LÝ HỆ THỐNG	 PAGEREF _Toc224738252 \h 5
+5.	USER STORY TRONG HỆ THỐNG	 PAGEREF _Toc224738253 \h 6
+5.1.	User Story 1: Đăng nhập	 PAGEREF _Toc224738254 \h 6
+5.2.	User Story 2: Đăng xuất	 PAGEREF _Toc224738255 \h 6
+5.3.	User Story 3: Quên mật khẩu	 PAGEREF _Toc224738256 \h 6
+5.4.	User Story 4: Quản lý cơ sở	 PAGEREF _Toc224738257 \h 7
+5.5.	User Story 5: Quản lý Loại Khóa học	 PAGEREF _Toc224738258 \h 7
+5.6.	User Story 6: Quản lý Người dùng	 PAGEREF _Toc224738259 \h 8
+5.7.	User Story 7: Quản lý Khóa học	 PAGEREF _Toc224738260 \h 8
+5.8.	User Story 8: Báo cáo thống kê	 PAGEREF _Toc224738261 \h 8
+5.9.	User Story 9: Quản lý đề thi mẫu	 PAGEREF _Toc224738262 \h 9
+5.10.	User Story 10: Quản lý luyện tập	 PAGEREF _Toc224738263 \h 9
+5.11.	User Story 11: Quản lý Lớp Học	 PAGEREF _Toc224738264 \h 10
+5.12.	User Story 12: Xem Lịch Dạy	 PAGEREF _Toc224738265 \h 10
+5.13.	User Story 13: Quản lý thông tin giảng viên	 PAGEREF _Toc224738266 \h 11
+5.14.	User Story 14:  Quản lý thông tin cá nhân học viên	 PAGEREF _Toc224738267 \h 11
+5.15.	User Story 15: Xem lịch học	 PAGEREF _Toc224738268 \h 12
+5.16.	User Story 16: Quản lý khóa học (học viên)	 PAGEREF _Toc224738269 \h 12
+5.17.	User Story 17: điểm danh bằng nhận diện khuôn mặt	 PAGEREF _Toc224738270 \h 12
+5.18.	User Story 18: Ôn tập	 PAGEREF _Toc224738271 \h 13
+5.19.	User Story 19: Luyện đề	 PAGEREF _Toc224738272 \h 13
+5.20.	User Story 20: Xem Thông báo	 PAGEREF _Toc224738273 \h 14
+MỤC ĐÍCH TÀI LIÊU
+Tài liệu này mô tả các đặc tính của “Thiết kế và phát triển Hệ thống quản lý trung tâm tiếng Anh tích hợp điểm danh bằng nhận diện khuôn mặt sử dụng AI” sẽ được phát triển. Khách hàng và các bên liên quan sẽ sử dụng tài liệu này để đảm bảo tính đầy đủ và chính xác của các yêu cầu hệ thống, bao gồm các yêu cầu chức năng và các yêu cầu về chất lượng.
+Tài liệu này trình bày định hướng phát triển của hệ thống, mô tả các chức năng chính, phạm vi hoạt động và các yêu cầu cần thiết. Đồng thời, tài liệu cũng hỗ trợ việc điều chỉnh và hoàn thiện các yêu cầu sử dụng của hệ thống trong quá trình phát triển.
+Đối tượng sử dụng tài liệu này bao gồm khách hàng, giảng viên hướng dẫn, nhóm phát triển hệ thống và bất kỳ nhóm phần mềm nào trong tương lai có nhu cầu bảo trì, nâng cấp hoặc mở rộng hệ thống.
+MỤC TIÊU HỆ THỐNG
+Xây dựng  “Hệ thống quản lý trung tâm tiếng Anh tích hợp điểm danh nhận diện khuôn mặt bằng AI” nhằm cung cấp giải pháp quản lý tập trung cho các trung tâm tiếng Anh, hỗ trợ quản lý học viên, giáo viên, lớp học, lịch học và kết quả học tập một cách hiệu quả, nhanh chóng và chính xác.
+Ứng dụng công nghệ trí tuệ nhân tạo (AI) nhận diện khuôn mặt vào chức năng điểm danh tự động, giúp ghi nhận sự có mặt của học viên khi vào lớp một cách chính xác, giảm thiểu gian lận và tiết kiệm thời gian so với phương pháp điểm danh thủ công.
+Đảm bảo mọi hoạt động quản lý và đào tạo trong trung tâm đều được lưu trữ, theo dõi và thống kê trên hệ thống, từ việc quản lý học viên, lớp học, lịch học đến quá trình điểm danh và đánh giá kết quả học tập, giúp nhà quản lý dễ dàng kiểm soát và đưa ra quyết định kịp thời.
+RÀNG BUỘC
+Dự án phải kết thúc trong thời gian 2,5 tháng.
+Chi phí cho dự án: Hạn chế.
+Nguồn lực: 5 người.
+CÔNG CỤ VÀ PHƯƠNG PHÁP QUẢN LÝ HỆ THỐNG
+Ngôn ngữ & công nghệ: JavaScript với Node.js (Backend) và ReactJS (Frontend).
+Cơ sở dữ liệu: MongoDB.
+Môi trường phát triển: Visual Studio Code và các công cụ debug.
+Quản lý mã nguồn: Git và GitHub.
+Phương pháp phát triển: Agile/Scrum.
+USER STORY TRONG HỆ THỐNG
+User Story 1: Đăng nhập
+Là Admin, Giảng viên, Học viên, Trợ giảng tôi muốn đăng nhập để sử dụng các chức năng của hệ thống, (hoặc đăng xuất khi không sử dụng)
+Tác nhân
+Admin, giảng viên, học viên, trợ giảng
+Điều kiện tiên quyết
+Người dùng phải có tài khoản trong hệ thống
+Tiêu chí chấp nhận:
+Khi đăng nhập vào hệ thống thì người dùng phải nhập đầy đầy đủ các thông tin, gồm email, mật khẩu.
++ Nếu đăng nhập thành công, thì người dùng sẽ vào được giao diện chính của hệ thống.
++ Ngược lại, hệ thống thông báo “Sai email hoặc mật khẩu, yêu cầu nhập lại.”
+Khi không muốn sử dụng ứng dụng, người dùng có thể chọn mục Đăng xuất để thoát khỏi hệ thống.
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 2: Đăng xuất
+Là Admin, Giảng viên, Học viên, Trợ giảng tôi muốn đăng xuất để không muốn sử dụng các chức năng của hệ thống
+Tác nhân
+Admin, giảng viên, học viên, trợ giảng
+Điều kiện tiên quyết
+Người dùng phải có tài khoản trong hệ thống
+Tiêu chí chấp nhận:
+Khi đăng nhập vào hệ thống thì người muốn đăng xuất thì chọn mục đăng xuất để thoát khỏi hệ thống.
+Hệ thống yêu cần khẳng định trước khi đăng xuất.
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 3: Quên mật khẩu
+Là Admin, Giảng viên, Học viên, Trợ giảng tôi muốn đặt lại mật khẩu của mình
+Tác nhân
+Admin, giảng viên, học viên, trợ giảng
+Điều kiện tiên quyết
+Người dùng phải có tài khoản trong hệ thống
+Tiêu chí chấp nhận:
+Chọn “Quên mật khẩu”
+Nhập email và nhấn “Nhận Mã OTP” để nhận OTP được gửi về email.
+Nhập OTP vừa nhận và nhấn “Next” để đến trang nhập mật khẩu
+Nhập mật khẩu mới và xác nhận mật khẩu mới.
+Nhấn “Lưu” để hoàn thành đổi mật khẩu.
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 4: Quản lý cơ sở
+Là Admin tôi muốn quản lý các cơ sở của trung tâm  để hệ thống có thể tổ chức và quản lý phòng học cho từng cơ sở khác nhau.
+Tác nhân
+Admin
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, người dùng có thể
++ Thêm, xóa, sửa thông tin cơ sở
++Quản lý phòng học của cơ sở đó.
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 5: Quản lý Loại Khóa học
+Là Admin, Tôi muốn quản lý loại khóa học để tạo, sửa, xóa loại khóa học khi cần thiết
+Tác nhân
+Admin
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Phân Loại khóa học, admin có thể
++ Thêm, xóa, sửa loại khóa học
++ Quản lý chương trình học của loại khóa học.
++ Quản lý kho bài tập về nhà và đáp án của loại khóa học
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 6: Quản lý Người dùng
+Là Admin, Tôi muốn quản lý người dùng để tạo, sửa, xóa người dùng của đảm bảo việc phân quyền, theo dõi thông tin và quản lý hoạt động của các người dùng trong hệ thống
+Tác nhân
+Admin
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Người dùng, để thực hiện:
++ Thêm người dùng
++ Cập nhật thông tin người dùng.
++ Xóa người dùng
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 7: Quản lý Khóa học
+Là Admin, Tôi muốn quản lý khóa học để tạo, sửa, xóa khóa học khi cần thiết
+Tác nhân
+Admin
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục khóa học, để thực hiện:
++ Thêm khóa học mới
++ Sửa thông tin khóa học
++ Xóa khóa học
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 8: Báo cáo thống kê
+Là Admin, Tôi muốn theo dõi tình hình hoạt động của trung tâm để dễ dàng theo dõi và đánh giá tình hình của trung tâm
+Tác nhân
+Admin
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Báo cáo thống kê, để thực hiện:
++ Hiển thị dữ liệu thống kế.
++ Lọc dữ liệu theo thời gian
++ Xuất báo cáo ra file PDF, Excel
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 9: Quản lý đề thi mẫu
+Là Admin, Tôi muốn quản lý các đề thi mẫu trong hệ thống để dễ dàng tạo, chỉnh sửa và sử dụng cho việc luyện tập hoặc thi thử.
+Tác nhân
+Admin
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Quản lý Đề thi Mẫu, để thực hiện:
++ Hiển thị danh sách đề thi mẫu.
++ Thêm mới đề thi mẫu
++ Chỉnh sửa thông tin đề thi mẫu.
++ Xóa đề thi mẫu.
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 10: Quản lý luyện tập
+Là Admin, Tôi muốn quản lý hoạt động luyện tập của người dùng để theo dõi và cải thiện hiệu quả học tập.
+Tác nhân
+Admin
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Quản lý luyện tập, để thực hiện:
++ Hiển thị danh sách lịch sử luyện tập của người dùng.
++ Xem chi tiết kết quả luyện tập (điểm số, thời gian, số câu đúng/sai).
++ Lọc dữ liệu theo người dùng hoặc thời gian.
++ Xóa dữ liệu luyện tập.
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 11: Quản lý Lớp Học
+Là Giảng viên, Tôi muốn quản lý lớp/ khóa học được phân công giảng dạy để theo dõi thông tin lớp/ khóa học và thực hiện các hoạt động giảng dạy.
+Tác nhân
+Giảng viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Lớp học, để thực hiện:
++ Xem danh sách các lớp/khóa học được phân công giảng dạy
++ Xem thông tin chi tiết lớp học (lịch học, chương trình học, danh sách học viên)
++ Điểm danh học viên trong buổi học
++ Xem và quản lý bài tập của học viên
++Quản lý nghỉ phép/học bù của học viên
++Thực hiện trừ điểm uy tín của học viên phạm lỗi(không làm bài tập, vào lớp trễ,…)
+Điều kiện ràng buộc
+Giảng viên chỉ được xem và quản lý các lớp/khóa học được phân công.
+Account phải tồn tại trong hệ thống
+User Story 12: Xem Lịch Dạy
+Là Giảng viên, Tôi muốn Xem lịch dạy của mình để biết thời gian và lớp học được phân công giảng dạy.
+Tác nhân
+Giảng viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Xem lịch Dạy, để thực hiện:
++ Xem lịch dạy theo ngày hoặc theo tuần
++ Xem phòng học và thời gian của buổi học
+Điều kiện ràng buộc
+Giảng viên chỉ được xem lịch dạy của các lớp được phân công.
+Account phải tồn tại trong hệ thống
+User Story 13: Quản lý thông tin giảng viên
+Là Giảng viên , Tôi muốn quản lý thông tin cá nhân để thay đổi thông tin cá nhân khi cần thiết
+Tác nhân
+Giảng viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Thông tin cá nhân, để thực hiện:
++ Thêm các thông tin còn thiếu
++ Thay đổi thông tin khi cần cập nhật
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 14:  Quản lý thông tin cá nhân học viên
+Là học viên, Tôi muốn quản lý thông tin cá nhân của bản thân để thay đổi thông tin khi cần thiết
+Tác nhân
+Học Viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Thông tin cá nhân, để thực hiện:
++ Xem Thông tin cá nhân
++ Bổ sung thông tin cá nhân còn thiếu
++Sửa thông tin cá nhân
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 15: Xem lịch học
+Là Học viên, Tôi muốn xem lịch học để biết thông tin thời gian, địa điểm các buổi học cần tham gia
+Tác nhân
+Học Viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Lịch học, để thực hiện:
++ xem thời khóa biểu
++ xem thông tin chi tiết của buổi học
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 16: Quản lý khóa học (học viên)
+Là học viên, Tôi muốn quản lý khóa học mình tham gia học để heo dõi quá trình học tập và thực hiện các hoạt động liên quan đến khóa học.
+Tác nhân
+Học Viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Khóa học của tôi, để thực hiện:
++ Xem lịch học và nội dung buổi học của khóa học
++ Gửi yêu cầu xin nghỉ phép khi cần
++ Nộp bài tập về nhà và xem kết quả
++ Xem kết quả chấm bài và Thông báo từ giảng viên/trợ giảng
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 17: Điểm danh bằng nhận diện khuôn mặt
+Là học viên, Tôi muốn sử dụng kiosk nhận diện khuôn mặt để điểm danh khi đến lớp và hệ thống tự động ghi nhận sự có mặt của tôi.
+Tác nhân
+Học viên
+Điều kiện tiên quyết
+Học viên đã đăng ký tài khoản trong hệ thống.
+Hệ thống đã lưu dữ liệu khuôn mặt của học viên.
+Tiêu chí chấp nhận:
+Học viên đến lớp và đứng trước kiosk nhận diện khuôn mặt để thực hiện:
++ Hệ thống quét và nhận diện khuôn mặt học viên
++ Hệ thống xác định lớp học và buổi học hiện tại
++ Hệ thống ghi nhận trạng thái điểm danh (có mặt / đi trễ)
++ Hiển thị kết quả điểm danh trên màn hình kiosk
+Điều kiện ràng buộc
+Học viên chỉ được điểm danh cho lớp học mà mình đang tham gia.
+Hệ thống chỉ ghi nhận điểm danh khi khuôn mặt được nhận diện chính xác.
+Điểm danh chỉ hợp lệ khi đúng ngày và khung giờ học của lớp.
+User Story 18: Ôn tập
+Là Học Viên, Tôi muốn ôn tập kiến thức của khóa học bằng các bài tập nhỏ như flashcard, quizz để ghi nhớ từ vựng và nội dung bài học.
+Tác nhân
+Học Viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Ôn tập, để thực hiện:
++ Xem danh sách các bài ôn tập
++ Chọn loại bài tập và khoản kiến thức cần ôn tập
++ Thực hiện làm bài ôn tập
++ Xem lại kết quả sau khi hoàn thành bài ôn tập
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 19: Luyện đề
+Là Học viên, Tôi muốn Luyện các đề mẫu trong hệ thống để kiểm tra và nâng cao khả năng làm bài của mình.
+Tác nhân
+Học viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống.
+Tiêu chí chấp nhận:
+Sau khi đăng nhập vào hệ thống, chọn mục Luyện đề, để thực hiện:
++ Xem danh sách các đề mẫu
++ Chọn loại đề cần luyện
++ Chọn các phần muốn làm
++ Thực hiện làm bài luyện đề
++ Xem kết quả và đáp án sau khi hoàn thành bài làm
+Điều kiện ràng buộc
+Account phải tồn tại trong hệ thống
+User Story 20: Xem Thông báo
+Là Giảng viên, học viên, Tôi muốn xem các thông báo của hệ thống để nắm được các thông tin và cập nhật mới từ trung tâm.
+Tác nhân
+Giảng viên, Học viên
+Điều kiện tiên quyết
+Đăng nhập thành công vào hệ thống
+Tiêu chí chấp nhận:
+Đăng nhập thành công vào hệ thống.
+Chọn văn bản đến:
++ Hiển thị danh sách thông báo.
++ Xem chi tiết nội dung thông báo.
++ Tìm kiếm thông báo (theo tiêu đề, thời gian)
+Điều kiện ràng buộc
+Người dùng chỉ được xem các thông báo được gửi đến mình hoặc thuộc lớp/khóa học của mình.

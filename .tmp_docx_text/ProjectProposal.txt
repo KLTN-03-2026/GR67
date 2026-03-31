@@ -1,0 +1,348 @@
+﻿THÔNG TIN DỰ ÁN
+Dự án viết tắt
+EMC
+Tên dự án
+Thiết kế và phát triển hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Ngày bắt đầu
+12/3/2026
+Ngày kết thúc
+15/5/2026
+Nơi thực hiện
+Khoa Công nghệ thông tin – Đại học Duy Tân
+Mentor
+ThS.Phan Long
+Email: phanlong92@gmail.com
+Phone: 0903333080
+Chủ sở hữu
+(Product Owner)
+Email: Trịnh Quang Công
+Tel: 0342613349
+Quản lý dự án (Scrum Master)
+Phan Thanh Chiến
+chiendtr0@gmail.com
+0705294925
+Thành viên trong đội
+Nguyễn Hoàng Thông
+thong2882004@gmail.com
+0856102428
+Trịnh Quang Công
+trinhcong1120@gmail.com
+0342613349
+Lê Trần Bình An
+lean5076@gmail.com
+0918355753
+Bùi Nguyễn Ngọc Thạch
+thachbui283@gmail.com
+0906479546
+THÔNG TIN TÀI LIỆU
+Tên dự án
+Thiết kế và phát triển hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Tiêu đề tài liệu
+Proposal Document
+Người thực hiện
+Phan Thanh Chiến
+LỊCH SỬ CHỈNH SỬA TÀI LIỆU
+Phiên bản
+Người chỉnh sửa
+Ngày
+Ghi chú
+1.0
+Phan Thanh Chiến
+16/3/2026
+Bản nháp
+1.1
+Phan Thanh Chiến
+17/3/2026
+Bản chính thức
+PHÊ DUYỆT TÀI LIỆU
+Người hướng dẫn
+Phan Long
+Chữ ký
+Ngày
+…./…./2026
+Chủ sở hữu
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Quản lý dự án
+Phan Thanh Chiến
+Chữ ký
+Ngày
+…./…./2026
+Thành viên
+Nguyễn Hoàng Thông
+Chữ ký
+Ngày
+…./…./2026
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Lê Trần Bình An
+Chữ ký
+Ngày
+…./…./2026
+Bùi Nguyễn Ngọc Thạch
+Chữ ký
+Ngày
+…./…./2026
+MỤC LỤC
+TOC \o "1-3" \h \z \u 1.	GIỚI THIỆU	 PAGEREF _Toc224635169 \h 4
+1.1.	Mục đích	 PAGEREF _Toc224635170 \h 4
+1.2.	Phạm vi	 PAGEREF _Toc224635171 \h 4
+1.3.	Tham khảo	 PAGEREF _Toc224635172 \h 4
+2.	TỔNG QUAN DỰ ÁN	 PAGEREF _Toc224635173 \h 5
+2.1.	Lý do chọn đề tài	 PAGEREF _Toc224635174 \h 5
+2.2.	Định nghĩa dự án	 PAGEREF _Toc224635175 \h 5
+2.3.	Giải pháp đề xuất	 PAGEREF _Toc224635176 \h 6
+2.3.1.	Mục tiêu dự án	 PAGEREF _Toc224635177 \h 6
+2.3.2.	Hoạt động của ứng dụng	 PAGEREF _Toc224635178 \h 6
+2.3.3.	Các chức năng cơ bản của hệ thống	 PAGEREF _Toc224635179 \h 8
+2.3.4.	Mô tả	 PAGEREF _Toc224635180 \h 9
+2.3.5.	Các công nghệ ràng buộc	 PAGEREF _Toc224635181 \h 9
+3.	KẾ HOẠCH TỔNG THỂ DỰ ÁN	 PAGEREF _Toc224635182 \h 10
+3.1.	Định nghĩa Scrum	 PAGEREF _Toc224635183 \h 10
+3.1.1.	Mô tả Scrum	 PAGEREF _Toc224635184 \h 10
+3.1.2. The artifacts	 PAGEREF _Toc224635185 \h 11
+3.1.3. Process (Quá trình)	 PAGEREF _Toc224635186 \h 12
+3.2.	Kế hoạch tổng thể	 PAGEREF _Toc224635187 \h 12
+3.3.	Quản lý tổ chức	 PAGEREF _Toc224635188 \h 13
+3.3.1.	Nguồn nhân lực	 PAGEREF _Toc224635189 \h 13
+3.3.2.	Phi nhân lực	 PAGEREF _Toc224635190 \h 13
+GIỚI THIỆU
+Mục đích
+Mục đích của tài liệu này:
+Xác định yêu cầu, ý tưởng các vấn đề liên quan đến việc xây dựng dự án
+Đưa ra các đề xuất dự án, kế hoạch hành động dự án, kiến trúc, giải pháp thực hiện, bao gồm cả về kế hoạch, phát triển, thực hiện và giám sát dự án.
+Phạm vi
+Bên cạnh việc cung cấp cho bạn các tài liệu, nó sẽ liệt kê tất cả các thành viên trong nhóm phát triển trong dự án này, quy trình và khuôn khổ mà dự án sẽ áp dụng.
+Cung cấp kế hoạch cho từng giai đoạn của quy trình phát triển phần mềm dựa trên quy trình Scrum bao gồm: Thời gian bắt đầu, thời gian kết thúc và các mốc thời gian quan trọng trong dự án v.v....
+Đề xuất bao gồm giới thiệu các giải pháp, xác định cách tốt nhất để phát triển mà chúng tôi tạo ra, tổng chi phí ước tính, thời gian hoàn vốn và khối lượng hoàn vốn cho dự án.
+Tham khảo
+Bảng 1.1: Danh mục tài liệu tham khảo
+Số TT
+Tên tài liệu
+Tham chiếu
+1
+Scrum Process
+https://www.mountaingoatsoftware.com/agile/scrum
+2
+HTML, CSS, JS
+https://www.w3schools.com/
+3
+Express.js
+https://expressjs.com/
+4
+Information
+https://chatgpt.com/
+TỔNG QUAN DỰ ÁN
+Lý do chọn đề tài
+Trong bối cảnh chuyển đổi số trong giáo dục ngày càng mạnh mẽ, các trung tâm tiếng Anh cần ứng dụng công nghệ để nâng cao hiệu quả quản lý và chất lượng đào tạo. Tuy nhiên, thực tế cho thấy nhiều trung tâm vẫn quản lý học viên, giáo viên, lớp học, lịch học, học phí và kết quả học tập bằng phương pháp thủ công hoặc sử dụng các công cụ rời rạc. Điều này không chỉ gây mất thời gian, dễ xảy ra sai sót mà còn khó khăn trong việc tổng hợp dữ liệu, theo dõi tình hình hoạt động và đưa ra quyết định quản lý kịp thời.
+Xuất phát từ nhu cầu đó, đề tài “Thiết kế và phát triển hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI” được lựa chọn nhằm xây dựng một hệ thống quản lý tập trung, đồng bộ và tự động hóa các quy trình quan trọng trong trung tâm. Hệ thống giúp quản lý hiệu quả thông tin học viên, giáo viên, lớp học và tình hình chuyên cần, đồng thời hỗ trợ tạo báo cáo nhanh chóng, chính xác. Chức năng điểm danh bằng AI được tích hợp như một giải pháp bổ trợ nhằm nâng cao tính chính xác và chuyên nghiệp trong công tác quản lý.
+Đề tài mang ý nghĩa thực tiễn cao, góp phần giải quyết bài toán quản lý trong lĩnh vực giáo dục, đồng thời giúp vận dụng kiến thức chuyên ngành vào một hệ thống có tính ứng dụng thực tế.
+Định nghĩa dự án
+Đây là dự án thuộc lĩnh vực phát triển website, nhằm xây dựng một nền tảng trực tuyến hỗ trợ quản lý toàn bộ hoạt động của trung tâm tiếng Anh. Hệ thống được thiết kế để quản lý thông tin học viên, giảng viên, khóa học, lớp học, lịch học, điểm danh và kết quả học tập.
+Hệ thống hướng đến việc tối ưu hóa quy trình quản lý, nâng cao trải nghiệm học viên, hỗ trợ giảng viên trong công tác giảng dạy và cung cấp cho ban quản lý công cụ thống kê, báo cáo chính xác, kịp thời.
+Giải pháp đề xuất
+Website quản lý trung tâm tiếng Anh với các tính năng chính như sau:
+Đối với Admin :
+Quản lý: tài khoản, cơ sở, phòng học, khóa học, loại khóa học
+Báo cáo và thống kê.
+Đối với giảng viên
+Quản lý thông tin cá nhân, xem lịch dạy, quản lý điểm danh, quản lý bài tập
+Quản lý nghỉ phép/học bù, Xem thông báo học viên
+Đối với học viên
+Quản lý thông tin cá nhân, xem thông báo của giáo viên, bài tập về nhà
+Xem lịch học, điểm danh, xin vắng, quản lý học tập
+Công nghệ thực hiện
+Ngôn ngữ & Framework :Nodejs(backend) Reactjs(frontend)
+Cơ sở dữ liệu: MongoDB.
+Frontend: HTML, CSS, JavaScript (Bootstrap).
+Tích hợp thư viện AI nhận diện khuôn mặt ( Face Recognition hoặc TensorFlow)
+Quy trình phát triển: Scrum.
+Mục tiêu dự án
+Xác định yêu cầu, ý tưởng và các vấn đề liên quan đến việc xây dựng hệ quản lý trung tâm tiếng Anh
+Đề xuất kiến trúc, kế hoạch hành động và giải pháp thực hiện, bao gồm quy trình phát triển, triển khai và giám sát dự án
+Thiết kế và xây dựng hoàn chỉnh hệ thống với các chức năng: quản lý học viên, giảng viên, khóa học, lịch học, điểm danh
+Hoạt động của ứng dụng
+Hệ thống có 3 tác nhân: Admin, Giảng viên, Học viên.
+Đối với Admin: Admin là người quản trị hệ thống và có quyền truy cập cao nhất. Sau khi đăng nhập vào hệ thống, Admin có thể thực hiện các chức năng quản lý như quản lý cơ sở, quản lý loại khóa học, quản lý người dùng và quản lý các khóa học của trung tâm. Ngoài ra, Admin còn có thể truy xuất các báo cáo và thống kê để theo dõi tình hình hoạt động của trung tâm như số lượng học viên, lớp học, tình trạng điểm danh và các dữ liệu liên quan. Khi Admin gửi yêu cầu đến hệ thống, hệ thống sẽ tiếp nhận, xử lý dữ liệu từ cơ sở dữ liệu và trả về kết quả hiển thị trên giao diện người dùn
+Đối với Giảng viên: Giảng viên là người trực tiếp tham gia vào hoạt động giảng dạy trong trung tâm. Sau khi đăng nhập, giảng viên có thể xem lịch dạy của mình, theo dõi thông tin lớp học được phân công và quản lý danh sách học viên trong lớp. Giảng viên cũng có thể thực hiện các thao tác liên quan đến việc quản lý lớp học như điểm danh học viên, xem thông báo và cập nhật thông tin cá nhân. Hệ thống sẽ xử lý các yêu cầu của giảng viên và cung cấp các thông tin cần thiết phục vụ cho việc giảng dạy.
+Đối với Học viên: Học viên là người sử dụng hệ thống để theo dõi quá trình học tập của mình. Sau khi đăng nhập, học viên có thể xem lịch học, theo dõi các khóa học đang tham gia, nhận thông báo từ giảng viên hoặc trung tâm và cập nhật thông tin cá nhân. Khi đến lớp học, học viên sẽ thực hiện điểm danh bằng hệ thống nhận diện khuôn mặt. Hệ thống sẽ sử dụng camera để quét khuôn mặt học viên, so sánh với dữ liệu khuôn mặt đã được lưu trữ trong cơ sở dữ liệu và tự động ghi nhận trạng thái điểm danh của học viên.
+right435610Xác định bối cảnh của hệ thống trong quá trình hoạt động trong thực tế.
+Hình 2.1: Sơ đồ ngữ cảnh của hệ thống
+Các chức năng cơ bản của hệ thống
+Đối với Admin ,có thể :
+Quản lý cơ sở
+Quản lý loại khóa học
+Quản lý người dùng
+Báo cáo thống kê
+Đối với Giảng viên có thể :
+Xem lịch dạy
+Quản lý lớp học
+Quản lý thông tin cá nhân giảng viên
+Xem thông báo
+Đối với Học viên có thể :
+Quản lý thông tin cá nhân học viên
+Xem lịch học
+Quản lý khóa học đăng ký
+Điểm danh nhận diện khuôn mặt
+Xem thông báo
+Mô tả
+Hệ thống quản lý trung tâm tiếng Anh tích hợp điểm danh nhận diện khuôn mặt bằng AI là một ứng dụng web được xây dựng nhằm hỗ trợ việc quản lý và vận hành các hoạt động trong trung tâm tiếng Anh một cách hiệu quả và tự động hóa.
+Hệ thống được thiết kế với ba nhóm người dùng chính gồm Admin, Giảng viên và Học viên, mỗi nhóm người dùng có quyền truy cập và sử dụng các chức năng khác nhau. Admin đóng vai trò quản trị hệ thống, chịu trách nhiệm quản lý dữ liệu tổng thể như thông tin học viên, giảng viên, khóa học, loại khóa học, cơ sở và phòng học. Ngoài ra, Admin còn có thể theo dõi các báo cáo và thống kê để đánh giá tình hình hoạt động của trung tâm.
+Giảng viên là người trực tiếp tham gia giảng dạy trong hệ thống. Giảng viên có thể xem lịch dạy, quản lý lớp học được phân công, theo dõi danh sách học viên, điểm danh và cập nhật các thông tin liên quan đến lớp học. Điều này giúp giảng viên dễ dàng quản lý quá trình giảng dạy và theo dõi tiến độ học tập của học viên.
+Học viên là đối tượng sử dụng hệ thống để theo dõi quá trình học tập của mình. Thông qua hệ thống, học viên có thể xem lịch học, nhận thông báo từ giảng viên hoặc trung tâm, theo dõi các khóa học đang tham gia và cập nhật thông tin cá nhân. Đặc biệt, hệ thống tích hợp công nghệ nhận diện khuôn mặt bằng AI để thực hiện chức năng điểm danh tự động, giúp giảm thiểu gian lận và nâng cao độ chính xác trong việc ghi nhận sự tham gia của học viên trong các buổi học.
+Hệ thống được phát triển dựa trên kiến trúc ứng dụng web với NodeJS cho backend, ReactJS cho frontend và MongoDB làm cơ sở dữ liệu, đảm bảo khả năng mở rộng, hiệu suất xử lý tốt và dễ dàng tích hợp các công nghệ AI trong tương lai.
+Các công nghệ ràng buộc
+Kỹ thuật phát triển hệ thống
+Nền tảng ứng dụng web.
+Ngôn ngữ lập trình: Html, Css, JavaScript.
+Cơ sở dữ liệu: Mongodb.
+Quy trình quản lý ứng dựng: Quy trình Scrum.
+Môi trường
+Máy người dùng phải được kết nối Internet, có trình duyệt Web (IE, Google Chrome, Fire Fox v.v..).
+Phần mềm phát triển dự án: VSCode, Mongodb, Figma, draw io.
+Công cụ quản lý mã nguồn: Github.
+Các ràng buộc khác
+Nguồn lực: 5 người.
+Kinh phí: Hạn chế.
+Thời gian: Dự án hoàn thành sau 2,5 tháng.
+Công nghệ: NodejsHtml, Css, Javascript.
+KẾ HOẠCH TỔNG THỂ DỰ ÁN
+Định nghĩa Scrum
+Scrum là một tập hợp con của Agile và là một trong những khuôn khổ quá trình phổ biến nhất để triển khai Agile. Nó là một mô hình phát triển phần mềm lặp đi lặp lại được sử dụng để quản lý phát triển phần mềm và sản phẩm phức tạp. Các lần lặp có độ dài cố định, được gọi là nước rút kéo dài từ một đến hai tuần cho phép nhóm vận chuyển phần mềm theo nhịp đều đặn. Vào cuối mỗi Sprint, các bên liên quan và các thánh viên trong nhóm họp lại để lập kế hoạch cho các bước tiếp theo.
+Mô tả Scrum
+Có ba vai trò cụ thể trong Scrum:
+Chủ sở hữu sản phẩm: Chủ sở hữu sản phẩm tập trung vào các yêu cầu kinh doanh và thị trường, ưu tiên tất cả các công việc cần được thực hiện. Anh ấy hoặc cô ấy xây dựng và quản lý công việc tồn đọng, cung cấp hướng dẫn về các tính năng cần vận chuyển tiếp theo, đồng thời tương tác với nhóm và các bên liên quan khác để đảm bảo mọi người đều hiểu các mục trong sản phẩm tồn đọng. Product Owner không phải là người quản lý dự án. Thay vì quản lý tình trạng và tiến độ, công việc của anh ta hoặc cô ta là thúc đẩy nhóm với mục tiêu và tầm nhìn.
+Scrum Master: Thường được coi là người huấn luyện cho nhóm, Scrum Master giúp nhóm làm việc tốt nhất có thể. Điều này có nghĩa là tổ chức các cuộc họp, đối phó với rào cản và thách thức, đồng thời làm việc với Product Owner để đảm bảo sản phẩm tồn đọng đã sẵn sàng cho sprint tiếp theo. Scrum Master cũng đảm bảo nhóm tuân thủ quy trình Scrum. Người đó không có quyền đối với các thành viên trong nhóm, nhưng người đó có quyền đối với quy trình. Ví dụ: Scrum Master không thể cho ai đó biết phải làm gì, nhưng có thể đề xuất một nhịp chạy nước rút mới.
+Nhóm làm việc tại Scrum: Nhóm Scrum bao gồm từ năm đến bảy thành viên. Mọi người trong dự án làm việc cùng nhau, giúp đỡ lẫn nhau và chia sẻ tình bạn thân thiết sâu sắc. Không giống như các nhóm phát triển truyền thống, không có các vai trò riêng biệt như lập trình viên, nhà thiết kế hoặc người kiểm tra. Mọi người cùng nhau hoàn thành tập hợp công việc. Nhóm Scrum sở hữu kế hoạch cho mỗi sprint; họ dự đoán khối lượng công việc họ có thể hoàn thành trong mỗi lần lặp lại.
+3.1.2. The artifacts
+Product Backlog: Product Owner và Nhóm Scrum họp để sắp xếp thứ tự ưu tiên các hạng mục trong product backlog (công việc trên product backlog đến từ các câu chuyện và yêu cầu của người dùng). Product backlog không phải là danh sách những thứ cần hoàn thành, mà nó là danh sách tất cả các tính năng mong muốn của sản phẩm. Sau đó, nhóm phát triển kéo công việc từ sản phẩm tồn đọng để hoàn thành trong mỗi sprint.
+Sprint Backlog: là danh sách các chức năng được phát triển cho Sprint; nó được xác định bởi cuộc họp “Lập kế hoạch Sprint’. Sprint Backlog là chức năng được chọn từ Product Backlog dựa trên mức độ ưu tiên và khả năng phát triển của nhóm.
+Estimation: Trong SCRUM, các thành viên của Nhóm công tác sẽ do chính bạn lựa chọn và ước tính thời gian phát triển dự kiến và chịu trách nhiệm về ước tính này. Sau khi hoàn thành bảng sẽ cập nhật Sprint Backlog.
+3.1.3. Process (Quá trình)
+Hình 3.1: Scrum process (Tiến trình Scrum)
+Kế hoạch tổng thể
+Bảng 3.1: Master Plan (Tiến trình Scrum)
+No.
+Tiến trình
+Thời gian
+Bắt đầu
+Kết thúc
+1
+Khởi tạo
+2 ngày
+12/03/2026
+13/03/2026
+1.1
+Thu thập yêu cầu
+1 ngày
+12/03/2026
+12/03/2026
+1.2
+Tạo tài liệu
+1 ngày
+13/03/2026
+13/03/2026
+2
+Bắt đầu
+8 ngày
+14/03/2026
+21/03/2026
+2.1
+Họp bắt đầu dự án
+1 ngày
+14/03/2026
+14/03/2026
+2.2
+Bổ sung tài liệu ban đầu
+7 ngày
+15/03/2026
+21/03/2026
+3
+Phát triển
+49 ngày
+22/03/2026
+10/05/2026
+3.1
+Sprint 1
+26 ngày
+22/03/2026
+17/04/2026
+3.2
+Sprint 2
+23 ngày
+18/04/2026
+10/05/2026
+4
+Họp nhận phản hồi dự án
+2 ngày
+11/05/2026
+12/05/2026
+5
+Viết báo cáo và kết thúc dự án
+3 ngày
+13/05/2026
+15/05/2026
+Quản lý tổ chức
+Nguồn nhân lực
+Bảng 3.2: Nguồn nhân lực
+Vai trò
+Trách nhiệm
+Người tham gia
+Người hướng dẫn
+Hướng dẫn về quy trình.
+Giám sát mọi hoạt động của đội.
+Phan Long
+Thành viên trong nhóm
+Ước tính thời gian để hoàn thành công việc.
+Phân tích yêu cầu.
+Thiết kế, hoàn thiện dần mẫu mã.
+Code và kiểm tra ứng dụng.
+Cài đặt và triển khai các chức năng của hệ thống.
+Triển khai sản phẩm.
+Trịnh Quang Công
+Bùi Nguyễn Ngọc Thạch
+Lê Trần Bình An
+Nguyễn Hoàng Thông
+Nhóm trưởng
+Xác định và phân tích ứng dụng.
+Phân công công việc cho các thành viên trong nhóm.
+Kiểm soát và quản lý các thành viên trong nhóm.
+Định hướng cho các thành viên trong nhóm.
+Đảm bảo rằng nhiệm vụ được hoàn thành đúng thời hạn.
+Quản lý rủi ro.
+Đưa ra các giải pháp để giải quyết vấn đề.
+Phan Thanh Chiến
+Phi nhân lực
+Bảng 3.3. Phi nhân lực
+STT
+Danh mục
+Mục đích
+Tiêu chí            (Yes/No)
+Số lượng
+Tiêu chí chấp nhận
+Ngày mục tiêu
+1
+Laptop
+Development
+Yes
+5
+2
+Express
+Programing Language
+Yes
+1
+3
+MongoDB,
+Drawio, VSCode
+Tools
+Yes
+2
+4
+Laptop
+Web Browser
+Yes
+5

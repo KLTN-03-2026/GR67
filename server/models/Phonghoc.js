@@ -14,6 +14,10 @@ const phonghocSchema = new mongoose.Schema({
   succhua: {
     type: Number,
     required: true
+  },
+  trangThaiHoatDong: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

@@ -147,15 +147,29 @@ const sendOTP = async (email, otp) => {
     to: email,
     subject: 'Xác thực tài khoản - Mã OTP',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Xác thực tài khoản</h2>
-        <p>Chào bạn,</p>
-        <p>Mã OTP của bạn là: <strong>${otp}</strong></p>
-        <p>Mã này sẽ hết hạn sau 10 phút.</p>
-        <p>Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email này.</p>
-        <br>
-        <p>Trân trọng,</p>
-        <p>Đội ngũ Trung tâm Tiếng Anh</p>
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; background-color: #f4f7fa; padding: 30px 20px; border-radius: 8px;">
+        <div style="background-color: #ffffff; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
+          <h1 style="color: #1a73b5; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 1px;">EMC</h1>
+          <p style="color: #7f8c8d; font-size: 13px; margin-top: 5px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;">English Center</p>
+          
+          <hr style="border: none; border-top: 2px solid #f0f3f6; margin-bottom: 30px;">
+          
+          <h2 style="color: #2c3e50; font-size: 22px; margin-bottom: 15px;">Xác Thực Tài Khoản</h2>
+          <p style="color: #555; font-size: 16px; margin-bottom: 5px;">Chào bạn,</p>
+          <p style="color: #555; font-size: 16px; margin-bottom: 25px;">Mã OTP dùng cho việc xác thực tài khoản của bạn là:</p>
+          
+          <div style="margin: 0 auto 30px; padding: 20px; background-color: #e8f4fd; border: 2px dashed #8ec3ea; border-radius: 8px; max-width: 250px;">
+            <strong style="font-size: 38px; color: #1a73b5; letter-spacing: 8px; font-family: monospace;">${otp}</strong>
+          </div>
+          
+          <p style="color: #7f8c8d; font-size: 15px; margin-bottom: 10px;">Mã này sẽ hết hạn tự động sau <strong>10 phút</strong>.</p>
+          <p style="color: #95a5a6; font-size: 13px;">Nếu bạn không có yêu cầu tạo tài khoản tại EMC, vui lòng xóa hoặc bỏ qua email này.</p>
+          
+          <hr style="border: none; border-top: 1px solid #f0f3f6; margin-top: 35px; margin-bottom: 20px;">
+          
+          <p style="color: #bdc3c7; font-size: 12px; margin: 0;">Trân trọng,</p>
+          <p style="color: #bdc3c7; font-size: 12px; margin: 5px 0 0; font-weight: bold;">Đội ngũ Hỗ trợ EMC</p>
+        </div>
       </div>
     `
   };
@@ -175,16 +189,29 @@ const sendPasswordResetOTP = async (email, otp) => {
     to: email,
     subject: 'Đặt lại mật khẩu - Mã OTP',
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Đặt lại mật khẩu</h2>
-        <p>Chào bạn,</p>
-        <p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình.</p>
-        <p>Mã OTP của bạn là: <strong>${otp}</strong></p>
-        <p>Mã này sẽ hết hạn sau 10 phút.</p>
-        <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
-        <br>
-        <p>Trân trọng,</p>
-        <p>Đội ngũ Trung tâm Tiếng Anh</p>
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; background-color: #f4f7fa; padding: 30px 20px; border-radius: 8px;">
+        <div style="background-color: #ffffff; padding: 40px 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center;">
+          <h1 style="color: #e74c3c; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 1px;">EMC</h1>
+          <p style="color: #7f8c8d; font-size: 13px; margin-top: 5px; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px;">English Center</p>
+          
+          <hr style="border: none; border-top: 2px solid #f0f3f6; margin-bottom: 30px;">
+          
+          <h2 style="color: #2c3e50; font-size: 22px; margin-bottom: 15px;">Khôi Phục Mật Khẩu</h2>
+          <p style="color: #555; font-size: 16px; margin-bottom: 5px;">Chào bạn,</p>
+          <p style="color: #555; font-size: 16px; margin-bottom: 25px;">Bạn đã gửi yêu cầu thay đổi mật khẩu. Mã OTP của bạn là:</p>
+          
+          <div style="margin: 0 auto 30px; padding: 20px; background-color: #fcebeb; border: 2px dashed #f5b7b1; border-radius: 8px; max-width: 250px;">
+            <strong style="font-size: 38px; color: #e74c3c; letter-spacing: 8px; font-family: monospace;">${otp}</strong>
+          </div>
+          
+          <p style="color: #7f8c8d; font-size: 15px; margin-bottom: 10px;">Mã này sẽ hết hạn tự động sau <strong>10 phút</strong>.</p>
+          <p style="color: #95a5a6; font-size: 13px;">Vì lý do bảo mật, vui lòng không cung cấp mã này cho ai. Nếu bạn không yêu cầu, vui lòng đổi mật khẩu ngay lập tức.</p>
+          
+          <hr style="border: none; border-top: 1px solid #f0f3f6; margin-top: 35px; margin-bottom: 20px;">
+          
+          <p style="color: #bdc3c7; font-size: 12px; margin: 0;">Trân trọng,</p>
+          <p style="color: #bdc3c7; font-size: 12px; margin: 5px 0 0; font-weight: bold;">Đội ngũ Hỗ trợ EMC Bản Mật</p>
+        </div>
       </div>
     `
   };

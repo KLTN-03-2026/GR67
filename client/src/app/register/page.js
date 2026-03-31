@@ -5,11 +5,10 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
-    FullName: "",
-    Numberphone: ""
+    hovaten: "",
+    soDienThoai: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -63,6 +62,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
 
         <div className="text-center mb-8">
+          <img src="/logo.png" alt="EMC Logo" className="w-16 h-16 mx-auto mb-4 object-contain" />
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
             Đăng ký tài khoản
           </h1>
@@ -83,18 +83,6 @@ export default function RegisterPage() {
               {success}
             </div>
           )}
-
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Tên đăng nhập"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
-            />
-          </div>
 
           <div>
             <input
@@ -123,9 +111,9 @@ export default function RegisterPage() {
           <div>
             <input
               type="text"
-              name="FullName"
+              name="hovaten"
               placeholder="Họ và tên đầy đủ"
-              value={formData.FullName}
+              value={formData.hovaten}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
@@ -135,9 +123,9 @@ export default function RegisterPage() {
           <div>
             <input
               type="tel"
-              name="Numberphone"
+              name="soDienThoai"
               placeholder="Số điện thoại"
-              value={formData.Numberphone}
+              value={formData.soDienThoai}
               onChange={handleChange}
               required
               className="w-full border border-gray-300 rounded-md px-4 py-2.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"

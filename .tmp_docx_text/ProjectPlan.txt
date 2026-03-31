@@ -1,0 +1,1613 @@
+﻿BỘ GIÁO DỤC VÀ ĐÀO TẠO
+TRƯỜNG ĐẠI HỌC DUY TÂN
+Tên đề tài:
+THIẾT KẾ VÀ PHÁT TRIỂN HỆ THỐNG QUẢN LÝ TRUNG TÂM TIẾNG ANH TÍCH HỢP ĐIỂM DANH NHẬN DIỆN KHUÔN MẶT BẰNG AI
+TÀI LIỆU PROJECT PLAN
+GVHD: Phan Long
+Nhóm SVTH:
+Phan Thanh Chiến	28211151053
+Trịnh Quang Công	28211101087
+Lê Trần Bình An	28211150401
+Bùi Nguyễn Ngọc Thạch	28211104344
+Nguyễn Hoàng Thông	28210201094
+Đà Nẵng, tháng 3 năm 2026
+THÔNG TIN DỰ ÁN
+Dự án viết tắt
+EMC
+Tên dự án
+Thiết kế và phát triển Hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Ngày bắt đầu
+12/03/2026
+Ngày kết thúc
+15/5/2026
+Nơi thực hiện
+Khoa Công nghệ thông tin – Đại học Duy Tân
+Giảng viên hướng dẫn
+ThS.Phan Long
+Email: phanlong92@gmail.com
+Phone: 0903333080
+Chủ sở hữu
+Trịnh Quang Công
+Email: trinhcong1120@gmail.com
+Tel: 0342613349
+Quản lý dự án
+Phan Thanh Chiến
+chiendtr0@gmail.com
+0705294925
+Thành viên trong đội
+Trịnh Quang Công
+trinhcong1120@gmail.com
+0342613349
+Lê Trần Bình An
+lean5076@gmail.com
+0918355753
+Bùi Nguyễn Ngọc Thạch
+thachbui283@gmail.com
+0906579546
+Nguyễn Hoàng Thông
+thong2882004@gmail.com
+0856102428
+THÔNG TIN TÀI LIỆU
+Tên dự án
+Thiết kế và phát triển Hệ thống quản lý trung tâm tiếng anh tích hợp điểm danh nhận diện khuôn mặt bằng AI
+Tiêu đề tài liệu
+Plan Document
+Người thực hiện
+Bùi Nguyễn Ngọc Thạch
+LỊCH SỬ CHỈNH SỬA TÀI LIỆU
+Phiên bản
+Người chỉnh sửa
+Ngày
+Ghi chú
+1.0
+Bùi Nguyễn Ngọc Thạch
+17/03/2026
+Bản nháp
+1.1
+Phan Thanh Chiến
+19/03/2026
+Bản chính thức
+PHÊ DUYỆT TÀI LIỆU
+Người hướng dẫn
+Phan Long
+Chữ ký
+Ngày
+…./…./2026
+Chủ sở hữu
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Quản lý dự án
+Phan Thanh Chiến
+Chữ ký
+Ngày
+…./…./2026
+Thành viên
+Trịnh Quang Công
+Chữ ký
+Ngày
+…./…./2026
+Lê Trần Bình An
+Chữ ký
+Ngày
+…./…./2026
+Bùi Nguyễn Ngọc Thạch
+Chữ ký
+Ngày
+…./…./2026
+Nguyễn Hoàng Thông
+Chữ ký
+Ngày
+…./…./2026
+MỤC LỤC
+TOC \o "1-3" \h \z \u 1.	GIỚI THIỆU	 PAGEREF _Toc71728192 \h 6
+1.1.	Mục đích	 PAGEREF _Toc71728193 \h 6
+1.2.	Tổng quan dự án	 PAGEREF _Toc71728194 \h 6
+1.3.	Mục tiêu của dự án	 PAGEREF _Toc71728195 \h 6
+1.4.	Phạm vi	 PAGEREF _Toc71728196 \h 6
+1.5.	Giả định và ràng buộc	 PAGEREF _Toc71728197 \h 7
+1.6.	Các bên liên quan	 PAGEREF _Toc71728198 \h 9
+1.7.	Mô hình	 PAGEREF _Toc71728199 \h 9
+2.	TỔ CHỨC NHÓM	 PAGEREF _Toc71728200 \h 9
+2.1.	Thông tin nhóm scrum	 PAGEREF _Toc71728201 \h 9
+2.2.	Vai trò trách nhiệm	 PAGEREF _Toc71728202 \h 10
+2.3.	Cách thức liên lạc	 PAGEREF _Toc71728203 \h 11
+2.4.	Báo cáo	 PAGEREF _Toc71728204 \h 11
+3.	PHẠM VI QUẢN LÝ	 PAGEREF _Toc71728205 \h 12
+3.1.	Phạm vi	 PAGEREF _Toc71728206 \h 12
+4.	LỊCH/QUẢN LÝ THỜI GIAN	 PAGEREF _Toc71728207 \h 14
+4.1.	Các cột mốc	 PAGEREF _Toc71728208 \h 14
+4.2.	Lịch trình dự án	 PAGEREF _Toc71728209 \h 14
+5.	CHI PHÍ QUẢN LÝ/NGÂN SÁCH	 PAGEREF _Toc71728210 \h 23
+5.1.	Đơn giá	 PAGEREF _Toc71728211 \h 24
+5.2.	Chi phí chi tiết	 PAGEREF _Toc71728212 \h 24
+5.3.	Chi phí khác	 PAGEREF _Toc71728213 \h 24
+5.4.	Tổng chi phí	 PAGEREF _Toc71728214 \h 24
+5.4.1.	Chi phí/giờ	 PAGEREF _Toc71728215 \h 24
+5.4.2.	Tổng dự toán	 PAGEREF _Toc71728216 \h 24
+6.	QUY TRÌNH PHÁT TRIỂN	 PAGEREF _Toc71728217 \h 24
+7.	RỦI RO DỰ ÁN	 PAGEREF _Toc71728218 \h 28
+8.	QUY TRÌNH ĐÁNH GIÁ CHẤT LƯỢNG	 PAGEREF _Toc71728219 \h 31
+8.1.	Mục tiêu chất lượng	 PAGEREF _Toc71728220 \h 31
+8.2.	Chỉ số	 PAGEREF _Toc71728221 \h 31
+8.3.	Kiểm tra	 PAGEREF _Toc71728222 \h 32
+8.4.	Báo cáo sự cố và khác phục	 PAGEREF _Toc71728223 \h 33
+9.	QUẢN LÝ CẤU HÌNH	 PAGEREF _Toc71728224 \h 33
+10.	CÔNG NGHỆ VÀ CÁC RÀNG BUỘC	 PAGEREF _Toc71728225 \h 34
+10.1.	Kỹ thuật phát triển hệ thống	 PAGEREF _Toc71728226 \h 34
+10.2.	Môi trường	 PAGEREF _Toc71728227 \h 34
+10.3.	Các ràng buộc khác	 PAGEREF _Toc71728228 \h 34
+11.	TÀI LIỆU THAM KHẢO	 PAGEREF _Toc71728229 \h 34
+GIỚI THIỆU
+Mục đích
+Tài liệu này cung cấp các thông tin mục tiêu của dự án, phân công công việc, các cột mốc quan trọng, các nguồn nhân lực cần thiết, thời gian và tiến độ tổng thể và phân bố ngân sách được sử dụng và dựa trên đề xuất tài liệu để xây dựng một ứng dụng quản lý chi phí đúng thời hạn yêu cầu và kế hoạch.
+Tổng quan dự án
+Tham khảo ProjectProposal.docx.
+Mục tiêu của dự án
+Xây dựng  “Hệ thống quản lý trung tâm tiếng Anh tích hợp điểm danh nhận diện khuôn mặt bằng AI” nhằm cung cấp giải pháp quản lý tập trung cho các trung tâm tiếng Anh, hỗ trợ quản lý học viên, giáo viên, lớp học, lịch học và kết quả học tập một cách hiệu quả, nhanh chóng và chính xác.
+Ứng dụng công nghệ trí tuệ nhân tạo (AI) nhận diện khuôn mặt vào chức năng điểm danh tự động, giúp ghi nhận sự có mặt của học viên khi vào lớp một cách chính xác, giảm thiểu gian lận và tiết kiệm thời gian so với phương pháp điểm danh thủ công.
+Đảm bảo mọi hoạt động quản lý và đào tạo trong trung tâm đều được lưu trữ, theo dõi và thống kê trên hệ thống, từ việc quản lý học viên, lớp học, lịch học đến quá trình điểm danh và đánh giá kết quả học tập, giúp nhà quản lý dễ dàng kiểm soát và đưa ra quyết định kịp thời.
+Phạm vi
+Bên cạnh việc cung cấp cho bạn các tài liệu, nó sẽ liệt kê tất cả các thành viên trong nhóm phát triển trong dự án này, quy trình và khuôn khổ mà dự án sẽ áp dụng.
+Cung cấp kế hoạch cho từng giai đoạn của quy trình phát triển phần mềm dựa trên quy trình Scrum bao gồm: Thời gian bắt đầu, thời gian kết thúc và một số thời gian làm việc.
+Đề xuất bao gồm giới thiệu các giải pháp, xác định cách tốt nhất để phát triển mà chúng tôi tạo ra, tổng chi phí ước tính, thời gian hoàn vốn và khối lượng hoàn vốn cho dự án.
+Ứng dụng chạy trên nền tảng ứng dựng Web, bao gồm các chức năng:
+Đối với admin, có thể:
+Đăng nhập.
+Đăng xuất
+Quản lý cơ sở
+Quản lý loại khóa học.
+Quản lý người dùng
+Quản lý khóa học
+Quản lý luyện tập
+Quản lý đề thi mẫu
+Báo cáo thống kê
+Đối với giảng viên, có thể:
+Đăng nhập.
+Đăng xuất.
+Quản lý lớp học.
+Quản lý thông tin cá nhân giảng viên.
+Xem lịch dạy
+Xem thông báo
+Đối với học viên, có thể:
+Quản lý thông tin cá nhân học viên
+Xem lịch học
+Điểm danh bằng nhận diện khuôn mặt
+Quản lý khóa học(học viên)
+Ôn tập
+Luyện đề
+Xem thông báo
+Giả định và ràng buộc
+Người dùng phải có máy tính sử dụng hệ điều hành Windows.
+Phải có kết nối Internet.
+Phần mềm phát triển dự án: MongoDB, VSCode.
+Công cụ quản lý mã nguồn: Github.
+Nguồn lực: 5 người.
+Kinh phí: Hạn chế.
+Thời gian: Dự án hoàn thành sau 2,5 tháng.
+Công nghệ: NodeJS.
+Các bên liên quan
+Mentor
+Scrum Master
+Product Owner
+Team member
+Mô hình
+Trong dự án lần này, chúng tôi sử dụng mô hình Scrum để phát triển phần mềm.
+TỔ CHỨC NHÓM
+Thông tin nhóm scrum
+Bảng 2.1: Thông tin nhóm Scrum
+Họ tên
+Số điện thoại
+Email
+Chức vụ
+Phan Thanh Chiến
+0705294925
+chiendtr0@gmail.com
+Scrum Master
+Trịnh Quang Công
+0342613349
+trinhcong1120@gmail.com
+Product Owner
+Lê Trần Bình An
+0918355753
+lean5076@gmail.com
+Member
+Bùi Nguyễn Ngọc Thạch
+0906579546
+thachbui283@gmail.com
+Member
+Nguyễn Hoàng Thông
+0856102428
+thong2882004@gmail.com
+Member
+Vai trò trách nhiệm
+Bảng 2.2: Vai trò và trách nhiệm
+Vai trò
+Nhiệm vụ
+Tên
+Mentor
+Hướng dẫn về quy trình.
+Nắm tất cả các hoạt động của nhóm.
+Hỗ trợ mọi vấn đề liên quan.
+ThS. Phan Long
+Scrum Master
+Xác định và phân tích các ứng dụng.
+Chỉ định làm việc cho các thành viên trong nhóm.
+Kiểm soát và theo dõi các thành viên trong nhóm.
+Định hướng cho các thành viên trong nhóm.
+Đảm bảo rằng nhiệm vụ được hoàn thành về thời gian, phạm vi, và chi phí.
+Bảo vệ đội ngũ làm việc và tránh những rắc rối.
+Cung cấp các giải pháp để giải quyết vấn đề.
+Phan Thanh Chiến
+Product Owner
+Giữ kiến trúc và thiết kế chi tiết được cập nhật.
+Đảm bảo các trình điều khiển kiến trúc được đáp ứng.
+Nắm giữ phần tổng quan của sản phẩm.
+Chấp nhận hoặc từ chối kết quả công việc.
+Ra quyết định về những thay đổi tính năng và độ ưu tiên mỗi Sprint.
+Trịnh Quang Công
+Team Member
+Ước tính thời gian để hoàn thành nhiệm vụ
+Phân tích yêu cầu
+Thiết kế và từng bước hoàn thiện thiết kế
+Code và kiểm thử
+Cài đặt và thực hiện các kiểm thử chức năng
+Kiểm tra sản phẩm
+Tất cả thành viên
+Cách thức liên lạc
+Bảng 2.3: Cách thức liên lạc
+Người tham dự
+Chủ đề
+Tần suất
+Phương thức
+Manager, Mentor và Team Member
+Đánh giá tiến độ dự án
+Hàng tuần
+Gặp mặt, Mail, Discord
+Customer, Manager và Team Leader
+Đánh giá mức độ dự án
+Hàng tuần
+Họp, Gặp mặt
+Customer, Manager và Team Leader
+Các yêu cầu cho sản phẩm
+Khi cần
+Email,Facebook
+Team Member và Team Leader
+Đánh giá tiến độ của dự án và lịch họp thường ngày
+Hằng ngày
+Email,Facebook
+Báo cáo
+Bảng 2.4: Các báo cáo và Meeting
+Loại liên lạc
+Phương thức công cụ
+Tần suất
+Thông tin chi tiết
+Nhân sự
+Liên lạc trong nhóm
+Daily meteting
+“Cuộc họp hằng ngày”
+Facebook hoặc Email, Discord
+Hằng ngày
+Thông tin về những gì dã làm trong 24h qua, làm vệc về kế hoạch cho ngày hôm nay, những khó khăn gặp phải và các giải pháp cần thiết, chỉ cần gặp 20-30 phút
+Project team
+Task planning meeting
+“Cuộc họp lập kế hoạch”
+Gặp trực tiếp
+7-14 ngày
+Tất cả các thành viên trong nhóm cùng nhau để phân tích các yêu cầu, chức năng, làm việc trên Sprint đang làm, quy hoạch và thiết kế cho các Sprint tiếp theo
+Project team, Product Owner
+Task review meeting
+“Cuộc họp rà soát công việc”
+Gặp trực tiếp
+7-14 ngày
+Hoàn thành các tài liệu.
+Đối với mỗi giai đoạn, chia sẻ tài liệu, cho biết điểm mạnh và điểm yếu của mỗi người. Thời gian của mỗi thành viên và các giải pháp trong dự án.
+Project team, Product Owner
+Giao tiếp và báo cáo
+Quản lý tác vụ
+Github, Jira
+Hằng ngày
+Hệ thống theo dõi nhiệm vụ dự trên web. Để quản lý hoặc phân chia nhiệm vu, hãy báo cáo lỗi/ vấn đề
+Project team
+PHẠM VI QUẢN LÝ
+Phạm vi
+Hệ thống hỗ trợ admin và giảng viên theo dõi tình hình học tập, chuyên cần và báo cáo thống kê. Hệ thống triển khai trên nền tảng web  sử dụng cơ sở dữ liệu lưu trữ thông tin và mô hình AI để nhận diện khuôn mặt chính xác, đảm bảo bảo mật và hiệu quả
+Work Breakdown Structure
+Hình 3.2: Sơ đồ cấu trúc công việc
+LỊCH/QUẢN LÝ THỜI GIAN
+Các cột mốc
+Bảng dưới đây liệt kê các sự kiện quan trọng của dự án này, với khung thời gian hoàn thành dự kiến của nhóm.
+Bảng 4.1: Các cột mốc
+STT
+Tên nhiệm vụ
+Thời gian
+Bắt đầu
+Hoàn thành
+1
+Chuẩn bị dự án
+2 ngày
+12/03/2026
+13/03/2026
+2
+Kế hoạch phát triển
+8 ngày
+14/03/2026
+14/03/2026
+3
+Triển khai
+49 ngày
+22/03/2026
+10/05/2026
+4
+Final Meeting
+2 ngày
+11/05/2026
+12/05/2026
+5
+Kết thúc và chuyển giao
+3 ngày
+13/05/2026
+15/05/2026
+Lịch trình dự án
+Bảng dưới đây liệt kê các sự kiện quan trọng cho dự án này, với khung thời gian hoàn thành dự kiến của nhóm.
+Bảng 4.2: Lịch làm việc chi tiết
+STT
+Tên nhiệm vụ
+Ngày bắt đầu
+Ngày kết thúc
+Thời gian
+Người thực hiện
+1
+Chuẩn bị
+12/03/2026
+13/03/2026
+34
+1.1
+Khảo sát yêu cầu
+12/03/2026
+12/03/2026
+30
+All team
+1.2
+Tạo tài liệu Proposal
+13/03/2026
+13/03/2026
+4
+Chiến
+2
+Bắt đầu
+14/03/2026
+21/03/2026
+46
+2.1
+Cuộc họp bắt đầu dự án
+14/03/2026
+14/03/2026
+20
+All team
+2.2
+Tạo tài liệu Project Plan
+14/03/2026
+15/03/2026
+4
+Thạch, Chiến
+2.3
+Tạo tài liệu User Story
+16/03/2026
+17/03/2026
+4
+Công
+2.4
+Tạo tài liệu Product Backlog
+17/03/2026
+18/03/2026
+4
+An, Thông
+2.5
+Tạo tài liệu database
+18/03/2026
+19/03/2026
+4
+All team
+2.7
+Review tài liệu
+20/03/2026
+21/03/2026
+10
+All team
+3
+Development
+22/03/2026
+10/05/2026
+406
+3.1
+Sprint 1
+22/03/2026
+17/04/2026
+223
+3.1.1
+Họp kế hoạch Sprint 1
+22/03/2026
+22/03/2026
+4
+All team
+3.1.2
+Tạo Sprint Backlog 1
+22/03/2026
+22/03/2026
+3
+Chiến
+3.1.3
+Tạo tài liệu kiểm thử cho Sprint 1
+22/03/2026
+22/03/2026
+3
+An, Thông
+3.1.4
+Thiết kế giao diện
+23/03/2026
+24/03/2026
+19
+Đăng nhập
+23/03/2026
+23/03/2026
+1
+An
+Đăng xuất
+23/03/2026
+23/03/2026
+1
+An
+Quên mật khẩu
+23/03/2026
+23/03/2026
+1
+An
+Quản lý cơ sở
+23/03/2026
+23/03/2026
+1
+Thông
+Quản lý loại khóa học
+23/03/2026
+23/03/2026
+1
+An
+Quản lý khóa học
+23/03/2026
+23/03/2026
+3
+Thông
+Quản lý thông tin giảng viên
+23/03/2026
+23/03/2026
+1
+An
+Quản lý người dùng
+24/03/2026
+24/03/2026
+1
+Thông
+Quản lý lớp học
+24/03/2026
+24/03/2026
+3
+An
+Quản lý khóa học(học viên)
+24/03/2026
+24/03/2026
+3
+Thông
+Review of Sprint 1
+24/03/2026
+24/03/2026
+3
+All team
+3.1.5
+Design Test Case for User Interface Sprint 1
+25/03/2026
+26/03/2026
+20
+Đăng nhập
+25/03/2026
+25/03/2026
+1
+Công
+Đăng xuất
+25/03/2026
+25/03/2026
+1
+Công
+Quên mật khẩu
+25/03/2026
+25/03/2026
+1
+Công
+Quản lý cơ sở
+25/03/2026
+25/03/2026
+1
+Công
+Quản lý loại khóa học
+25/03/2026
+25/03/2026
+2
+Công
+Quản lý khóa học
+25/03/2026
+25/03/2026
+2
+Công
+Quản lý thông tin giảng viên
+25/03/2026
+25/03/2026
+1
+Chiến
+Quản lý người dùng
+26/03/2026
+26/03/2026
+1
+Công
+Quản lý lớp học
+26/03/2026
+26/03/2026
+3
+Chiến
+Quản lý khóa học(học viên)
+26/03/2026
+26/03/2026
+3
+Thạch
+Review all test case of Sprint 1
+26/03/2026
+26/03/2026
+4
+All Members
+3.1.6
+Coding
+27/03/2026
+05/04/2026
+94
+Code Front – End Đăng nhập
+27/03/2026
+27/03/2026
+1
+An
+Code Back – End Đăng nhập
+27/03/2026
+27/03/2026
+2
+Công
+Code Front – End Đăng xuất
+27/03/2026
+27/03/2026
+1
+Thông
+Code Back – End Đăng xuất
+27/03/2026
+27/03/2026
+1
+Công
+Code Front – End Quên mật khẩu
+27/03/2026
+27/03/2026
+1
+Thông
+Code Back – End Quên mật khẩu
+27/03/2026
+27/03/2026
+2
+Công
+Code Front – End
+Quản lý thông tin giảng viên
+27/03/2026
+27/03/2026
+2
+Chiến
+Code Back – End
+Quản lý thông tin giảng viên
+27/03/2026
+27/03/2026
+3
+Chiến
+Code Front – End
+Quản lý khóa học(học viên)
+27/03/2026
+27/03/2026
+5
+Thạch
+Code Back – End
+Quản lý khóa học(học viên)
+27/03/2026
+29/03/2026
+13
+Thạch
+Code Front – End
+Quản lý cơ sở
+28/03/2026
+28/03/2026
+3
+Công
+Code Back – End
+Quản lý cơ sở
+28/03/2026
+29/03/2026
+6
+Công
+Code Front – End
+Quản lý lớp học
+28/03/2026
+28/03/2026
+5
+Chiến
+Code Back – End
+Quản lý lớp học
+28/03/2026
+30/03/2026
+13
+Chiến
+Code Front – End loại khóa học
+29/03/2026
+29/03/2026
+3
+Công
+Code Back – End loại khóa học
+29/03/2026
+30/03/2026
+6
+Công
+Code Front – End Quản lý khóa học
+31/03/2026
+31/03/2026
+4
+Thông
+Code Back – End Quản lý khóa học
+31/03/2026
+01/04/2026
+8
+Công
+Code Front – End
+Quản lý người dùng
+02/04/2026
+02/04/2026
+3
+An
+Code Back – End
+Quản lý người dùng
+03/04/2026
+04/04/2026
+6
+Công
+Integrate Code
+05/04/2026
+05/04/2026
+6
+All Team
+3.1.7
+Testing
+06/04/2026
+07/04/2026
+17
+Đăng nhập
+06/04/2026
+06/04/2026
+1
+Thông
+Đăng xuất
+06/04/2026
+06/04/2026
+1
+Thông
+Quên mật khẩu
+06/04/2026
+06/04/2026
+1
+Thông
+Quản lý cơ sở
+06/04/2026
+06/04/2026
+2
+An
+Quản lý loại khóa học
+06/04/2026
+06/04/2026
+2
+Thông
+Quản lý khóa học
+07/04/2026
+07/04/2026
+2
+An
+Quản lý thông tin giảng viên
+07/04/2026
+07/04/2026
+2
+Thông
+Quản lý người dùng
+07/04/2026
+07/04/2026
+2
+An
+Quản lý lớp học
+07/04/2026
+07/04/2026
+2
+Thông
+Quản lý khóa học(học viên)
+07/04/2026
+07/04/2026
+2
+An
+3.1.8
+Fix Bugs Sprint 1
+08/04/2026
+14/04/2026
+36
+Đăng nhập
+08/04/2026
+08/04/2026
+2
+Công
+Đăng xuất
+08/04/2026
+08/04/2026
+1
+Công
+Quên mật khẩu
+08/04/2026
+08/04/2026
+2
+Công
+Quản lý thông tin giảng viên
+08/04/2026
+08/04/2026
+3
+Chiến
+Quản lý cơ sở
+08/04/2026
+09/04/2026
+3
+Công
+Quản lý lớp học
+09/04/2026
+11/04/2026
+8
+Chiến
+Quản lý khóa học(học viên)
+08/04/2026
+10/04/2026
+8
+Thạch
+Quản lý loại khóa học
+09/04/2026
+10/04/2026
+3
+Công
+Quản lý khóa học
+11/04/2026
+12/04/2026
+3
+Công
+Quản lý người dùng
+13/04/2026
+14/04/2026
+3
+Công
+3.1.9
+Re-testing sprint 1
+15/04/2026
+16/04/2026
+17
+Đăng nhập
+15/04/2026
+15/04/2026
+1
+Thông
+Đăng xuất
+15/04/2026
+15/04/2026
+1
+Thông
+Quên mật khẩu
+15/04/2026
+15/04/2026
+1
+Thông
+Quản lý cơ sở
+15/04/2026
+15/04/2026
+2
+An
+Quản lý loại khóa học
+15/04/2026
+15/04/2026
+2
+Thông
+Quản lý khóa học
+16/04/2026
+16/04/2026
+2
+An
+Quản lý thông tin giảng viên
+16/04/2026
+16/04/2026
+2
+Thông
+Quản lý người dùng
+16/04/2026
+16/04/2026
+2
+An
+Quản lý lớp học
+16/04/2026
+16/04/2026
+2
+Thông
+Quản lý khóa học(học viên)
+16/04/2026
+16/04/2026
+2
+An
+3.1.10
+Release Sprint 1
+17/04/2026
+17/04/2026
+10
+Sprint 1 Review Meeting
+17/04/2026
+17/04/2026
+5
+All team
+Sprint 1 Retrospective
+17/04/2026
+17/04/2026
+5
+All team
+3.2
+Sprint 2
+18/04/2026
+15/05/2026
+183
+3.2.1
+Họp kế hoạch Sprint 2
+18/04/2026
+18/04/2026
+4
+All team
+3.2.2
+Tạo Sprint Backlog 2
+18/04/2026
+18/04/2026
+3
+Chiến
+3.2.3
+Tạo tài liệu kiểm thử cho Sprint 2
+18/04/2026
+18/04/2026
+3
+An, Thông
+3.2.4
+Thiết kế giao diện
+19/04/2026
+20/04/2026
+24
+Xem lịch dạy
+19/04/2026
+19/04/2026
+2
+Chiến
+Quản lý thông tin cá nhân học viên
+19/04/2026
+19/04/2026
+2
+An
+Xem lịch học
+19/04/2026
+19/04/2026
+2
+Thông
+Điểm danh bằng nhận diện khuôn mặt
+19/04/2026
+19/04/2026
+2
+Công
+Quản lý luyện tập
+20/04/2026
+20/04/2026
+2
+Thông
+Quản lý đề thi mẫu
+20/04/2026
+20/04/2026
+2
+An
+Ôn tập
+20/04/2026
+20/04/2026
+2
+Thông
+Luyện đề
+20/04/2026
+20/04/2026
+2
+An
+Báo cáo thống kê
+20/04/2026
+20/04/2026
+2
+Thạch
+Xem thông báo
+20/04/2026
+20/04/2026
+2
+Chiến
+Review all user interfaces of Sprint 2
+20/04/2026
+20/04/2026
+4
+All team
+3.2.5
+Design Test Case for Sprint 2
+21/04/2026
+22/04/2026
+19
+Xem lịch dạy
+21/04/2026
+21/04/2026
+1
+Chiến
+Quản lý thông tin cá nhân học viên
+21/04/2026
+21/04/2026
+1
+Thạch
+Xem lịch học
+21/04/2026
+21/04/2026
+1
+Thạch
+Điểm danh bằng nhận diện khuôn mặt
+21/04/2026
+21/04/2026
+2
+Thạch
+Quản lý luyện tập
+21/04/2026
+21/04/2026
+2
+Công
+Quản lý đề thi mẫu
+22/04/2026
+22/04/2026
+2
+Công
+Ôn tập
+22/04/2026
+22/04/2026
+2
+Công
+Luyện đề
+22/04/2026
+22/04/2026
+2
+Công
+Báo cáo thống kê
+22/04/2026
+22/04/2026
+1
+Công
+Xem thông báo
+22/04/2026
+22/04/2026
+1
+Chiến
+Review all test case of Sprint 2
+22/04/2026
+22/04/2026
+4
+All team
+3.2.6
+Coding
+23/04/2026
+02/05/2026
+76
+Thiết kế front-end Xem lịch dạy
+23/04/2026
+23/04/2026
+2
+Chiến
+Code back-end
+Xem lịch dạy
+23/04/2026
+23/04/2026
+4
+Chiến
+Thiết kế front-end Quản lý thông tin cá nhân học viên
+23/04/2026
+23/04/2026
+2
+Thông
+Code back-end
+Quản lý thông tin cá nhân học viên
+23/04/2026
+23/04/2026
+4
+Thạch
+Thiết kế front-end Điểm danh bằng nhận diện khuôn mặt
+23/04/2026
+23/04/2026
+2
+Công
+Code back-end
+Điểm danh bằng nhận diện khuôn mặt
+23/04/2026
+25/04/2026
+10
+Công
+Thiết kế front-end Xem lịch học
+24/04/2026
+24/04/2026
+2
+Thạch
+Code back-end
+Xem lịch học
+24/04/2026
+24/04/2026
+4
+Thạch
+Thiết kế front-end
+Quản lý luyện tập
+25/04/2026
+25/04/2026
+2
+Thông
+Code back-end
+Quản lý luyện tập
+26/04/2026
+26/04/2026
+4
+Công
+Thiết kế front-end
+Quản lý đề thi mẫu
+26/04/2026
+26/04/2026
+2
+An
+Code back-end
+Quản lý đề thi mẫu
+27/04/2026
+27/04/2026
+4
+Công
+Thiết kế front-end
+Ôn tập
+27/04/2026
+27/04/2026
+2
+Thông
+Code back-end
+Ôn tập
+28/04/2026
+28/04/2026
+4
+Công
+Thiết kế front-end
+Luyện đề
+28/04/2026
+28/04/2026
+2
+An
+Code back-end
+Luyện đề
+29/04/2026
+29/04/2026
+4
+Công
+Thiết kế front-end
+Báo cáo thống kê
+30/04/2026
+30/04/2026
+2
+Công
+Code back-end
+Báo cáo thống kê
+30/04/2026
+30/04/2026
+4
+Công
+Thiết kế front-end
+Xem thông báo
+01/05/2026
+01/05/2026
+2
+Chiến
+Code back-end
+Xem thông báo
+01/05/2026
+01/05/2026
+4
+Chiến
+Integrate code
+02/05/2026
+02/05/2026
+10
+All team
+3.2.7
+Testing
+03/05/2026
+04/05/2026
+16
+Xem lịch dạy
+03/05/2026
+03/05/2026
+1
+An
+Quản lý thông tin cá nhân học viên
+03/05/2026
+03/05/2026
+1
+Thông
+Xem lịch học
+03/05/2026
+03/05/2026
+1
+An
+Điểm danh bằng nhận diện khuôn mặt
+03/05/2026
+03/05/2026
+2
+Thông
+Quản lý luyện tập
+03/05/2026
+03/05/2026
+2
+An
+Quản lý đề thi mẫu
+04/05/2026
+04/05/2026
+2
+Thông
+Ôn tập
+04/05/2026
+04/05/2026
+2
+An
+Luyện đề
+04/05/2026
+04/05/2026
+2
+Thông
+Báo cáo thống kê
+04/05/2026
+04/05/2026
+2
+An
+Xem thông báo
+04/05/2026
+04/05/2026
+1
+Thông
+3.2.8
+Fix Bugs Sprint 2
+05/05/2026
+07/05/2026
+12
+Xem lịch dạy
+05/05/2026
+05/05/2026
+2
+Chiến
+Quản lý thông tin cá nhân học viên
+05/05/2026
+05/05/2026
+2
+Thạch
+Xem lịch học
+05/05/2026
+05/05/2026
+2
+Thạch
+Điểm danh bằng nhận diện khuôn mặt
+06/05/2026
+06/05/2026
+4
+Công
+Quản lý luyện tập
+06/05/2026
+06/05/2026
+2
+Công
+Quản lý đề thi mẫu
+07/05/2026
+07/05/2026
+2
+Công
+Ôn tập
+07/05/2026
+07/05/2026
+2
+Công
+Luyện đề
+07/05/2026
+07/05/2026
+2
+Công
+Báo cáo thống kê
+07/05/2026
+07/05/2026
+3
+Công
+Xem thông báo
+07/05/2026
+07/05/2026
+2
+Chiến
+3.2.9
+Re-testing sprint 2
+08/05/2026
+09/05/2026
+16
+Xem lịch dạy
+08/05/2026
+08/05/2026
+1
+Thông
+Quản lý thông tin cá nhân học viên
+08/05/2026
+08/05/2026
+1
+An
+Xem lịch học
+08/05/2026
+08/05/2026
+1
+Thông
+Điểm danh bằng nhận diện khuôn mặt
+08/05/2026
+08/05/2026
+2
+An
+Quản lý luyện tập
+08/05/2026
+08/05/2026
+2
+Thông
+Quản lý đề thi mẫu
+09/05/2026
+09/05/2026
+2
+An
+Ôn tập
+09/05/2026
+09/05/2026
+2
+Thông
+Luyện đề
+09/05/2026
+09/05/2026
+2
+An
+Báo cáo thống kê
+09/05/2026
+09/05/2026
+2
+Thông
+Xem thông báo
+09/05/2026
+09/05/2026
+1
+An
+3.2.10
+Release Sprint 2
+10/05/2026
+10/05/2026
+10
+Sprint 2 Review Meeting
+10/05/2026
+10/05/2026
+5
+All Team
+Sprint 2 Retrospective
+10/05/2026
+10/05/2026
+5
+All Team
+4
+Project’s Meeting
+11/05/2026
+12/05/2026
+20
+All Team
+5
+Final release
+13/12/2026
+15/05/2026
+30
+All Team
+The total of working hour(s)
+536(HOUR)
+CHI PHÍ QUẢN LÝ/NGÂN SÁCH
+Đơn giá
+Liên quan đến: FinancialManagementPlanDocument.docx
+Chi phí chi tiết
+Liên quan đến: FinancialManagementPlanDocument.docx
+Chi phí khác
+Liên quan đến: FinancialManagementPlanDocument.docx
+Tổng chi phí
+Liên quan đến: FinancialManagementPlanDocument.docx
+Chi phí/giờ
+Thành viên
+Chức vụ
+Lương(VND/giờ)
+Phan Thanh Chiến
+Scrum Master
+30.000
+Trịnh Quang Công
+Product Owner
+30.000
+Lê Trần Bình An
+Team Member
+30.000
+Bùi Nguyễn Ngọc Thạch
+Team Member
+30.000
+Nguyễn Hoàng Thông
+Team Member
+30.000
+Tổng dự toán
+Số lượng thành viên: 5 người.
+Số giờ là việc trên ngày: 8 giờ/ngày.
+Chi phí 1 giờ: 30.000VND.
+Chi phí trực tiếp = ((số giờ làm việc của mỗi người trong 1 ngày * số lượng thành viên)*tổng thời gian làm việc)*Chi phí 1 giờ
+= (536)*30.000 = 16.080.000VND
+Chi phí gián tiếp: 10% * chi phí trực tiếp = 1.608.000VND
+Chi phí văn phòng phẩm, in ấn, bút viết v.v…): 10% * chi phí trực tiếp =1.608.000VND
+Chi phí khác:10.000.000VND
+Tổng = 29.296.000 VND
+QUY TRÌNH PHÁT TRIỂN
+Các nguyên tắc và giai đoạn phát triển
+Phương pháp Scrum dựa vào sự gia tăng phát triển của một số ứng dụng phần mềm trong khi vẫn duy trì một danh sách minh bạch trong việc nâng cấp hoặc hiệu chỉnh các yêu cầu được thực hiện (backlog). Nó liên quan đến việc giao hàng thường xuyên, thường là bốn tuần một lần, và khách hàng nhận được một ứng dụng hoạt động hoàn hảo bao gồm nhiều tính năng hơn và nhiều hơn nữa. Đây là lý do tại sao phương pháp dựa vào sự phát triển lặp đi lặp lại với nhịp không đổi từ 2-4 tuần. Do đó, việc nâng cấp có thể được tích hợp dễ dàng hơn khi sử dụng chu trình chữ V.
+Phương pháp này đòi hỏi bốn loại cuộc họp:
+Các cuộc họp hàng ngày: Cường độ nhóm họp khoảng 15 phút mỗi ngày để trả lời ba câu hỏi sau, thường là khi đứng: Tôi đã làm gì hôm qua? Tôi sẽ làm gì hôm nay? Có trở ngại gì khó khăn vào ngày hôm nay không?
+Các cuộc họp lập kế hoạch: Cường độ nhóm tập hợp để quyết định các tính năng sẽ tạo nên cuộc chạy nước rút sau đây
+Các cuộc họp rà soát công việc: Trong cuộc họp này, mỗi thành viên trình bày những gì mình đã làm trong quá trình chạy nước rút. Họ tổ chức một sự cắt giảm các tính năng mới hoặc trình bày về kiến trúc. Đây là cuộc họp không chính thức kéo dài khoảng 2 giờ đồng hồ.
+Các cuộc họp hồi cứu: Vào cuối mỗi lần chạy nước rút, nhóm phân tích cả những yếu tố thành công và không thành công trong hoạt động của họ. Trong cuộc họp này kéo dài trong khoảng từ 15 đến 30 phút, trong đó mọi người được mời và nói chuyện riêng về mình, một cuộc bỏ phiếu  được tổ chức để quyết định những cải tiến cần thực hiện.
+Lợi thế của phương pháp này bao gồm việc giảm thiểu tài liệu tới mức tối thiểu để đạt được năng suất cao nhất. Chỉ viết những tài liệu tối thiểu cho phép lưu lại lịch sử của các quyết định được đưa ra trong dự án và dễ dàng thực hiện các can thiệp vào phần mềm khi nó đi vào giai đoạn bảo trì.
+Hình 6.1: Các giai đoạn trong Scrum
+Phương pháp Scrum bao gồm 3 thành phần chính sau:
+Hình 6.2: Thành viên trong nhóm Scrum
+Chủ dự án: Product Owner (Chủ sản phẩm) chịu trách nhiệm tối đa hóa giá trị của sản phẩm và công việc của nhóm phát triển.
+Xác định tính năng của sản phẩm.
+Quyết định ngày và nội dung cho mỗi nhà phát hành.
+Chịu trách nhiệm về lợi nhuận của sản phẩm (ROI).
+Xác định độ ưu tiên cho các chức năng dựa trên số liệu thị trường.
+Thay đổi độ ưu tiên và chức năng sau mỗi lần lặp (nếu cần).
+Chấp nhận hay loại bỏ kết quả công việc.
+Scrum Master: chịu trách nhiệm đảm bảo mọi người hiểu và dùng được Scrum. Scrum master thực hiện việc này bằng cách đảm bảo nhóm Scrum tuân thủ lý thuyết, các kĩ thuật thực hành và các quy tắc của Scrum.
+Đại diện quản lý dự án.
+Chịu trách nhiệm đưa ra các giá trị và công việc của Scrum.
+Giải quyết các khó khăn.
+Bảo đảm nhóm hoạt động hết công suất và hiệu quả.
+Tạo sự hợp tác chặt chẽ giữ các vai trò, chức năng.
+Giúp nhóm tránh khỏi sự can thiệp từ bên ngoài.
+Nhóm phát triển: gồm các chuyên gia làm việc để cho ra các phần tăng trưởng có thể phát hành được (potentially releasable) cuối mỗi Sprint. Chỉ các thành viên của nhóm phát triển mới tạo ra các phần tăng trưởng này. Nhóm phát triển được cấu trúc và trao quyền được tổ chức và quản lý công việc của họ. Sự hợp lực sẽ tối ưu hóa nỗ lực và hiệu quả tổng thể của nhóm phát triển.
+RỦI RO DỰ ÁN
+Đánh giá khả năng và mức độ nghiệm trọng đối với mỗi rủi ro.
+Bảng 7.1: Đánh giá khả năng và mức đọ nghiêm trọng đối với mỗi rủi ro
+Ký hiệu
+Mức độ
+Ảnh hưởng
+L
+Thấp
+Ảnh hưởng thấp
+M
+Trung bình
+Ảnh hưởng trung bình
+H
+Cao
+Ảnh hưởng cao
+E
+Rất cao
+Ảnh hưởng rất cao
+NA
+Không
+Không ảnh hưởng
+Bảng 7.2: Rủi ro dự án
+Rủi ro
+Định nghĩa
+Mức độ
+Khả năng xảy ra
+Chiến lược giảm thiểu rủi ro
+Đánh giá kế hoạch của dự án
+Kế hoạch có thể bị hoãn lại do dự toán ban đầu của dự án
+L
+L
+Phân tích và đánh giá quy mô.
+Giảm yêu cầu
+Yêu cầu
+Mâu thuấn có thể tồn tại bên trong yêu cầu.
+Yêu cầu quan trọng có thể bị thiếu trong các yêu cầu chính thức
+H
+H
+Thống nhất yêu cầu thực hiện phân tích
+Thời gian làm việc
+Dự kiến lịch trình thực hiện và phân bố thời gian thực hiện dự án
+M
+M
+Thời gian thực hiện dự án được cập nhật và đánh giá thường xuyên
+Kinh nghiệm lập trình
+Sự thiếu xót về kinh nghiệm và kiến thức để hoàn thành một vài tính năng
+M
+L
+Chia sẻ kinh nghiệm để bổ sung kiến thức và nghiên cứu trong thời gian ngắn nhất
+Các quy trình kỹ thuật
+Các phương thức bình thường không thể đáp ứng các yêu cầu của các giải pháp cụ thể.
+Quá trình này có thể được cải thiện và hiệu quả hơn
+M
+M
+Phân tích yêu cầu và quy trình để đảm bảo mức độ phù hợp.
+Nếu quy trình mới là cần thiết, chúng ta cần đánh giá quy trình này có cải thiện hơn không so với quy trình cũ
+Bất đồng ý kiến
+Việc các thành viên có nhiều ý kiến, ý tưởng dẫn đến dự không đồng nhất
+M
+L
+Cùng thảo luận để chọn ra ý tưởng, ý kiến phù hợp nhất
+Chậm tiến độ dự án
+Do ước tính về thời gian thực hiện dự án có sai sót hoặc gặp sự cố nên dẫn đến lịch trình hoàn thành dự án bị trì hoãn.
+Trong quá trình thực hiện dự án, đội ngũ của chúng tối thiếu thời gian để vừa tìm hiểu vừa thực hiện dự án.
+H
+M
+Tăng thời gian làm việc
+Quản trị dự án
+Hệ thống quản trị dự án có thể không hỗ trợ đầy đủ các yêu cầu của dự án
+M
+H
+Thảo luận với nhóm để đưa ra các giải pháp
+QUY TRÌNH ĐÁNH GIÁ CHẤT LƯỢNG
+Mục tiêu chất lượng
+Các mục tiêu chất lượng của dự án được trình bày dưới đây. Chúng tôi được kiểm tả liên tục với các thành viên trong nhóm và có thể bổ sung các mục tiêu dựa trên nhận thức của thành viên về chất lượng.
+Bảng 8.1: Các chỉ tiêu đánh giá sản phẩm
+No.
+Các yếu tố
+Mô tả
+1
+Tính kịp thời
+Cung cấp sản phẩm đúng thời gian quy định
+2
+Chức năng
+Đáp ứng các chức năng trong yêu cầu của người dùng
+3
+Độ tin cậy
+Nên đáp ứng các tiêu chí sau: Không có khiếm khuyết lớn .(Số lỗi tìm thấy trong giai đoạn thử nghiệm nghiệm thu / mức độ nỗ lực của dự án <=1)
+Chỉ số
+Số liệu phần mềm dự kiến sẽ được sử dụng trong quá trình này được liệt kê trong bảng dưới đây.
+Bảng 8.2: Bảng chỉ số đánh giá sản phẩm
+Loại
+Chỉ số
+Đơn vị đo lường
+Ước lượng
+Tần suất
+Tính kịp thời
+Sản phẩm
+%
+>=90%
+Tại phiên bản cuối
+Effort
+Sản phẩm
+Man-Day
+30MD
+Hàng tuần
+Sự chính xác
+Sản phẩm
+Tổn các khiếm khuyết
+Không có khiếm khuyết lớn
+Tại phiên bản cuối
+Thời gian đã qua
+Dự án
+Ngày
+79 ngày
+Tại phiên bản cuối
+Kiểm tra
+Bảng 8.3: Bảng kiểm tra
+Giai đoạn
+Mục điều kiện
+Ký hiệu và loại review
+Ước tính sự nỗ lực
+Tiêu chuẩn kết thúc
+Bắt đầu
+Xem lại kế hoạch dự án
+External(2)
+1
+Được thông qua bởi Project Manager
+PP đánh giá nội bộ
+Internal(3)
+1
+Total Fatal = 0 Total Serious = 0
+Phân tích và thiết kế
+Đánh giá thiết kế hệ thống nội bộ
+Internal(3)
+1
+Được thông qua bỏi Project Owner
+Xem lại thiết kế hệ thống
+External(3)
+1
+Được thông qua bởi Project Manager
+Coding
+Xem lại source code
+External(3)
+1
+Total Fatal = 0 Total Serious = 0
+Kiểm tra hệ thống
+Xem xét kế hoạch kiểm tra hệ thống
+Internal(3)
+1
+Được thông qua bỏi Scrum Master
+Cập nhật kế hoạch kiểm tra hệ thống
+Internal(3)
+As needed
+Được thông qua bởi Scrum Master
+Kiểm tra lần cuối tất cả sản phẩm được giao
+Internal(3)
+1
+Total Fatal = 0 Total Serious = 0
+Báo cáo sự cố và khác phục
+Bảng 8.4: Các báo cáo khi gặp sự cố
+Mục
+Hoạt động
+Tần suất
+Template No
+1
+Đánh giá Sprint và ghi lại nhật ký sai sót
+Kết thúc Sprint
+Xem lại báo cáo
+2
+Hồi tưởng Sprint và suy ngẫm
+Kết thúc Sprint
+Báo cáo hồi cứu
+3
+Báo cáo sự cố
+Theo yêu cầu
+Các vấn đề của Google
+QUẢN LÝ CẤU HÌNH
+Bảng 9.1: Danh mục cấu hình
+Mục
+Tên danh mục
+Ghi chú
+1
+Proposal
+2
+Project plan
+3
+Product backlog
+4
+Sprint backlog
+5
+User story
+6
+User interface design
+7
+Test plan
+8
+Test case
+9
+Reflection
+10
+Meeting report
+CÔNG NGHỆ VÀ CÁC RÀNG BUỘC
+Kỹ thuật phát triển hệ thống
+Nền tảng ứng dụng web.
+Ngôn ngữ lập trình: JavaScript, ReactJs.
+Cơ sở dữ liệu: MongoDB.
+Quy trình quản lý ứng dựng: Quy trình Scrum.
+Môi trường
+Máy người dùng phải được kết nối Internet, có trình duyệt Web (IE, Google Chrome, Fire Fox v.v..).
+Phần mềm phát triển dự án:Mongodb, VSCode.
+Công cụ quản lý mã nguồn: Github.
+Các ràng buộc khác
+Nguồn lực: 5 người.
+Kinh phí: Hạn chế.
+Thời gian: Dự án hoàn thánh sau 2,5 tháng.
+Công nghệ: NodeJS
+TÀI LIỆU THAM KHẢO
+ProjectProposal.docx

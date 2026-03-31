@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import ConfirmModal from "../components/ConfirmModal";
+import { ThemeProvider } from "../contexts/ThemeContext";
 
 export default function AdminLayout({ children }) {
   const { user, loading, isAuthenticated, isAdmin, logout } = useAuth();
@@ -139,9 +140,9 @@ export default function AdminLayout({ children }) {
           
           <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2">Nhân sự & Học viên</p>
           <CollapsibleMenu text="Người dùng" icon={<IconUsers />} baseRoute="/admin/users">
-            <SidebarLink href="/admin/users?role=admin" text="Quản trị viên"  />
-            <SidebarLink href="/admin/users?role=teacher" text="Giảng viên"  />
-            <SidebarLink href="/admin/users?role=student" text="Học viên"  />
+            <SidebarLink href="/admin/users/admin" text="Quản trị viên"  />
+            <SidebarLink href="/admin/users/teacher" text="Giảng viên"  />
+            <SidebarLink href="/admin/users/student" text="Học viên"  />
           </CollapsibleMenu>
           
           <p className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2">Đào tạo</p>
@@ -166,41 +167,42 @@ export default function AdminLayout({ children }) {
 
       {/* Khu vực nội dung chính */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Header chung */}
-        <header className={`shadow-sm h-16 flex justify-between items-center px-8 z-0 transition-colors duration-300 ${darkMode ? "bg-gray-800 border-b border-gray-700" : "bg-white"}`}>
-          <h2 className={`text-xl font-semibold ${darkMode ? "text-gray-100" : "text-gray-800"}`}>Hệ Thống Quản Lý Trung Tâm</h2>
-          <div className="flex items-center space-x-4">
-            {/* Nút đổi Theme */}
-            <button onClick={toggleTheme} className={`p-2 rounded-full transition-colors ${darkMode ? "hover:bg-gray-700 text-yellow-400" : "hover:bg-gray-100 text-gray-600"}`} title="Đổi giao diện">
-               {darkMode ? <IconSun /> : <IconMoon />}
-            </button>
+        <ThemeProvider value={{ darkMode }}>
+          {/* Header chung */}
+          <header className={`shadow-sm h-16 flex justify-between items-center px-8 z-0 transition-colors duration-300 ${darkMode ? "bg-gray-800 border-b border-gray-700" : "bg-white"}`}>
+            <h2 className={`text-xl font-semibold ${darkMode ? "text-gray-100" : "text-gray-800"}`}>Hệ Thống Quản Lý Trung Tâm</h2>
+            <div className="flex items-center space-x-4">
+              {/* Nút đổi Theme */}
+              <button onClick={toggleTheme} className={`p-2 rounded-full transition-colors ${darkMode ? "hover:bg-gray-700 text-yellow-400" : "hover:bg-gray-100 text-gray-600"}`} title="Đổi giao diện">
+                {darkMode ? <IconSun /> : <IconMoon />}
+              </button>
 
-            <div className="text-right">
-              <p className={`text-sm font-medium ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{user?.FullName || user?.name}</p>
-              <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>{user?.email}</p>
+              <div className="text-right">
+                <p className={`text-sm font-medium ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{user?.FullName || user?.name}</p>
+                <p className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>{user?.email}</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg border border-blue-200">
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg border border-blue-200">
-              {user?.name?.charAt(0).toUpperCase()}
-            </div>
-          </div>
-        </header>
+          </header>
 
-        {/* Nội dung thay đổi (Children) */}
-        {/* Thêm class 'dark' vào wrapper này để các component con có thể dùng class dark: của Tailwind */}
-        <main className={`flex-1 overflow-y-auto p-8 ${darkMode ? "dark" : ""}`}>
-          {children}
-        </main>
+          {/* Nội dung thay đổi (Children) */}
+          <main className="flex-1 overflow-y-auto p-8">
+            {children}
+          </main>
 
-        <ConfirmModal
-          isOpen={showLogoutModal}
-          title="Xác nhận đăng xuất"
-          message="Bạn có chắc muốn đăng xuất không?"
-          onCancel={() => setShowLogoutModal(false)}
-          onConfirm={() => {
-            setShowLogoutModal(false);
-            logout();
-          }}
-        />
+          <ConfirmModal
+            isOpen={showLogoutModal}
+            title="Xác nhận đăng xuất"
+            message="Bạn có chắc muốn đăng xuất không?"
+            onCancel={() => setShowLogoutModal(false)}
+            onConfirm={() => {
+              setShowLogoutModal(false);
+              logout();
+            }}
+          />
+        </ThemeProvider>
       </div>
     </div>
   );

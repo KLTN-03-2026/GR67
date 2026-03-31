@@ -37,10 +37,6 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
-    // Confirm before logging out (Có / Không)
-    const confirmed = window.confirm('Bạn có chắc muốn đăng xuất không?');
-    if (!confirmed) return;
-
     setUser(null);
     setToken(null);
     localStorage.removeItem('user');
