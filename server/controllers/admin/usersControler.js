@@ -26,6 +26,18 @@ const isStrongPassword = (password) => {
     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{7,}$/.test(String(password || ""));
 };
 
+const normalizeGenderToBoolean = (value) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'number') return value === 1;
+    if (typeof value === 'string') {
+        const v = value.trim().toLowerCase();
+        if (['nam', 'male', 'm', 'true', '1'].includes(v)) return true;
+        if (['nu', 'nữ', 'female', 'f', 'false', '0'].includes(v)) return false;
+    }
+    return undefined;
+};
+
 // ==========================================
 //  ========== ADMIN MANAGEMENT ==========
 // ==========================================
@@ -81,13 +93,14 @@ const createAdmin = async (req, res) => {
             return res.status(409).json({ success: false, message: 'Email đã được sử dụng' });
         }
 
+        const genderValue = normalizeGenderToBoolean(gioitinh);
         const newAdmin = new NguoiDung({
             email,
             password,
             hovaten,
             soDienThoai,
             diachi,
-            gioitinh,
+            gioitinh: genderValue,
             ngaysinh,
             role: 'admin',
             daXacThuc: true,
@@ -121,7 +134,8 @@ const updateAdmin = async (req, res) => {
         admin.hovaten = hovaten;
         admin.soDienThoai = soDienThoai;
         admin.diachi = diachi;
-        admin.gioitinh = gioitinh;
+        const genderValue = normalizeGenderToBoolean(gioitinh);
+        if (genderValue !== undefined) admin.gioitinh = genderValue;
         admin.ngaysinh = ngaysinh;
 
         if (password !== undefined && password !== null && String(password).trim() !== '') {
@@ -273,8 +287,9 @@ const createTeacher = async (req, res) => {
         }
 
         // Tạo NguoiDung
+        const genderValue = normalizeGenderToBoolean(gioitinh);
         const newUser = new NguoiDung({
-            email, password, hovaten, soDienThoai, diachi, gioitinh, ngaysinh,
+            email, password, hovaten, soDienThoai, diachi, gioitinh: genderValue, ngaysinh,
             role: 'teacher',
             daXacThuc: true,
             trangThaiHoatDong: true
@@ -319,7 +334,8 @@ const updateTeacher = async (req, res) => {
         user.hovaten = hovaten;
         user.soDienThoai = soDienThoai;
         user.diachi = diachi;
-        user.gioitinh = gioitinh;
+        const genderValue = normalizeGenderToBoolean(gioitinh);
+        if (genderValue !== undefined) user.gioitinh = genderValue;
         user.ngaysinh = ngaysinh;
 
         if (password !== undefined && password !== null && String(password).trim() !== '') {
@@ -470,8 +486,9 @@ const createStudent = async (req, res) => {
         }
 
         // Tạo NguoiDung
+        const genderValue = normalizeGenderToBoolean(gioitinh);
         const newUser = new NguoiDung({
-            email, password, hovaten, soDienThoai, diachi, gioitinh, ngaysinh,
+            email, password, hovaten, soDienThoai, diachi, gioitinh: genderValue, ngaysinh,
             role: 'student',
             daXacThuc: true,
             trangThaiHoatDong: true
@@ -514,7 +531,8 @@ const updateStudent = async (req, res) => {
         user.hovaten = hovaten;
         user.soDienThoai = soDienThoai;
         user.diachi = diachi;
-        user.gioitinh = gioitinh;
+        const genderValue = normalizeGenderToBoolean(gioitinh);
+        if (genderValue !== undefined) user.gioitinh = genderValue;
         user.ngaysinh = ngaysinh;
 
         if (password !== undefined && password !== null && String(password).trim() !== '') {
@@ -618,9 +636,12 @@ const updateTeacherProfile = async (req, res) => {
     try {
         const { hovaten, soDienThoai, diachi, gioitinh, ngaysinh, TrinhDoHocVan, kinhnghiem, chuyenmon } = req.body;
 
+        const genderValue = normalizeGenderToBoolean(gioitinh);
+        const userUpdate = { hovaten, soDienThoai, diachi, ngaysinh };
+        if (genderValue !== undefined) userUpdate.gioitinh = genderValue;
         const user = await NguoiDung.findByIdAndUpdate(
             req.user._id,
-            { hovaten, soDienThoai, diachi, gioitinh, ngaysinh },
+            userUpdate,
             { new: true, runValidators: true }
         ).select('-password -maOTP -hanSuDungOTP');
 
@@ -665,9 +686,12 @@ const updateStudentProfile = async (req, res) => {
     try {
         const { hovaten, soDienThoai, diachi, gioitinh, ngaysinh } = req.body;
 
+        const genderValue = normalizeGenderToBoolean(gioitinh);
+        const userUpdate = { hovaten, soDienThoai, diachi, ngaysinh };
+        if (genderValue !== undefined) userUpdate.gioitinh = genderValue;
         const user = await NguoiDung.findByIdAndUpdate(
             req.user._id,
-            { hovaten, soDienThoai, diachi, gioitinh, ngaysinh },
+            userUpdate,
             { new: true, runValidators: true }
         ).select('-password -maOTP -hanSuDungOTP');
 

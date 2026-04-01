@@ -33,6 +33,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.static(path.join(__dirname, 'public')));
+// Public serve các file upload trong server/uploads qua URL /uploads/...
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // routes (prefix /api cho toàn bộ REST API)
 app.use('/api', indexRouter);

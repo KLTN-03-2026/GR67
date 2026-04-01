@@ -56,6 +56,10 @@ router.use("/course-types", courseTypesRouter);
 const filesRouter = require("./admin/filesRoutes");
 router.use("/admin/files", filesRouter);
 
+/* ================== COURSES (ADMIN) ================== */
+const adminCoursesRouter = require("./admin/coursesRoutes");
+router.use("/admin/courses", adminCoursesRouter);
+
 // Giảng viên tự xem & cập nhật thông tin cá nhân
 // COMMENT LẠI ĐỂ TRÁNH XUNG ĐỘT: Route này đã được xử lý trong giangvienRoutes (được load ở app.js)
 // router.use('/teacher', teacherSelfRouter);
