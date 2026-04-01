@@ -48,4 +48,12 @@ router.use('/admin/users/teachers', teacherAdminRouter);
 // Admin quản lý tài khoản học viên
 router.use('/admin/users/students', studentAdminRouter);
 
+/* ================== COURSE TYPES + LESSONS ================== */
+const courseTypesRouter = require("./admin/courseTypesRoutes");
+router.use("/course-types", courseTypesRouter);
+
+/* ================== FILE UPLOAD (ADMIN) ================== */
+const filesRouter = require("./admin/filesRoutes");
+router.use("/admin/files", filesRouter);
+
 module.exports = router;

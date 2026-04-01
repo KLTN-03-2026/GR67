@@ -1,9 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function VerifyOTPPage() {
+  return (
+    <Suspense fallback={<VerifyOTPLoading />}>
+      <VerifyOTPInner />
+    </Suspense>
+  );
+}
+
+function VerifyOTPLoading() {
+  return (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8 text-sm text-gray-600">
+        Đang tải...
+      </div>
+    </div>
+  );
+}
+
+function VerifyOTPInner() {
   const [formData, setFormData] = useState({
     email: "",
     otp: ""
@@ -17,7 +35,7 @@ export default function VerifyOTPPage() {
   // Get email from URL params if available
   const emailFromParams = searchParams.get('email');
 
-  useState(() => {
+  useEffect(() => {
     if (emailFromParams) {
       setFormData(prev => ({ ...prev, email: emailFromParams }));
     }
@@ -30,7 +48,7 @@ export default function VerifyOTPPage() {
     });
   };
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
