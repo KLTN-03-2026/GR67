@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
+import { toDateInputValue } from "../../../../lib/dateFormat";
 import PasswordStrength from "../../../components/PasswordStrength";
 
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
@@ -78,7 +79,7 @@ export default function AdminAccountsPage() {
       soDienThoai: selectedUser.soDienThoai || "",
       diachi: selectedUser.diachi || "",
       gioitinh: selectedUser.gioitinh || "Nam",
-      ngaysinh: selectedUser.ngaysinh ? new Date(selectedUser.ngaysinh).toISOString().split("T")[0] : "",
+      ngaysinh: selectedUser.ngaysinh ? toDateInputValue(selectedUser.ngaysinh) : "",
     });
   }, [selectedUser]);
 

@@ -5,6 +5,8 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import PasswordStrength from "../../../components/PasswordStrength";
+import DateInputField from "../../../components/DateInputField";
+import { toDateInputValue } from "../../../../lib/dateFormat";
 
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
 const PencilIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>;
@@ -83,7 +85,7 @@ export default function TeacherAccountsPage() {
       password: "",
       soDienThoai: selectedUser.soDienThoai || "",
       gioitinh: selectedUser.gioitinh || "Nam",
-      ngaysinh: selectedUser.ngaysinh ? new Date(selectedUser.ngaysinh).toISOString().split("T")[0] : "",
+      ngaysinh: selectedUser.ngaysinh ? toDateInputValue(selectedUser.ngaysinh) : "",
       diachi: selectedUser.diachi || "",
       TrinhDoHocVan: selectedUser.giangVienInfo?.TrinhDoHocVan || "",
       kinhnghiem: selectedUser.giangVienInfo?.kinhnghiem || 0,
@@ -291,12 +293,26 @@ const StatCard = ({ title, value }) => (
 const Input = ({ label, name, value, onChange, type = "text", disabled = false }) => (
   <div>
     <label className="text-sm text-gray-600 dark:text-gray-300">{label}</label>
-    <input
-      type={type}
-      disabled={disabled}
-      value={value}
-      onChange={(e) => onChange((prev) => ({ ...prev, [name]: type === "number" ? Number(e.target.value) : e.target.value }))}
-      className="w-full mt-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 disabled:opacity-70"
-    />
+    {type === "date" ? (
+      <div className="mt-1">
+        <DateInputField
+          name={name}
+          id={name}
+          value={value}
+          disabled={disabled}
+          onChange={(e) => onChange((prev) => ({ ...prev, [name]: e.target.value }))}
+          className="w-full rounded-lg border dark:border-gray-600 dark:bg-gray-800"
+          inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0 disabled:opacity-70 dark:bg-gray-800 dark:text-gray-100"
+        />
+      </div>
+    ) : (
+      <input
+        type={type}
+        disabled={disabled}
+        value={value}
+        onChange={(e) => onChange((prev) => ({ ...prev, [name]: type === "number" ? Number(e.target.value) : e.target.value }))}
+        className="w-full mt-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 disabled:opacity-70"
+      />
+    )}
   </div>
 );

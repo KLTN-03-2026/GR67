@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import DateInputField from "../../components/DateInputField";
+import { formatDateDdMmYyyy, toDateInputValue } from "../../../lib/dateFormat";
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('personal');
@@ -55,7 +57,7 @@ export default function Profile() {
           fullName: data.userId?.hovaten || '',
           email: data.userId?.email || '',
           phone: data.userId?.soDienThoai || '',
-          dateOfBirth: data.userId?.ngaysinh?.slice(0, 10) || '',
+          dateOfBirth: data.userId?.ngaysinh ? toDateInputValue(data.userId.ngaysinh) : "",
           address: data.userId?.diachi || '',
           gender: data.userId?.gioitinh ? 'male' : 'female',
           qualification: data.TrinhDoHocVan || '',
@@ -94,18 +96,6 @@ export default function Profile() {
       }
     }
   };
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
-  };
-
-
   const handlePasswordChange = (field, value) => {
     setPasswordData(prev => ({ ...prev, [field]: value }));
   };
@@ -292,14 +282,16 @@ export default function Profile() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Ngày sinh</label>
                   {isEditing ? (
-                    <input
-                      type="date"
+                    <DateInputField
                       value={personalInfo.dateOfBirth}
-                      onChange={(e) => handlePersonalInfoChange('dateOfBirth', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onChange={(e) => handlePersonalInfoChange("dateOfBirth", e.target.value)}
+                      className="w-full rounded-md border border-gray-300"
+                      inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0"
                     />
                   ) : (
-                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md">{formatDate(personalInfo.dateOfBirth)}</p>
+                    <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
+                      {formatDateDdMmYyyy(personalInfo.dateOfBirth, { empty: "" })}
+                    </p>
                   )}
                 </div>
 

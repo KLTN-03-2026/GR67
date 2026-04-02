@@ -1,3 +1,4 @@
+const { formatDateDdMmYyyy } = require("../../utils/dateFormat");
 const ThamGiaBuoiHoc = require('../../models/ThamGiaBuoiHoc');
 const DangKyKhoaHoc = require('../../models/DangKyKhoaHoc');
 const GiangVien = require('../../models/GiangVien');
@@ -74,21 +75,17 @@ exports.getLeaveRequests = async (req, res) => {
 
           reason: req.lydo_nghi,
 
-          startDate: req.ngay_bat_dau
-            ? new Date(req.ngay_bat_dau).toLocaleDateString('vi-VN')
-            : '',
+          startDate: req.ngay_bat_dau ? formatDateDdMmYyyy(req.ngay_bat_dau, "") : "",
 
-          endDate: req.ngay_ket_thuc
-            ? new Date(req.ngay_ket_thuc).toLocaleDateString('vi-VN')
-            : '',
+          endDate: req.ngay_ket_thuc ? formatDateDdMmYyyy(req.ngay_ket_thuc, "") : "",
 
           status: req.trangthai_duyet,
 
           totalRequests, // ✅ CHUẨN
 
           submittedDate: req.thoigian_nop
-            ? new Date(req.thoigian_nop).toLocaleDateString('vi-VN')
-            : new Date(req.createdAt).toLocaleDateString('vi-VN'),
+            ? formatDateDdMmYyyy(req.thoigian_nop, "")
+            : formatDateDdMmYyyy(req.createdAt, ""),
         };
       })
     );

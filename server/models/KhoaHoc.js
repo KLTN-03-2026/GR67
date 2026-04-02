@@ -66,7 +66,7 @@ const khoaHocSchema = new mongoose.Schema({
             return it.gioBatDau < it.gioKetThuc; // HH:mm lexicographic ok
           });
         },
-        message: 'lichHoc phải có ít nhất 1 lịch và mỗi lịch phải có gioBatDau < gioKetThuc',
+        message: 'Lịch khóa phải có ít nhất một ca; trong mỗi ca, giờ bắt đầu phải sớm hơn giờ kết thúc.',
       },
       {
         validator: function (items) {
@@ -79,7 +79,7 @@ const khoaHocSchema = new mongoose.Schema({
           }
           return true;
         },
-        message: 'lichHoc không được trùng thứ trong cùng một khóa học',
+        message: 'Trong một khóa học, không được đặt hai ca trùng cùng một thứ trong tuần.',
       },
     ],
   },

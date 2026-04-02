@@ -10,7 +10,7 @@ export default function Schedule() {
   const scheduleData = [
     {
       day: "Thứ 2",
-      date: "1/04/2026",
+      date: "01/04/2026",
       classes: [
         {
           time: "09:00 - 10:30",
@@ -24,7 +24,7 @@ export default function Schedule() {
     },
     {
       day: "Thứ 3",
-      date: "5/04/2026",
+      date: "05/04/2026",
       classes: [
         {
           time: "10:00 - 11:30",

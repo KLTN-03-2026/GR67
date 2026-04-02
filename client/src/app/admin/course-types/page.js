@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../../components/ConfirmModal";
 import { useNotification } from "../../contexts/NotificationContext";
 import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiArrowLeft, FiPaperclip } from "react-icons/fi";
+import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
 
 
 export default function CourseTypesPage() {
@@ -244,7 +245,7 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
                           <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{ct.Tenloai}</th>
                           <td className="px-6 py-4 max-w-sm truncate">{ct.mota || ""}</td>
                           <td className="px-6 py-4">{String(ct.ChungChi || "").toUpperCase() || "—"}</td>
-                          <td className="px-6 py-4">{ct.createdAt ? new Date(ct.createdAt).toLocaleDateString() : "—"}</td>
+                          <td className="px-6 py-4">{ct.createdAt ? formatDateDdMmYyyy(ct.createdAt) : "—"}</td>
                           <td className="px-6 py-4 text-right">
                             <button onClick={() => onEdit(ct)} className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-yellow-400/90 hover:bg-yellow-400 text-white" title="Chỉnh sửa">
                               <FiEdit2 className="h-5 w-5" />

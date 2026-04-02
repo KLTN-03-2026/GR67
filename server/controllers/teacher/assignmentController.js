@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { formatDateDdMmYyyy } = require("../../utils/dateFormat");
 const BaiTap = require("../../models/BaiTap");
 const DangKyKhoaHoc = require("../../models/DangKyKhoaHoc");
 const NopBai = require("../../models/NopBai");
@@ -221,7 +222,7 @@ exports.getSubmissionsForAssignment = async (req, res) => {
         name: nguoiDung.hovaten || "Học viên không xác định",
         email: nguoiDung.email || "Chưa cập nhật",
         status: submission ? (submission.trangthai === "đã chấm" ? "graded" : "submitted") : "notSubmitted",
-        date: submission ? new Date(submission.thoigian).toLocaleDateString('vi-VN') : "--",
+        date: submission ? formatDateDdMmYyyy(submission.thoigian, "--") : "--",
         score: submission && submission.diem !== undefined ? `${submission.diem}/${assignment.diem}` : "--",
         submissionId: submission ? submission._id : null,
         fileNop: submission ? submission.filenop : null

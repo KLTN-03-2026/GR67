@@ -64,6 +64,24 @@ function combineDateAndTime(dateOnly, hhmm) {
   );
 }
 
+const THU_TEN_VI = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
+
+function formatHHmmFromDate(dateObj) {
+  const d = new Date(dateObj);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+function formatNgayDdMmYyyy(dateVal) {
+  const d = new Date(dateVal);
+  if (Number.isNaN(d.getTime())) return "";
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
 function normalizeLichHoc(lichHoc) {
   const items = Array.isArray(lichHoc) ? lichHoc : [];
   return items
@@ -78,32 +96,32 @@ function normalizeLichHoc(lichHoc) {
 
 function validateLichHocBasic(lichHoc) {
   const items = normalizeLichHoc(lichHoc);
-  if (items.length === 0) return { ok: false, message: "lichHoc phải có ít nhất 1 lịch" };
+  if (items.length === 0) return { ok: false, message: "Cần có ít nhất một ca học trong lịch khóa." };
 
   const seenThu = new Set();
   for (const it of items) {
     if (!Number.isInteger(it.thu) || it.thu < 0 || it.thu > 6) {
-      return { ok: false, message: "thu phải là số nguyên từ 0 (CN) đến 6 (T7)" };
+      return { ok: false, message: "Thứ trong tuần phải từ 0 (Chủ nhật) đến 6 (Thứ bảy)." };
     }
     if (seenThu.has(it.thu)) {
-      return { ok: false, message: "lichHoc không được trùng thứ trong cùng một khóa học" };
+      return { ok: false, message: "Trong một khóa học, mỗi thứ chỉ được đặt một ca học." };
     }
     seenThu.add(it.thu);
 
     const startTime = parseHHmm(it.gioBatDau);
     const endTime = parseHHmm(it.gioKetThuc);
     if (!startTime || !endTime) {
-      return { ok: false, message: "gioBatDau/gioKetThuc phải theo định dạng HH:mm" };
+      return { ok: false, message: "Giờ bắt đầu và giờ kết thúc phải đúng dạng 24 giờ (ví dụ 18:30)." };
     }
     const startMinutes = startTime.hh * 60 + startTime.mm;
     const endMinutes = endTime.hh * 60 + endTime.mm;
     if (startMinutes >= endMinutes) {
-      return { ok: false, message: "gioBatDau phải nhỏ hơn gioKetThuc" };
+      return { ok: false, message: "Giờ bắt đầu phải sớm hơn giờ kết thúc trong cùng một ca." };
     }
 
     const roomId = asObjectId(it.phonghoc);
     if (!roomId) {
-      return { ok: false, message: "phonghoc không hợp lệ" };
+      return { ok: false, message: "Vui lòng chọn phòng học hợp lệ cho mỗi ca trong lịch." };
     }
   }
 
@@ -179,14 +197,14 @@ async function ensureRefsExist({ LoaiKhoaHocID, giangvien, lichHocItems }) {
     LoaiKhoaHoc.findById(LoaiKhoaHocID).select("_id").lean(),
     GiangVien.findById(giangvien).select("_id").lean(),
   ]);
-  if (!ct) return { ok: false, message: "LoaiKhoaHocID không tồn tại" };
-  if (!gv) return { ok: false, message: "giangvien không tồn tại" };
+  if (!ct) return { ok: false, message: "Loại khóa học được chọn không tồn tại trong hệ thống." };
+  if (!gv) return { ok: false, message: "Giảng viên được chọn không tồn tại trong hệ thống." };
 
   const roomIds = [...new Set(lichHocItems.map((it) => String(asObjectId(it.phonghoc))))].map((s) =>
     new mongoose.Types.ObjectId(s)
   );
   const roomsCount = await Phonghoc.countDocuments({ _id: { $in: roomIds } });
-  if (roomsCount !== roomIds.length) return { ok: false, message: "Có phonghoc không tồn tại" };
+  if (roomsCount !== roomIds.length) return { ok: false, message: "Có ít nhất một phòng học trong lịch không tồn tại hoặc đã bị xóa." };
 
   return { ok: true };
 }
@@ -281,8 +299,35 @@ async function findScheduleConflicts({ proposedSessions, giangvienId, ignoreCour
       const sameTeacher = String(giangvienId) === String(e.khoaHoc.giangvien);
       if (!(sameRoom || sameTeacher)) continue;
 
+      const lyDo =
+        sameRoom && sameTeacher
+          ? "Trùng phòng học và trùng giảng viên"
+          : sameRoom
+          ? "Trùng phòng học"
+          : "Trùng lịch giảng viên";
+      const thuTen = THU_TEN_VI[p.meta.thu] ?? `Thứ (mã ${p.meta.thu})`;
+      const ngayDeXuat = formatNgayDdMmYyyy(p.ngayhoc);
+      const gioBd = formatHHmmFromDate(p.giobatdau);
+      const gioKt = formatHHmmFromDate(p.gioketthuc);
+      const ngayDaCo = formatNgayDdMmYyyy(e.ngayhoc);
+      const gioBdB = formatHHmmFromDate(e.giobatdau);
+      const gioKtB = formatHHmmFromDate(e.gioketthuc);
+      const tomTat = `${lyDo}. Ca đang đăng ký: ${thuTen}, ngày ${ngayDeXuat}, từ ${gioBd} đến ${gioKt}. Ca đã có trong hệ thống: ngày ${ngayDaCo}, từ ${gioBdB} đến ${gioKtB}.`;
+
       conflicts.push({
-        type: sameRoom && sameTeacher ? "room_and_teacher" : sameRoom ? "room" : "teacher",
+        lyDo,
+        tomTat,
+        caDangKy: {
+          thuTrongTuan: thuTen,
+          ngay: ngayDeXuat,
+          tuGio: gioBd,
+          denGio: gioKt,
+        },
+        buoiTrung: {
+          ngay: ngayDaCo,
+          tuGio: gioBdB,
+          denGio: gioKtB,
+        },
         proposed: {
           ngayhoc: p.ngayhoc,
           giobatdau: p.giobatdau,
@@ -444,7 +489,7 @@ exports.listCourses = async (req, res) => {
 exports.getCourseById = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
-    if (!courseId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
     const item = await KhoaHoc.findById(courseId)
       .populate("LoaiKhoaHocID", "Tenloai mota ChungChi")
       .populate({
@@ -477,10 +522,10 @@ exports.validateSchedule = async (req, res) => {
     const courseTypeId = asObjectId(LoaiKhoaHocID);
     const teacherId = await resolveTeacherId(giangvien);
     const ignoreId = asObjectId(ignoreCourseId);
-    if (!courseTypeId) return res.status(400).json({ success: false, message: "LoaiKhoaHocID không hợp lệ" });
-    if (!teacherId) return res.status(400).json({ success: false, message: "giangvien không hợp lệ" });
+    if (!courseTypeId) return res.status(400).json({ success: false, message: "Mã loại khóa học không hợp lệ hoặc thiếu." });
+    if (!teacherId) return res.status(400).json({ success: false, message: "Giảng viên được chọn không hợp lệ hoặc không tồn tại." });
     const start = new Date(ngaykhaigiang);
-    if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "ngaykhaigiang không hợp lệ" });
+    if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "Ngày khai giảng không hợp lệ." });
 
     const lichCheck = validateLichHocBasic(lichHoc);
     if (!lichCheck.ok) return res.status(400).json({ success: false, message: lichCheck.message });
@@ -520,6 +565,7 @@ exports.validateSchedule = async (req, res) => {
       success: true,
       data: {
         lessonCount: lessons.length,
+        soHocVienToiDa,
         conflicts,
         suggestedStartDates,
       },
@@ -537,12 +583,12 @@ exports.createCourse = async (req, res) => {
 
     const courseTypeId = asObjectId(LoaiKhoaHocID);
     const teacherId = await resolveTeacherId(giangvien);
-    if (!courseTypeId) return res.status(400).json({ success: false, message: "LoaiKhoaHocID không hợp lệ" });
-    if (!teacherId) return res.status(400).json({ success: false, message: "giangvien không hợp lệ" });
+    if (!courseTypeId) return res.status(400).json({ success: false, message: "Mã loại khóa học không hợp lệ hoặc thiếu." });
+    if (!teacherId) return res.status(400).json({ success: false, message: "Giảng viên được chọn không hợp lệ hoặc không tồn tại." });
     const name = (tenkhoahoc || "").trim();
-    if (!name) return res.status(400).json({ success: false, message: "tenkhoahoc là bắt buộc" });
+    if (!name) return res.status(400).json({ success: false, message: "Vui lòng nhập tên khóa học." });
     const start = new Date(ngaykhaigiang);
-    if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "ngaykhaigiang không hợp lệ" });
+    if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "Ngày khai giảng không hợp lệ." });
 
     const lichCheck = validateLichHocBasic(lichHoc);
     if (!lichCheck.ok) return res.status(400).json({ success: false, message: lichCheck.message });
@@ -550,6 +596,11 @@ exports.createCourse = async (req, res) => {
 
     const refs = await ensureRefsExist({ LoaiKhoaHocID: courseTypeId, giangvien: teacherId, lichHocItems });
     if (!refs.ok) return res.status(400).json({ success: false, message: refs.message });
+
+    const soHocVienToiDa = await computeCourseCapacityFromSchedule(lichHocItems);
+    if (!soHocVienToiDa) {
+      return res.status(400).json({ success: false, message: "Không thể xác định sức chứa tối đa từ danh sách phòng học" });
+    }
 
     const lessons = await fetchLessonsForCourseType(courseTypeId);
     if (lessons.length === 0) {
@@ -561,7 +612,8 @@ exports.createCourse = async (req, res) => {
     if (conflicts.length > 0) {
       return res.status(409).json({
         success: false,
-        message: "Lịch học bị trùng (phòng hoặc giảng viên). Vui lòng chọn khung giờ hoặc ngày bắt đầu khác.",
+        message:
+          "Lịch học bị trùng: phòng hoặc giảng viên đã có buổi trùng khung giờ. Vui lòng đổi phòng, giờ học hoặc ngày khai giảng.",
         data: { conflicts },
       });
     }
@@ -574,6 +626,17 @@ exports.createCourse = async (req, res) => {
       soHocVienToiDa,
       lichHoc: lichHocItems,
     });
+
+    const conflictsBeforeInsert = await findScheduleConflicts({ proposedSessions: proposed, giangvienId: teacherId });
+    if (conflictsBeforeInsert.length > 0) {
+      await KhoaHoc.findByIdAndDelete(created._id);
+      return res.status(409).json({
+        success: false,
+        message:
+          "Lịch học bị trùng: phòng hoặc giảng viên đã có buổi trùng khung giờ. Vui lòng đổi phòng, giờ học hoặc ngày khai giảng.",
+        data: { conflicts: conflictsBeforeInsert },
+      });
+    }
 
     try {
       const buoiDocs = proposed.map((p) => ({
@@ -611,7 +674,7 @@ exports.createCourse = async (req, res) => {
 exports.updateCourse = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
-    if (!courseId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
 
     const existingCourse = await KhoaHoc.findById(courseId);
     if (!existingCourse) return res.status(404).json({ success: false, message: "Không tìm thấy khóa học" });
@@ -626,13 +689,13 @@ exports.updateCourse = async (req, res) => {
 
     const courseTypeId = asObjectId(LoaiKhoaHocID);
     const teacherId = await resolveTeacherId(giangvien);
-    if (!courseTypeId) return res.status(400).json({ success: false, message: "LoaiKhoaHocID không hợp lệ" });
-    if (!teacherId) return res.status(400).json({ success: false, message: "giangvien không hợp lệ" });
+    if (!courseTypeId) return res.status(400).json({ success: false, message: "Mã loại khóa học không hợp lệ hoặc thiếu." });
+    if (!teacherId) return res.status(400).json({ success: false, message: "Giảng viên được chọn không hợp lệ hoặc không tồn tại." });
 
     const name = (tenkhoahoc || "").trim();
-    if (!name) return res.status(400).json({ success: false, message: "tenkhoahoc là bắt buộc" });
+    if (!name) return res.status(400).json({ success: false, message: "Vui lòng nhập tên khóa học." });
     const start = new Date(ngaykhaigiang);
-    if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "ngaykhaigiang không hợp lệ" });
+    if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "Ngày khai giảng không hợp lệ." });
 
     const lichCheck = validateLichHocBasic(lichHoc);
     if (!lichCheck.ok) return res.status(400).json({ success: false, message: lichCheck.message });
@@ -685,7 +748,8 @@ exports.updateCourse = async (req, res) => {
       if (conflicts.length > 0) {
         return res.status(409).json({
           success: false,
-          message: "Lịch học bị trùng (phòng hoặc giảng viên). Vui lòng chọn khung giờ hoặc ngày bắt đầu khác.",
+          message:
+            "Lịch học bị trùng: phòng hoặc giảng viên đã có buổi trùng khung giờ. Vui lòng đổi phòng, giờ học hoặc ngày khai giảng.",
           data: { conflicts },
         });
       }
@@ -768,7 +832,7 @@ exports.updateCourse = async (req, res) => {
 exports.listCourseStudents = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
-    if (!courseId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
 
     const course = await KhoaHoc.findById(courseId).select("_id tenkhoahoc").lean();
     if (!course) return res.status(404).json({ success: false, message: "Không tìm thấy khóa học" });
@@ -803,7 +867,7 @@ exports.listCourseStudents = async (req, res) => {
 exports.addStudentToCourse = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
-    if (!courseId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
     const { hocvienId, userId } = req.body || {};
 
     const course = await KhoaHoc.findById(courseId).select("_id soHocVienToiDa").lean();
@@ -812,7 +876,11 @@ exports.addStudentToCourse = async (req, res) => {
     let hocVien = null;
     if (hocvienId) hocVien = await HocVien.findById(hocvienId).select("_id userId").lean();
     if (!hocVien && userId) hocVien = await HocVien.findOne({ userId: asObjectId(userId) }).select("_id userId").lean();
-    if (!hocVien) return res.status(400).json({ success: false, message: "hocvienId/userId không hợp lệ" });
+    if (!hocVien)
+      return res.status(400).json({
+        success: false,
+        message: "Mã học viên hoặc tài khoản người dùng không hợp lệ.",
+      });
 
     const existed = await DangKyKhoaHoc.findOne({ hocvienId: hocVien._id, KhoaHocID: courseId }).select("_id").lean();
     if (existed) return res.status(409).json({ success: false, message: "Học viên đã có trong khóa học" });
@@ -856,7 +924,7 @@ exports.removeStudentFromCourse = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
     const enrollmentId = asObjectId(req.params.enrollmentId);
-    if (!courseId || !enrollmentId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId || !enrollmentId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
 
     const deleted = await DangKyKhoaHoc.findOneAndDelete({ _id: enrollmentId, KhoaHocID: courseId });
     if (!deleted) return res.status(404).json({ success: false, message: "Không tìm thấy học viên trong khóa học" });
@@ -872,7 +940,7 @@ exports.removeStudentFromCourse = async (req, res) => {
 exports.addCourseSession = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
-    if (!courseId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
 
     const course = await KhoaHoc.findById(courseId).select("_id giangvien").lean();
     if (!course) return res.status(404).json({ success: false, message: "Không tìm thấy khóa học" });
@@ -880,20 +948,29 @@ exports.addCourseSession = async (req, res) => {
     const { ngayhoc, gioBatDau, gioKetThuc, phonghoc, BaiHocID } = req.body || {};
     const p = parseHHmm(gioBatDau);
     const e = parseHHmm(gioKetThuc);
-    if (!p || !e) return res.status(400).json({ success: false, message: "gioBatDau/gioKetThuc không hợp lệ" });
+    if (!p || !e)
+      return res.status(400).json({ success: false, message: "Giờ bắt đầu hoặc giờ kết thúc không hợp lệ." });
     if (p.hh * 60 + p.mm >= e.hh * 60 + e.mm) {
-      return res.status(400).json({ success: false, message: "gioBatDau phải nhỏ hơn gioKetThuc" });
+      return res.status(400).json({ success: false, message: "Giờ bắt đầu phải sớm hơn giờ kết thúc." });
     }
     const roomId = asObjectId(phonghoc);
     const lessonId = asObjectId(BaiHocID);
-    if (!roomId || !lessonId) return res.status(400).json({ success: false, message: "phonghoc/BaiHocID không hợp lệ" });
+    if (!roomId || !lessonId)
+      return res.status(400).json({
+        success: false,
+        message: "Phòng học hoặc bài học được chọn không hợp lệ.",
+      });
     const dateOnly = startOfDayLocal(ngayhoc);
-    if (Number.isNaN(dateOnly.getTime())) return res.status(400).json({ success: false, message: "ngayhoc không hợp lệ" });
+    if (Number.isNaN(dateOnly.getTime())) return res.status(400).json({ success: false, message: "Ngày diễn ra buổi học không hợp lệ." });
 
     const proposed = buildProposedSessionForConflict({ ngayhoc: dateOnly, gioBatDau, gioKetThuc, phonghoc: roomId, BaiHocID: lessonId });
     const conflicts = await findScheduleConflicts({ proposedSessions: [proposed], giangvienId: asObjectId(course.giangvien), ignoreCourseId: courseId });
     if (conflicts.length > 0) {
-      return res.status(409).json({ success: false, message: "Buổi học mới bị trùng lịch", data: { conflicts } });
+      return res.status(409).json({
+        success: false,
+        message: "Không thể thêm buổi học vì bị trùng lịch phòng hoặc giảng viên.",
+        data: { conflicts },
+      });
     }
 
     const created = await BuoiHoc.create({
@@ -916,7 +993,7 @@ exports.updateCourseSession = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
     const sessionId = asObjectId(req.params.sessionId);
-    if (!courseId || !sessionId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId || !sessionId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
 
     const course = await KhoaHoc.findById(courseId).select("_id giangvien").lean();
     if (!course) return res.status(404).json({ success: false, message: "Không tìm thấy khóa học" });
@@ -937,9 +1014,10 @@ exports.updateCourseSession = async (req, res) => {
 
     const p = parseHHmm(startStr);
     const e = parseHHmm(endStr);
-    if (!p || !e) return res.status(400).json({ success: false, message: "gioBatDau/gioKetThuc không hợp lệ" });
+    if (!p || !e)
+      return res.status(400).json({ success: false, message: "Giờ bắt đầu hoặc giờ kết thúc không hợp lệ." });
     if (p.hh * 60 + p.mm >= e.hh * 60 + e.mm) {
-      return res.status(400).json({ success: false, message: "gioBatDau phải nhỏ hơn gioKetThuc" });
+      return res.status(400).json({ success: false, message: "Giờ bắt đầu phải sớm hơn giờ kết thúc." });
     }
 
     const proposed = buildProposedSessionForConflict({
@@ -952,7 +1030,11 @@ exports.updateCourseSession = async (req, res) => {
     const conflicts = await findScheduleConflicts({ proposedSessions: [proposed], giangvienId: asObjectId(course.giangvien), ignoreCourseId: courseId });
     const selfOnly = conflicts.filter((c) => String(c.existing?.buoiHocId) !== String(sessionId));
     if (selfOnly.length > 0) {
-      return res.status(409).json({ success: false, message: "Buổi học cập nhật bị trùng lịch", data: { conflicts: selfOnly } });
+      return res.status(409).json({
+        success: false,
+        message: "Không thể cập nhật buổi học vì bị trùng lịch phòng hoặc giảng viên.",
+        data: { conflicts: selfOnly },
+      });
     }
 
     existing.ngayhoc = proposed.ngayhoc;
@@ -967,19 +1049,12 @@ exports.updateCourseSession = async (req, res) => {
   }
 };
 
-function formatHHmmFromDate(dateObj) {
-  const d = new Date(dateObj);
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mm = String(d.getMinutes()).padStart(2, "0");
-  return `${hh}:${mm}`;
-}
-
 // DELETE /api/admin/courses/:id/sessions/:sessionId
 exports.deleteCourseSession = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
     const sessionId = asObjectId(req.params.sessionId);
-    if (!courseId || !sessionId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId || !sessionId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
 
     const course = await KhoaHoc.findById(courseId).select("_id giangvien lichHoc").lean();
     if (!course) return res.status(404).json({ success: false, message: "Không tìm thấy khóa học" });
@@ -1038,7 +1113,10 @@ exports.deleteCourseSession = async (req, res) => {
       }
     }
     if (!candidateDate || !candidateCfg) {
-      return res.status(400).json({ success: false, message: "Không thể tạo buổi bù cuối vì lichHoc không hợp lệ" });
+      return res.status(400).json({
+        success: false,
+        message: "Không thể tạo buổi bù cuối vì lịch cố định của khóa học không hợp lệ.",
+      });
     }
     const appendedProposed = buildProposedSessionForConflict({
       ngayhoc: candidateDate,
@@ -1081,7 +1159,7 @@ exports.deleteCourseSession = async (req, res) => {
 exports.deleteCourse = async (req, res) => {
   try {
     const courseId = asObjectId(req.params.id);
-    if (!courseId) return res.status(400).json({ success: false, message: "id không hợp lệ" });
+    if (!courseId) return res.status(400).json({ success: false, message: "Tham số định danh không hợp lệ." });
 
     const existingCourse = await KhoaHoc.findById(courseId).select("_id").lean();
     if (!existingCourse) return res.status(404).json({ success: false, message: "Không tìm thấy khóa học" });

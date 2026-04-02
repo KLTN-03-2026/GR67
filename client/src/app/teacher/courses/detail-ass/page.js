@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
+import { formatDateTimeDdMmYyyy } from "../../../../lib/dateFormat";
 
 function AssignmentDetailContent() {
     const router = useRouter();
@@ -139,7 +140,7 @@ function AssignmentDetailContent() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6 border-y">
                         <div>
                             <p className="text-sm text-gray-500">📅 Hạn nộp</p>
-                            <p className="font-semibold">{new Date(assignment.hannop).toLocaleString('vi-VN')}</p>
+                            <p className="font-semibold">{formatDateTimeDdMmYyyy(assignment.hannop)}</p>
                         </div>
 
                         <div>

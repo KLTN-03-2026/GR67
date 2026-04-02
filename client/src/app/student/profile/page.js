@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import DateInputField from "../../components/DateInputField";
+import { formatDateDdMmYyyy, toDateInputValue } from "../../../lib/dateFormat";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -27,7 +29,7 @@ export default function Profile() {
         email: user.email || '',
         FullName: user.FullName || '',
         Numberphone: user.Numberphone || '',
-        dateOfBirth: user.dateOfBirth || '',
+        dateOfBirth: user.dateOfBirth ? toDateInputValue(user.dateOfBirth) : "",
         address: user.address || '',
         currentPassword: '',
         newPassword: '',
@@ -236,14 +238,13 @@ export default function Profile() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Ngày sinh
                   </label>
-                  <input
-                    type="date"
+                  <DateInputField
                     name="dateOfBirth"
                     value={formData.dateOfBirth}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${!isEditing ? 'bg-gray-50' : ''
-                      }`}
+                    className={`w-full rounded-md border border-gray-300 ${!isEditing ? "opacity-80" : ""}`}
+                    inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0 disabled:bg-gray-50"
                   />
                 </div>
 
@@ -361,7 +362,7 @@ export default function Profile() {
           </div>
           <div className="flex justify-between">
             <span className="text-gray-600">Ngày tham gia:</span>
-            <span className="font-medium">{new Date().toLocaleDateString('vi-VN')}</span>
+            <span className="font-medium">{formatDateDdMmYyyy(new Date())}</span>
           </div>
         </div>
       </div>

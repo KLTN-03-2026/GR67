@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import DateInputField from "../../../components/DateInputField";
 
 export default function LeaveRequest() {
   const [formData, setFormData] = useState({
@@ -56,26 +57,26 @@ export default function LeaveRequest() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Ngày bắt đầu *
               </label>
-              <input
-                type="date"
+              <DateInputField
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                className="w-full rounded-md border border-gray-300"
+                inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0"
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Ngày kết thúc *
               </label>
-              <input
-                type="date"
+              <DateInputField
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                className="w-full rounded-md border border-gray-300"
+                inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0"
               />
             </div>
           </div>

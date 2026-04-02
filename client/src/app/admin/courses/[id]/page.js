@@ -6,6 +6,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
+import DateInputField from "../../../components/DateInputField";
+import { formatDateDdMmYyyy, toDateInputValue } from "../../../../lib/dateFormat";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const DAY_LABELS = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
@@ -127,7 +129,7 @@ export default function AdminCourseDetailPage() {
       setFormData({
         tenkhoahoc: c.tenkhoahoc || "",
         LoaiKhoaHocID: c.LoaiKhoaHocID?._id || "",
-        ngaykhaigiang: toDateInput(c.ngaykhaigiang),
+        ngaykhaigiang: toDateInputValue(c.ngaykhaigiang),
         giangvien: c.giangvien?._id || "",
         lichHoc: (c.lichHoc || []).map((it) => ({
           thu: Number(it.thu),
@@ -276,7 +278,7 @@ export default function AdminCourseDetailPage() {
   const openCreateSessionModal = () => {
     const defaultRoom = rooms[0]?._id || "";
     const defaultLesson = lessons[0]?._id || "";
-    const today = toDateInput(new Date());
+    const today = toDateInputValue(new Date());
     setSessionModal({
       isOpen: true,
       mode: "create",
@@ -294,7 +296,7 @@ export default function AdminCourseDetailPage() {
       isOpen: true,
       mode: "edit",
       sessionId: session._id,
-      ngayhoc: toDateInput(session.ngayhoc),
+      ngayhoc: toDateInputValue(session.ngayhoc),
       gioBatDau: formatTime(session.giobatdau),
       gioKetThuc: formatTime(session.gioketthuc),
       phonghoc: String(session.phonghoc?._id || session.phonghoc || ""),
@@ -414,7 +416,13 @@ export default function AdminCourseDetailPage() {
           </div>
           <div className="lg:col-span-6 space-y-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Ngày khai giảng</label>
-            <input className={FIELD_CLASS} title="Chọn ngày khai giảng" type="date" value={formData.ngaykhaigiang} onChange={(e) => setFormData((p) => ({ ...p, ngaykhaigiang: e.target.value }))} />
+            <DateInputField
+              title="Chọn ngày khai giảng"
+              value={formData.ngaykhaigiang}
+              onChange={(e) => setFormData((p) => ({ ...p, ngaykhaigiang: e.target.value }))}
+              className={`w-full p-0 ${FIELD_CLASS}`}
+              inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2 text-sm text-gray-900 shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
+            />
           </div>
           <div className="lg:col-span-6 space-y-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Giảng viên</label>
@@ -496,7 +504,7 @@ export default function AdminCourseDetailPage() {
             {(course.buoiHoc || []).map((b) => (
               <div key={b._id} className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm flex items-center justify-between bg-gray-50 dark:bg-gray-900/20">
                 <div>
-                  {formatDate(b.ngayhoc)} | {formatTime(b.giobatdau)} - {formatTime(b.gioketthuc)}
+                  {formatDateDdMmYyyy(b.ngayhoc, { empty: "-" })} | {formatTime(b.giobatdau)} - {formatTime(b.gioketthuc)}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`px-2 py-1 rounded text-xs ${b.isLocked ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
@@ -592,7 +600,13 @@ export default function AdminCourseDetailPage() {
                 </div>
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Ngày sinh</label>
-                  <input className={FIELD_CLASS} title="Chọn ngày sinh" type="date" value={studentForm.ngaysinh} onChange={(e) => setStudentForm((p) => ({ ...p, ngaysinh: e.target.value }))} />
+                  <DateInputField
+                    title="Chọn ngày sinh"
+                    value={studentForm.ngaysinh}
+                    onChange={(e) => setStudentForm((p) => ({ ...p, ngaysinh: e.target.value }))}
+                    className={`w-full p-0 ${FIELD_CLASS}`}
+                    inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2 text-sm shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
+                  />
                 </div>
                 <div className="md:col-span-12 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Địa chỉ</label>
@@ -619,7 +633,13 @@ export default function AdminCourseDetailPage() {
                 <button type="button" onClick={() => setSessionModal((p) => ({ ...p, isOpen: false }))}>Đóng</button>
               </div>
               <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input className={FIELD_CLASS} type="date" value={sessionModal.ngayhoc} onChange={(e) => setSessionModal((p) => ({ ...p, ngayhoc: e.target.value }))} required />
+                <DateInputField
+                  value={sessionModal.ngayhoc}
+                  onChange={(e) => setSessionModal((p) => ({ ...p, ngayhoc: e.target.value }))}
+                  required
+                  className={`w-full p-0 ${FIELD_CLASS}`}
+                  inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2 text-sm shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
+                />
                 <select className={FIELD_CLASS} value={sessionModal.BaiHocID} onChange={(e) => setSessionModal((p) => ({ ...p, BaiHocID: e.target.value }))} required>
                   <option value="">Chọn bài học</option>
                   {lessons.map((ls) => (
@@ -647,20 +667,6 @@ export default function AdminCourseDetailPage() {
       ) : null}
     </div>
   );
-}
-
-function toDateInput(v) {
-  if (!v) return "";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "";
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
-}
-
-function formatDate(v) {
-  if (!v) return "-";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString("vi-VN");
 }
 
 function formatTime(v) {

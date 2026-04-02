@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import ConfirmModal from "../../components/ConfirmModal";
+import DateInputField from "../../components/DateInputField";
+import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const DAY_LABELS = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 const createDefaultForm = () => ({
@@ -31,7 +33,6 @@ export default function AdminCoursesPage() {
   const [saving, setSaving] = useState(false);
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState(null);
-  const [validatedSignature, setValidatedSignature] = useState("");
   const [deleteId, setDeleteId] = useState("");
   const headers = useMemo(
     () => ({ "Content-Type": "application/json", Authorization: `Bearer ${token}` }),
@@ -102,7 +103,6 @@ export default function AdminCoursesPage() {
   }, [token]);
   const openCreateModal = () => {
     setValidationResult(null);
-    setValidatedSignature("");
     setFormData(createDefaultForm());
     setModalOpen(true);
   };
@@ -130,13 +130,14 @@ export default function AdminCoursesPage() {
     }
 
     const payloadForValidate = buildValidatePayload(formData);
-    const currentSignature = createPayloadSignature(payloadForValidate);
-    if (validatedSignature !== currentSignature || (validationResult?.conflicts || []).length > 0) {
-      const result = await validateSchedule(payloadForValidate);
-      if (!result?.ok) return;
-      if ((result.data?.conflicts || []).length > 0) {
-        return notify.warning("Lịch đang bị trùng, vui lòng xử lý xung đột trước khi lưu");
-      }
+    const result = await validateSchedule(payloadForValidate, { quiet: true });
+    if (!result?.ok) return;
+    if ((result.data?.conflicts || []).length > 0) {
+      return notify.warning(
+        formData._id
+          ? "Lịch học bị trùng phòng hoặc giảng viên. Không thể cập nhật khóa học."
+          : "Lịch học bị trùng phòng hoặc giảng viên. Không thể tạo khóa học."
+      );
     }
     try {
       setSaving(true);
@@ -156,7 +157,14 @@ export default function AdminCoursesPage() {
       const url = isEdit ? `${API_BASE}/api/admin/courses/${formData._id}` : `${API_BASE}/api/admin/courses`;
       const method = isEdit ? "PUT" : "POST";
       const res = await fetch(url, { method, headers, body: JSON.stringify(payload) });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
+      if (res.status === 409 && Array.isArray(json.data?.conflicts)) {
+        setValidationResult((prev) => ({
+          lessonCount: json.data.lessonCount ?? prev?.lessonCount ?? result.data?.lessonCount ?? 0,
+          conflicts: json.data.conflicts,
+          suggestedStartDates: json.data.suggestedStartDates ?? [],
+        }));
+      }
       if (!res.ok || !json.success) throw new Error(json.message || "Không thể lưu khóa học");
       notify.success(isEdit ? "Cập nhật khóa học thành công" : "Tạo khóa học thành công");
       setModalOpen(false);
@@ -167,25 +175,28 @@ export default function AdminCoursesPage() {
       setSaving(false);
     }
   };
-  const validateSchedule = async (customPayload) => {
+  const validateSchedule = async (customPayload, options = {}) => {
+    const { quiet = false } = options;
+    const isPayloadObject = customPayload && typeof customPayload === "object" && "lichHoc" in customPayload;
     try {
       setValidating(true);
-      const payload = customPayload || buildValidatePayload(formData);
-      setValidationResult(null);
+      const payload = isPayloadObject ? customPayload : buildValidatePayload(formData);
+      if (!quiet) setValidationResult(null);
       const res = await fetch(`${API_BASE}/api/admin/courses/validate-schedule`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (!res.ok || !json.success) throw new Error(json.message || "Validate lịch thất bại");
+      if (!res.ok || !json.success) throw new Error(json.message || "Kiểm tra lịch thất bại");
       setValidationResult(json.data);
-      setValidatedSignature(createPayloadSignature(payload));
-      if ((json.data?.conflicts || []).length === 0) notify.success("Lịch học hợp lệ, không bị trùng");
-      else notify.warning(`Phát hiện ${json.data.conflicts.length} xung đột lịch`);
+      if (!quiet) {
+        if ((json.data?.conflicts || []).length === 0) notify.success("Lịch học hợp lệ, không bị trùng");
+        else notify.warning(`Phát hiện ${json.data.conflicts.length} xung đột lịch`);
+      }
       return { ok: true, data: json.data };
     } catch (e) {
-      notify.error(e.message || "Validate lịch thất bại");
+      notify.error(e.message || "Kiểm tra lịch thất bại");
       return { ok: false, error: e };
     } finally {
       setValidating(false);
@@ -236,8 +247,18 @@ export default function AdminCoursesPage() {
             <option value="">Tất cả giảng viên</option>
             {teachers.map((it, idx) => <option key={it.courseTeacherId || `gv-${idx}`} value={it.courseTeacherId}>{it.hovaten || it.email}</option>)}
           </select>
-          <input className="input" type="date" value={filters.from} onChange={(e) => setFilters((p) => ({ ...p, from: e.target.value }))} />
-          <input className="input" type="date" value={filters.to} onChange={(e) => setFilters((p) => ({ ...p, to: e.target.value }))} />
+          <DateInputField
+            value={filters.from}
+            onChange={(e) => setFilters((p) => ({ ...p, from: e.target.value }))}
+            className="input flex-1 min-w-[10rem] p-0"
+            inputClassName="date-input-field min-w-0 flex-1 rounded-l-md bg-transparent px-3 py-2 text-sm outline-none border-0 dark:bg-transparent dark:text-gray-100"
+          />
+          <DateInputField
+            value={filters.to}
+            onChange={(e) => setFilters((p) => ({ ...p, to: e.target.value }))}
+            className="input flex-1 min-w-[10rem] p-0"
+            inputClassName="date-input-field min-w-0 flex-1 rounded-l-md bg-transparent px-3 py-2 text-sm outline-none border-0 dark:bg-transparent dark:text-gray-100"
+          />
           <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" onClick={() => fetchCourses()}>Lọc</button>
           <button className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700" onClick={openCreateModal}>Thêm khóa học</button>
         </div>
@@ -261,7 +282,7 @@ export default function AdminCoursesPage() {
                 <tr key={c._id} className="border-t border-gray-200 dark:border-gray-700">
                   <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{c.tenkhoahoc}</td>
                   <td className="px-4 py-3">{c.LoaiKhoaHocID?.Tenloai || "-"}</td>
-                  <td className="px-4 py-3">{formatDate(c.ngaykhaigiang)}</td>
+                  <td className="px-4 py-3">{formatDateDdMmYyyy(c.ngaykhaigiang, { empty: "-" })}</td>
                   <td className="px-4 py-3">{c.giangvien?.userId?.hovaten || c.giangvien?.userId?.email || c.giangvien?._id || "-"}</td>
                   <td className="px-4 py-3">
                     <div className="space-y-1">
@@ -353,11 +374,11 @@ function CourseModal({ isOpen, onClose, data, setData, teachers, courseTypes, ro
               </div>
               <div>
                 <label className={fieldLabelClass}>Ngày khai giảng *</label>
-                <input
-                  className={modalInputClass}
-                  type="date"
+                <DateInputField
                   value={data.ngaykhaigiang}
                   onChange={(e) => setData((p) => ({ ...p, ngaykhaigiang: e.target.value }))}
+                  className={`w-full p-0 ${modalInputClass} rounded-lg`}
+                  inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2.5 text-[15px] font-medium text-gray-900 shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
                 />
                 <p className={fieldHintClass}>Nên chọn trước ngày học buổi đầu tiên ít nhất 1-3 ngày.</p>
               </div>
@@ -421,18 +442,24 @@ function CourseModal({ isOpen, onClose, data, setData, teachers, courseTypes, ro
                 <div className="text-indigo-800 dark:text-indigo-300">Số bài học của loại khóa: {validationResult.lessonCount || 0}</div>
                 <div className="text-indigo-800 dark:text-indigo-300">Số xung đột: {(validationResult.conflicts || []).length}</div>
                 {(validationResult.conflicts || []).slice(0, 6).map((c, idx) => (
-                  <div key={`cf-${idx}`} className="text-indigo-800 dark:text-indigo-300">
-                    - Trùng {c.type} | {DAY_LABELS[Number(c?.proposed?.thu)]} | {formatDate(c?.proposed?.ngayhoc)}
+                  <div key={`cf-${idx}`} className="text-indigo-800 dark:text-indigo-300 mt-1">
+                    {c.tomTat ||
+                      `${c.lyDo || "Xung đột lịch"}. ${DAY_LABELS[Number(c?.proposed?.thu)] || ""} — ${formatDateDdMmYyyy(c?.proposed?.ngayhoc, { empty: "-" })}`}
                   </div>
                 ))}
                 {(validationResult.suggestedStartDates || []).length > 0 ? (
-                  <div className="text-indigo-800 dark:text-indigo-300">Ngày gợi ý: {(validationResult.suggestedStartDates || []).map((d) => formatDate(d)).join(", ")}</div>
+                  <div className="text-indigo-800 dark:text-indigo-300">Ngày gợi ý: {(validationResult.suggestedStartDates || []).map((d) => formatDateDdMmYyyy(d, { empty: "-" })).join(", ")}</div>
                 ) : null}
               </div>
             ) : null}
           </div>
           <div className="px-6 py-4 border-t-2 border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 flex justify-end gap-3">
-            <button type="button" onClick={onValidate} className="px-4 py-2.5 rounded-md bg-indigo-600 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed" disabled={validating}>
+            <button
+              type="button"
+              onClick={() => onValidate()}
+              className="px-4 py-2.5 rounded-md bg-indigo-600 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed"
+              disabled={validating}
+            >
               {validating ? "Đang kiểm tra..." : "Kiểm tra trùng lịch"}
             </button>
             <button type="button" onClick={onClose} className="px-4 py-2.5 rounded-md border-2 border-gray-300 text-base font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700">Hủy</button>
@@ -453,19 +480,6 @@ function StatCard({ title, value }) {
     </div>
   );
 }
-function toDateInput(v) {
-  if (!v) return "";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "";
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().split("T")[0];
-}
-function formatDate(v) {
-  if (!v) return "-";
-  const d = new Date(v);
-  if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString("vi-VN");
-}
-
 function buildValidatePayload(formData) {
   return {
     LoaiKhoaHocID: formData.LoaiKhoaHocID,
@@ -480,21 +494,3 @@ function buildValidatePayload(formData) {
     ignoreCourseId: formData._id || undefined,
   };
 }
-
-function createPayloadSignature(payload) {
-  return JSON.stringify({
-    LoaiKhoaHocID: payload.LoaiKhoaHocID || "",
-    ngaykhaigiang: payload.ngaykhaigiang || "",
-    giangvien: payload.giangvien || "",
-    ignoreCourseId: payload.ignoreCourseId || "",
-    lichHoc: (payload.lichHoc || [])
-      .map((it) => ({
-        thu: Number(it.thu),
-        gioBatDau: it.gioBatDau,
-        gioKetThuc: it.gioKetThuc,
-        phonghoc: it.phonghoc,
-      }))
-      .sort((a, b) => a.thu - b.thu),
-  });
-}
-
