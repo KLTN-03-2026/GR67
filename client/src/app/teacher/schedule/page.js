@@ -1,88 +1,88 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Schedule() {
 
   const [view, setView] = useState("week");
+  const [scheduleData, setScheduleData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const scheduleData = [
-    {
-      day: "Thứ 2",
-      date: "01/04/2026",
-      classes: [
-        {
-          time: "09:00 - 10:30",
-          course: "Tiếng Anh Cơ Bản",
-          classroom: "Phòng 101",
-          branch: "Cơ sở 1",
-          students: 25,
-          status: "completed"
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        setLoading(true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+        const response = await fetch(`${apiUrl}/teacher/schedule`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Không thể tải lịch dạy");
         }
-      ]
-    },
-    {
-      day: "Thứ 3",
-      date: "05/04/2026",
-      classes: [
-        {
-          time: "10:00 - 11:30",
-          course: "Tiếng Anh Giao Tiếp",
-          classroom: "Phòng 305",
-          branch: "Cơ sở 1",
-          students: 18,
-          status: "completed"
-        }
-      ]
-    },
-    {
-      day: "Thứ 4",
-      date: "20/04/2026",
-      classes: []
-    },
-    {
-      day: "Thứ 5",
-      date: "26/03/2026",
-      classes: [
-        {
-          time: "14:00 - 15:30",
-          course: "Speaking Club",
-          classroom: "Phòng 401",
-          branch: "Cơ sở 1",
-          students: 30,
-          status: "ongoing"
-        }
-      ]
-    },
-    {
-      day: "Thứ 6",
-      date: "27/03/2026",
-      classes: [{
-        time: "14:00 - 15:30",
-        course: "Speaking Club",
-        classroom: "Phòng 401",
-        branch: "Cơ sở 1",
-        students: 30,
-        status: "ongoing"
-      }]
-    },
-    {
-      day: "Thứ 7",
-      date: "28/03/2026",
-      classes: []
-    },
-    {
-      day: "Chủ Nhật",
-      date: "29/03/2026",
-      classes: []
-    }
-  ];
+
+        const result = await response.json();
+        const rawData = result.data || [];
+
+        // Group by day and date
+        const grouped = rawData.reduce((acc, lesson) => {
+          const dateObj = new Date(lesson.ngayhoc);
+
+          const dateStr = `${dateObj.getDate()}/${dateObj.getMonth() + 1}/${dateObj.getFullYear()}`;
+
+          const days = ["Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
+          const dayStr = days[dateObj.getDay()];
+
+          let group = acc.find(g => g.date === dateStr);
+          if (!group) {
+            group = {
+              day: dayStr,
+              date: dateStr,
+              classes: []
+            };
+            acc.push(group);
+          }
+
+          group.classes.push({
+            id: lesson.id,
+            time: lesson.time,
+            course: lesson.course,
+            classroom: lesson.classroom,
+            branch: lesson.branch,
+            students: lesson.students,
+            status: lesson.status
+          });
+
+          return acc;
+        }, []);
+
+        // Sort groups by date
+        grouped.sort((a, b) => {
+          const [da, ma, ya] = a.date.split("/");
+          const [db, mb, yb] = b.date.split("/");
+          return new Date(ya, ma - 1, da) - new Date(yb, mb - 1, db);
+        });
+
+        setScheduleData(grouped);
+      } catch (err) {
+        console.error("Lỗi:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchedule();
+  }, []);
 
   // 👉 Convert "dd/mm/yyyy" -> Date
   const parseDate = (dateStr) => {
     const [d, m, y] = dateStr.split("/");
-    return new Date(`${y}-${m}-${d}`);
+    return new Date(y, m - 1, d);
   };
 
   // 👉 Lọc dữ liệu theo view
@@ -160,6 +160,22 @@ export default function Schedule() {
   };
 
   const filteredData = getFilteredSchedule();
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -7,6 +7,10 @@ export default function Assignments() {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [courseName, setCourseName] = useState("");
+  
+  // States cho Modal xóa bài tập
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [assignmentToDelete, setAssignmentToDelete] = useState(null);
   const [stats, setStats] = useState({
     total: 0,
     active: 0,
@@ -43,7 +47,7 @@ export default function Assignments() {
       if (data.success) {
         const rawAssignments = data.data;
         const now = new Date();
-        
+
         let activeCount = 0;
         let upcomingCount = 0;
         let completedCount = 0;
@@ -87,6 +91,41 @@ export default function Assignments() {
       console.error("Lỗi khi tải danh sách bài tập:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openDeleteModal = (id) => {
+    setAssignmentToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteAssignment = async () => {
+    if (!assignmentToDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+      const res = await fetch(`${apiUrl}/teacher/assignments/${assignmentToDelete}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setIsDeleteModalOpen(false);
+        setAssignmentToDelete(null);
+        fetchAssignments(); // reload lại
+      } else {
+        alert(data.message || "Xóa thất bại");
+      }
+
+    } catch (error) {
+      console.error("Lỗi xóa:", error);
+      alert("Có lỗi xảy ra khi xóa!");
     }
   };
 
@@ -220,11 +259,10 @@ export default function Assignments() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full ${
-                        assignment.status === 'completed' ? 'bg-gray-600' :
+                      className={`h-2 rounded-full ${assignment.status === 'completed' ? 'bg-gray-600' :
                         assignment.submitted === assignment.total && assignment.total > 0 ? 'bg-green-600' :
-                        assignment.submitted > 0 ? 'bg-blue-600' : 'bg-gray-400'
-                      }`}
+                          assignment.submitted > 0 ? 'bg-blue-600' : 'bg-gray-400'
+                        }`}
                       style={{ width: assignment.total > 0 ? `${(assignment.submitted / assignment.total) * 100}%` : '0%' }}
                     ></div>
                   </div>
@@ -235,7 +273,10 @@ export default function Assignments() {
                     <span className="font-medium">{getTypeText(assignment.type)}</span>
                   </div>
                   <div className="flex space-x-10">
-                    <button className="text-red-600 hover:text-red-900 text-sm font-medium">
+                    <button
+                      onClick={() => openDeleteModal(assignment.id)}
+                      className="text-red-600 hover:text-red-900 text-sm font-medium"
+                    >
                       Xóa
                     </button>
                     <Link href={`/teacher/courses/grade-ass?id=${assignment.id}`}>
@@ -311,6 +352,40 @@ export default function Assignments() {
           )}
         </div>
       </div>
+
+      {/* MODAL XÁC NHẬN XÓA */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 transition-all">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all scale-100 opacity-100">
+            <div className="p-6 text-center">
+              <div className="flex items-center justify-center w-14 h-14 mx-auto mb-4 bg-red-100 rounded-full">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Xóa bài tập?</h3>
+              <p className="text-sm text-gray-500">
+                Lưu ý: Hành động này không thể hoàn tác. Các bài nộp và dữ liệu liên quan sẽ bị xóa sạch.
+              </p>
+            </div>
+            
+            <div className="flex px-6 pb-6 gap-3 justify-center">
+              <button 
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                onClick={confirmDeleteAssignment}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 transition-colors"
+              >
+                Chắc chắn Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

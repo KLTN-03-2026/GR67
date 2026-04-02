@@ -14,8 +14,12 @@ const storage = multer.diskStorage({
     cb(null, uploadDir); // sử dụng đường dẫn tuyệt đối
   },
   filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueName + path.extname(file.originalname)); // vd: 169366234-12345.png
+    // Xử lý lỗi font tiếng Việt (do multer mặc định là latin1)
+    const originalName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    
+    // Lưu với tên file gốc có kèm tiền tố để tránh trùng lặp
+    cb(null, uniqueSuffix + "-" + originalName);
   },
 });
 

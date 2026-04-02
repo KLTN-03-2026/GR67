@@ -2,7 +2,77 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
+
 import { formatDateTimeDdMmYyyy } from "../../../../lib/dateFormat";
+
+import mammoth from "mammoth";
+
+function DocxViewer({ url }) {
+    const [html, setHtml] = useState("");
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setLoading(true);
+        // Thử lấy token nếu url được bảo vệ
+        const token = localStorage.getItem("token");
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+        fetch(url, { headers })
+            .then(async res => {
+                // Kiểm tra nếu request bị lỗi 404 hoặc lỗi server
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status} - Khộng tìm thấy hoặc server từ chối truy cập file.`);
+                }
+
+                // Kiểm tra Content-Type xem có phải là trang HTML không
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.includes("text/html")) {
+                    throw new Error("Phản hồi từ máy chủ là giao diện HTML, không phải file Word hợp lệ. (Có thể URL file không tồn tại hoặc yêu cầu phân quyền).");
+                }
+
+                return res.arrayBuffer();
+            })
+            .then(arrayBuffer => {
+                mammoth.convertToHtml({ arrayBuffer: arrayBuffer })
+                    .then(result => {
+                        setHtml(result.value || "<p class='text-gray-500 italic'>File văn bản trống.</p>");
+                        setLoading(false);
+                    })
+                    .catch(e => {
+                        console.error("Lỗi parse file word:", e);
+                        setHtml(`<div class='bg-red-50 p-4 rounded-lg text-red-600 border border-red-200'>
+                            <h4 class='font-bold mb-2'>Lỗi giải mã file Word</h4>
+                            <p class='text-sm mb-2'>${e.message || "Tệp hỏng hoặc không đúng định dạng .docx."}</p>
+                            <a href="${url}" target="_blank" download class='inline-block mt-2 bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition'>Tải file xuống thủ công</a>
+                        </div>`);
+                        setLoading(false);
+                    })
+            })
+            .catch(e => {
+                console.error("Lỗi fetch file:", e);
+                setHtml(`<div class='bg-red-50 p-4 rounded-lg text-red-600 border border-red-200'>
+                    <h4 class='font-bold mb-2'>Không thể lấy dữ liệu file</h4>
+                    <p class='text-sm mb-2'>${e.message}</p>
+                    <a href="${url}" target="_blank" download class='inline-block mt-2 bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700 transition'>Thử tải file xuống trực tiếp</a>
+                </div>`);
+                setLoading(false);
+            });
+    }, [url]);
+
+    if (loading) return (
+        <div className="flex flex-col justify-center items-center h-full w-full bg-white shadow-xl min-h-[500px]">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
+            <span className="text-gray-500">Đang tải tài liệu về máy...</span>
+        </div>
+    );
+
+    return (
+        <div className="bg-white shadow-xl min-h-[500px] w-full p-8 overflow-y-auto text-gray-800">
+            <div dangerouslySetInnerHTML={{ __html: html }} className="docx-content [&>p]:mb-4 [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:mb-4 [&>h2]:text-xl [&>h2]:font-bold [&>h2]:mb-3 [&>h3]:text-lg [&>h3]:font-bold [&>h3]:mb-2 [&>ul]:list-disc [&>ul]:ml-6 [&>ul]:mb-4 [&>ol]:list-decimal [&>ol]:ml-6 [&>ol]:mb-4 [&>table]:border-collapse [&>table]:w-full [&>table]:mb-4 [&_td]:border [&_td]:border-gray-300 [&_td]:p-2 [&_th]:border [&_th]:border-gray-300 [&_th]:p-2 [&_th]:bg-gray-100 [&>img]:max-w-full [&>img]:h-auto" />
+        </div>
+    );
+}
+
 
 function AssignmentDetailContent() {
     const router = useRouter();
@@ -11,11 +81,15 @@ function AssignmentDetailContent() {
 
     const [tab, setTab] = useState("all");
     const [search, setSearch] = useState("");
-    
+
     const [assignment, setAssignment] = useState(null);
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    // States for file preview modal
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState("");
 
     useEffect(() => {
         if (!assignmentId) {
@@ -60,10 +134,10 @@ function AssignmentDetailContent() {
         } else if (tab === "notSubmitted") {
             matchTab = s.status === "notSubmitted";
         }
-        
-        const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || 
-                            s.email.toLowerCase().includes(search.toLowerCase());
-                            
+
+        const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
+            s.email.toLowerCase().includes(search.toLowerCase());
+
         return matchTab && matchSearch;
     });
 
@@ -151,40 +225,31 @@ function AssignmentDetailContent() {
                         <div>
                             <p className="text-sm text-gray-500">📎 File đính kèm</p>
                             {assignment.file ? (
-                                <button 
-                                    onClick={async () => {
-                                        try {
-                                            const fileUrl = process.env.NEXT_PUBLIC_API_URL 
-                                                ? `${process.env.NEXT_PUBLIC_API_URL}/${assignment.file.url.replace(/\\/g, "/")}` 
-                                                : `http://localhost:3000/${assignment.file.url.replace(/\\/g, "/")}`;
-                                            
-                                            // Fetch data dưới dạng blob để ép trình duyệt tải về thay vì mở tab mới
-                                            const response = await fetch(fileUrl);
-                                            const blob = await response.blob();
-                                            const blobUrl = window.URL.createObjectURL(blob);
-                                            
-                                            const a = document.createElement('a');
-                                            a.href = blobUrl;
-                                            const fileName = assignment.file.url.split(/[\\/]/).pop();
-                                            a.download = fileName || "bai-tap";
-                                            document.body.appendChild(a);
-                                            a.click();
-                                            
-                                            // Cleanup
-                                            window.URL.revokeObjectURL(blobUrl);
-                                            document.body.removeChild(a);
-                                        } catch (error) {
-                                            console.error("Lỗi tải file:", error);
-                                            alert("Lỗi khi tải file. Vui lòng thử lại!");
-                                        }
-                                    }}
-                                    className="text-blue-600 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 text-left"
-                                >
-                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                                    </svg>
-                                    Tải file bài tập xuống máy
-                                </button>
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            let baseUrl = "http://localhost:3000";
+                                            if (process.env.NEXT_PUBLIC_API_URL) {
+                                                try {
+                                                    baseUrl = new URL(process.env.NEXT_PUBLIC_API_URL).origin;
+                                                } catch (e) { }
+                                            }
+                                            const filename = assignment.file.url.split(/[\\/]/).pop();
+                                            const fileUrl = `${baseUrl}/uploads/${filename}`;
+
+                                            console.log("URL tài liệu:", fileUrl);
+                                            setPreviewUrl(fileUrl);
+                                            setIsPreviewOpen(true);
+                                        }}
+                                        className="text-blue-600 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-none p-0 text-left"
+                                        title={assignment.file.url.split(/[\\/]/).pop()}
+                                    >
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                        </svg>
+                                        Xem file đính kèm: {assignment.file.url.split(/[\\/]/).pop().replace(/^\d+-\d+-/, '')}
+                                    </button>
+                                </div>
                             ) : (
                                 <span className="text-gray-500 text-sm">Không có</span>
                             )}
@@ -283,23 +348,22 @@ function AssignmentDetailContent() {
 
                                     <td className="px-6 py-4 text-gray-600">{s.date}</td>
 
-                                    <td className={`px-6 py-4 font-semibold ${
-                                        s.status === "graded" ? "text-blue-600" :
-                                        s.status === "submitted" ? "text-yellow-600" : "text-gray-400"
-                                    }`}>
+                                    <td className={`px-6 py-4 font-semibold ${s.status === "graded" ? "text-blue-600" :
+                                            s.status === "submitted" ? "text-yellow-600" : "text-gray-400"
+                                        }`}>
                                         {s.score}
                                     </td>
 
                                     <td className="px-6 py-4 flex justify-end gap-2">
                                         {s.status !== "notSubmitted" ? (
-                                            <button 
+                                            <button
                                                 onClick={() => router.push(`/teacher/courses/grade-ass?id=${assignmentId}&submissionId=${s.submissionId}`)}
                                                 className="px-3 py-1.5 text-sm rounded-md bg-green-50 text-green-700 hover:bg-green-600 hover:text-white transition-colors"
                                             >
                                                 {s.status === "graded" ? "Xem / Chấm lại" : "Chấm điểm"}
                                             </button>
                                         ) : (
-                                            <button 
+                                            <button
                                                 onClick={() => alert(`Đã gửi nhắc nhở tới ${s.email}`)}
                                                 className="px-3 py-1.5 text-sm rounded-md bg-orange-50 text-orange-700 hover:bg-orange-600 hover:text-white transition-colors"
                                             >
@@ -319,6 +383,53 @@ function AssignmentDetailContent() {
                     </table>
                 </div>
             </div>
+
+            {/* PREVIEW MODAL */}
+            {isPreviewOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center p-4 border-b bg-gray-50">
+                            <h3 className="font-bold text-lg text-gray-800">Chi tiết nội dung file</h3>
+                            <button
+                                onClick={() => setIsPreviewOpen(false)}
+                                className="text-gray-500 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Modal Body / Iframe */}
+                        <div className="flex-1 bg-gray-200 p-4 sm:p-8 overflow-y-auto w-full h-full flex justify-center">
+                            {previewUrl.toLowerCase().endsWith('.pdf') || previewUrl.toLowerCase().match(/\.(jpeg|jpg|gif|png)$/) ? (
+                                <iframe
+                                    src={previewUrl}
+                                    className="w-full h-full bg-white shadow-xl min-h-[500px]"
+                                    title="File Preview"
+                                />
+                            ) : previewUrl.toLowerCase().endsWith('.docx') ? (
+                                <DocxViewer url={previewUrl} />
+                            ) : (
+                                <div className="bg-white w-full max-w-3xl h-full shadow-xl p-8 flex flex-col items-center justify-center text-center">
+                                    <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <h4 className="text-lg font-bold text-gray-700 mb-2">Không thể xem trực tiếp định dạng này</h4>
+                                    <p className="text-sm text-gray-500 mb-4">Trình duyệt không hỗ trợ xem trực tiếp các file như .docx, .xlsx, .pptx... Vui lòng tải xuống để xem chi tiết.</p>
+                                    <button
+                                        onClick={() => window.open(previewUrl, '_blank')}
+                                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-medium"
+                                    >
+                                        Tải file xuống
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

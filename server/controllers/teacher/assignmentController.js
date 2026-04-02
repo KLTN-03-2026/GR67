@@ -103,13 +103,13 @@ exports.createAssignment = async (req, res) => {
 exports.getAssignmentById = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Assignment ID không hợp lệ." });
     }
 
     const assignment = await BaiTap.findById(id).populate("file");
-    
+
     if (!assignment) {
       return res.status(404).json({ success: false, message: "Không tìm thấy bài tập." });
     }
@@ -129,7 +129,7 @@ exports.updateAssignment = async (req, res) => {
   try {
     const { id } = req.params;
     const { tieude, mota, hannop, loai, diem, removeFile } = req.body;
-    
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Assignment ID không hợp lệ." });
     }
@@ -163,7 +163,7 @@ exports.updateAssignment = async (req, res) => {
     }
 
     await assignment.save();
-    
+
     // Nạp thêm thông tin file để trả về client (nếu có)
     const updatedAssignment = await BaiTap.findById(id).populate("file");
 
@@ -240,5 +240,50 @@ exports.getSubmissionsForAssignment = async (req, res) => {
   } catch (error) {
     console.error("Lỗi lấy danh sách nộp bài:", error);
     res.status(500).json({ success: false, message: "Lỗi server." });
+  }
+};
+//Xoa Bai Tap
+exports.deleteAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Assignment ID không hợp lệ."
+      });
+    }
+
+    const assignment = await BaiTap.findById(id);
+
+    if (!assignment) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy bài tập."
+      });
+    }
+
+    // Xóa tất cả bài nộp liên quan (nếu muốn)
+    await NopBai.deleteMany({ baitapID: id });
+
+    // (Optional) Xóa file nếu có
+    if (assignment.file) {
+      await FileModel.findByIdAndDelete(assignment.file);
+    }
+
+    // Xóa bài tập
+    await BaiTap.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Xóa bài tập thành công!"
+    });
+
+  } catch (error) {
+    console.error("Lỗi xóa bài tập:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server khi xóa bài tập."
+    });
   }
 };

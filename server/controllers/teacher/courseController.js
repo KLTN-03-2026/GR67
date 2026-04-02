@@ -173,13 +173,15 @@ exports.getCourses = async (req, res) => {
           iconColor = "text-green-500";
         }
 
+        const startDate = new Date(course.ngaykhaigiang).toLocaleDateString('vi-VN');
+
         return {
           id: course._id,
           name: course.tenkhoahoc,
           code: `KH-${course._id.toString().slice(-6).toUpperCase()}`,
           status: status,
           studentsText: `${studentsCount} học viên`,
-          schedule: "Đang cập nhật", // Chưa có model cụ thể cho lịch học, tạm thời giữ mockup
+          startDate,
           iconBg,
           iconColor
         };

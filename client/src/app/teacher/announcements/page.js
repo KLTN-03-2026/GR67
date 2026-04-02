@@ -93,24 +93,14 @@ export default function Announcements() {
               {/* Thanh hành động cuối thẻ */}
               <div className="flex justify-between items-center pt-4 border-t border-gray-50">
                 <div className="flex space-x-6">
-                  <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    Xem chi tiết
-                  </button>
+
                   <button className="text-red-500 hover:text-red-700 text-sm font-medium">
                     Xóa
                   </button>
                 </div>
 
                 <div className="flex items-center space-x-4 text-gray-400">
-                  <button className="hover:text-gray-600">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.172 13.828a4 4 0 015.656 0l4-4a4 4 0 115.656 5.656l-1.101 1.101" />
-                    </svg>
-                  </button>
-                  <button className="hover:text-gray-600 text-xl leading-none">
-                    •••
-                  </button>
+
                 </div>
               </div>
             </div>
