@@ -13,12 +13,12 @@ const HocVien = require("../../models/HocVien");
 
 function asObjectId(value) {
   if (!value) return null;
+  if (value instanceof mongoose.Types.ObjectId) return value;
   if (typeof value === "object" && value !== null) {
     // Accept payloads like { _id: "..." } from inconsistent clients.
     if (value._id) return asObjectId(value._id);
     return null;
   }
-  if (value instanceof mongoose.Types.ObjectId) return value;
   if (!mongoose.Types.ObjectId.isValid(value)) return null;
   return new mongoose.Types.ObjectId(value);
 }

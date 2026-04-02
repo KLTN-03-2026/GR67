@@ -5,7 +5,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import PasswordStrength from "../../../components/PasswordStrength";
-import DateInputField from "../../../components/DateInputField";
+import InputField from "../../../components/InputField";
 import { formatDateDdMmYyyy, toDateInputValue } from "../../../../lib/dateFormat";
 
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
@@ -44,6 +44,11 @@ export default function StudentAccountsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState(null);
+
+  const handleFieldChange = (e) => {
+    const { name, value } = e?.target || {};
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -247,20 +252,36 @@ export default function StudentAccountsPage() {
           </div>
           <h3 className="font-semibold mb-3">{isCreateMode ? "Thêm học viên" : "Chi tiết học viên"}</h3>
           <form onSubmit={handleSave} className="space-y-3">
-            <Input label="Họ và tên" name="hovaten" value={formData.hovaten} onChange={setFormData} />
-            <Input label="Email" name="email" value={formData.email} onChange={setFormData} disabled={!isCreateMode} />
-            <Input label="SĐT" name="soDienThoai" value={formData.soDienThoai} onChange={setFormData} />
-            <Input label="Ngày sinh" name="ngaysinh" type="date" value={formData.ngaysinh} onChange={setFormData} />
-            <Input label="Địa chỉ" name="diachi" value={formData.diachi} onChange={setFormData} />
-            <div>
-              <label className="text-sm text-gray-600 dark:text-gray-300">Giới tính</label>
-              <select value={formData.gioitinh} onChange={(e) => setFormData((prev) => ({ ...prev, gioitinh: e.target.value }))} className="w-full mt-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600">
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
-              </select>
-            </div>
-            <Input label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"} name="password" type="password" value={formData.password} onChange={setFormData} />
+            <InputField label="Họ và tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
+            <InputField
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleFieldChange}
+              disabled={!isCreateMode}
+            />
+            <InputField label="SĐT" name="soDienThoai" value={formData.soDienThoai} onChange={handleFieldChange} />
+            <InputField label="Ngày sinh" name="ngaysinh" type="date" value={formData.ngaysinh} onChange={handleFieldChange} />
+            <InputField label="Địa chỉ" name="diachi" value={formData.diachi} onChange={handleFieldChange} />
+            <InputField
+              label="Giới tính"
+              name="gioitinh"
+              type="select"
+              value={formData.gioitinh}
+              onChange={handleFieldChange}
+              options={[
+                { value: "Nam", label: "Nam" },
+                { value: "Nữ", label: "Nữ" },
+                { value: "Khác", label: "Khác" },
+              ]}
+            />
+            <InputField
+              label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"}
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleFieldChange}
+            />
             <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
             <div>
               <label className="text-sm text-gray-600 dark:text-gray-300">Ảnh nhận diện khuôn mặt</label>
@@ -289,30 +310,4 @@ const StatCard = ({ title, value }) => (
     <p className="text-4xl font-bold text-gray-900 dark:text-white">{value}</p>
   </div>
 );
-
-const Input = ({ label, name, value, onChange, type = "text", disabled = false }) => (
-  <div>
-    <label className="text-sm text-gray-600 dark:text-gray-300">{label}</label>
-    {type === "date" ? (
-      <div className="mt-1">
-        <DateInputField
-          name={name}
-          id={name}
-          value={value}
-          disabled={disabled}
-          onChange={(e) => onChange((prev) => ({ ...prev, [name]: e.target.value }))}
-          className="w-full rounded-lg border dark:border-gray-600 dark:bg-gray-800"
-          inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm text-gray-900 outline-none border-0 disabled:opacity-70 dark:bg-gray-800 dark:text-gray-100"
-        />
-      </div>
-    ) : (
-      <input
-        type={type}
-        disabled={disabled}
-        value={value}
-        onChange={(e) => onChange((prev) => ({ ...prev, [name]: e.target.value }))}
-        className="w-full mt-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 disabled:opacity-70"
-      />
-    )}
-  </div>
-);
+// Không còn Input cục bộ: dùng chung InputField

@@ -74,12 +74,19 @@ nguoiDungSchema.methods.generateOTP = async function() {
   return otp;
 };
 
-nguoiDungSchema.methods.verifyOTP = async function(otp) {
+/**
+ * @param {string} otp
+ * @param {{ markVerified?: boolean }} [options] markVerified=false: chỉ kiểm tra OTP (vd. đặt lại mật khẩu), không gắn cờ đã xác thực tài khoản
+ */
+nguoiDungSchema.methods.verifyOTP = async function(otp, options = {}) {
+  const markVerified = options.markVerified !== false;
   if (!this.maOTP || !this.hanSuDungOTP) return false;
   if (Date.now() > this.hanSuDungOTP) return false;
   const isValid = await bcrypt.compare(otp, this.maOTP);
   if (isValid) {
-    this.daXacThuc = true;
+    if (markVerified) {
+      this.daXacThuc = true;
+    }
     this.maOTP = undefined;
     this.hanSuDungOTP = undefined;
     await this.save();

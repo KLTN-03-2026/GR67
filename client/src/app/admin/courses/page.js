@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import ConfirmModal from "../../components/ConfirmModal";
-import DateInputField from "../../components/DateInputField";
+import InputField from "../../components/InputField";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const DAY_LABELS = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
@@ -239,25 +239,41 @@ export default function AdminCoursesPage() {
           <StatCard title="Đã có lịch học" value={stats.hasSchedule} />
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex flex-col lg:flex-row gap-3">
-          <select className="input flex-1" value={filters.LoaiKhoaHocID} onChange={(e) => setFilters((p) => ({ ...p, LoaiKhoaHocID: e.target.value }))}>
-            <option value="">Tất cả loại khóa học</option>
-            {courseTypes.map((it, idx) => <option key={it._id || `ct-${idx}`} value={it._id}>{it.Tenloai}</option>)}
-          </select>
-          <select className="input flex-1" value={filters.giangvien} onChange={(e) => setFilters((p) => ({ ...p, giangvien: e.target.value }))}>
-            <option value="">Tất cả giảng viên</option>
-            {teachers.map((it, idx) => <option key={it.courseTeacherId || `gv-${idx}`} value={it.courseTeacherId}>{it.hovaten || it.email}</option>)}
-          </select>
-          <DateInputField
+          <InputField
+            type="select"
+            containerClassName="flex-1"
+            name="LoaiKhoaHocID"
+            value={filters.LoaiKhoaHocID}
+            onChange={(e) => setFilters((p) => ({ ...p, LoaiKhoaHocID: e.target.value }))}
+            options={[
+              { value: "", label: "Tất cả loại khóa học" },
+              ...(courseTypes || []).map((it, idx) => ({ value: it._id || `ct-${idx}`, label: it.Tenloai })),
+            ]}
+          />
+          <InputField
+            type="select"
+            containerClassName="flex-1"
+            name="giangvien"
+            value={filters.giangvien}
+            onChange={(e) => setFilters((p) => ({ ...p, giangvien: e.target.value }))}
+            options={[
+              { value: "", label: "Tất cả giảng viên" },
+              ...(teachers || []).map((it, idx) => ({ value: it.courseTeacherId || `gv-${idx}`, label: it.hovaten || it.email })),
+            ]}
+          />
+          <InputField
+            type="date"
+            name="from"
             value={filters.from}
             onChange={(e) => setFilters((p) => ({ ...p, from: e.target.value }))}
-            className="input flex-1 min-w-[10rem] p-0"
-            inputClassName="date-input-field min-w-0 flex-1 rounded-l-md bg-transparent px-3 py-2 text-sm outline-none border-0 dark:bg-transparent dark:text-gray-100"
+            containerClassName="flex-1 min-w-[10rem]"
           />
-          <DateInputField
+          <InputField
+            type="date"
+            name="to"
             value={filters.to}
             onChange={(e) => setFilters((p) => ({ ...p, to: e.target.value }))}
-            className="input flex-1 min-w-[10rem] p-0"
-            inputClassName="date-input-field min-w-0 flex-1 rounded-l-md bg-transparent px-3 py-2 text-sm outline-none border-0 dark:bg-transparent dark:text-gray-100"
+            containerClassName="flex-1 min-w-[10rem]"
           />
           <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" onClick={() => fetchCourses()}>Lọc</button>
           <button className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700" onClick={openCreateModal}>Thêm khóa học</button>
@@ -352,9 +368,10 @@ function CourseModal({ isOpen, onClose, data, setData, teachers, courseTypes, ro
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className={fieldLabelClass}>Tên khóa học *</label>
-                <input
-                  className={modalInputClass}
+                <InputField
+                  inputClassName={modalInputClass}
                   placeholder="Ví dụ: IELTS Foundation T7-CN"
+                  name="tenkhoahoc"
                   value={data.tenkhoahoc}
                   onChange={(e) => setData((p) => ({ ...p, tenkhoahoc: e.target.value }))}
                 />
@@ -362,36 +379,46 @@ function CourseModal({ isOpen, onClose, data, setData, teachers, courseTypes, ro
               </div>
               <div>
                 <label className={fieldLabelClass}>Loại khóa học *</label>
-                <select
-                  className={modalInputClass}
+                <InputField
+                  type="select"
+                  inputClassName={modalInputClass}
+                  name="LoaiKhoaHocID"
                   value={data.LoaiKhoaHocID}
                   onChange={(e) => setData((p) => ({ ...p, LoaiKhoaHocID: e.target.value }))}
-                >
-                  <option value="">Chọn loại khóa học</option>
-                  {courseTypes.map((it, idx) => <option key={it._id || `ct-modal-${idx}`} value={it._id}>{it.Tenloai}</option>)}
-                </select>
+                  options={[
+                    { value: "", label: "Chọn loại khóa học" },
+                    ...(courseTypes || []).map((it, idx) => ({ value: it._id || `ct-modal-${idx}`, label: it.Tenloai })),
+                  ]}
+                />
                 <p className={fieldHintClass}>Loại khóa sẽ quyết định số buổi học và cấu trúc chương trình.</p>
               </div>
               <div>
                 <label className={fieldLabelClass}>Ngày khai giảng *</label>
-                <DateInputField
+                <InputField
+                  type="date"
+                  inputClassName={modalInputClass}
+                  name="ngaykhaigiang"
                   value={data.ngaykhaigiang}
                   onChange={(e) => setData((p) => ({ ...p, ngaykhaigiang: e.target.value }))}
-                  className={`w-full p-0 ${modalInputClass} rounded-lg`}
-                  inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2.5 text-[15px] font-medium text-gray-900 shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
                 />
                 <p className={fieldHintClass}>Nên chọn trước ngày học buổi đầu tiên ít nhất 1-3 ngày.</p>
               </div>
               <div>
                 <label className={fieldLabelClass}>Giảng viên phụ trách *</label>
-                <select
-                  className={modalInputClass}
+                <InputField
+                  type="select"
+                  inputClassName={modalInputClass}
+                  name="giangvien"
                   value={data.giangvien}
                   onChange={(e) => setData((p) => ({ ...p, giangvien: e.target.value }))}
-                >
-                  <option value="">Chọn giảng viên</option>
-                  {teachers.map((it, idx) => <option key={it.courseTeacherId || `gv-modal-${idx}`} value={it.courseTeacherId}>{it.hovaten || it.email}</option>)}
-                </select>
+                  options={[
+                    { value: "", label: "Chọn giảng viên" },
+                    ...(teachers || []).map((it, idx) => ({
+                      value: it.courseTeacherId || `gv-modal-${idx}`,
+                      label: it.hovaten || it.email,
+                    })),
+                  ]}
+                />
                 <p className={fieldHintClass}>Chọn giảng viên chính để hệ thống kiểm tra trùng lịch chính xác hơn.</p>
               </div>
             </div>
@@ -409,24 +436,51 @@ function CourseModal({ isOpen, onClose, data, setData, teachers, courseTypes, ro
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Thứ</label>
-                      <select className={modalInputClass} value={slot.thu} onChange={(e) => changeSchedule(idx, "thu", Number(e.target.value))}>
-                        {DAY_LABELS.map((d, i) => <option key={`${d}-${i}`} value={i}>{d}</option>)}
-                      </select>
+                      <InputField
+                        type="select"
+                        inputClassName={modalInputClass}
+                        name="thu"
+                        value={slot.thu}
+                        onChange={(e) => changeSchedule(idx, "thu", Number(e.target.value))}
+                        options={DAY_LABELS.map((d, i) => ({ value: i, label: d }))}
+                      />
                     </div>
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Giờ bắt đầu</label>
-                      <input className={modalInputClass} type="time" value={slot.gioBatDau} onChange={(e) => changeSchedule(idx, "gioBatDau", e.target.value)} />
+                      <InputField
+                        type="time"
+                        inputClassName={modalInputClass}
+                        name="gioBatDau"
+                        value={slot.gioBatDau}
+                        onChange={(e) => changeSchedule(idx, "gioBatDau", e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Giờ kết thúc</label>
-                      <input className={modalInputClass} type="time" value={slot.gioKetThuc} onChange={(e) => changeSchedule(idx, "gioKetThuc", e.target.value)} />
+                      <InputField
+                        type="time"
+                        inputClassName={modalInputClass}
+                        name="gioKetThuc"
+                        value={slot.gioKetThuc}
+                        onChange={(e) => changeSchedule(idx, "gioKetThuc", e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Phòng học</label>
-                      <select className={modalInputClass} value={slot.phonghoc} onChange={(e) => changeSchedule(idx, "phonghoc", e.target.value)}>
-                        <option value="">Chọn phòng học</option>
-                        {rooms.map((r, rIdx) => <option key={r._id || `room-${rIdx}`} value={r._id}>{r.TenPhong} - {r.CoSoName}</option>)}
-                      </select>
+                      <InputField
+                        type="select"
+                        inputClassName={modalInputClass}
+                        name="phonghoc"
+                        value={slot.phonghoc}
+                        onChange={(e) => changeSchedule(idx, "phonghoc", e.target.value)}
+                        options={[
+                          { value: "", label: "Chọn phòng học" },
+                          ...(rooms || []).map((r, rIdx) => ({
+                            value: r._id || `room-${rIdx}`,
+                            label: `${r.TenPhong} - ${r.CoSoName}`,
+                          })),
+                        ]}
+                      />
                     </div>
                     <div className="flex items-end">
                       <button type="button" className="w-full px-3 py-2.5 rounded-md border border-red-200 bg-red-50 text-red-700 text-base font-semibold hover:bg-red-100 dark:border-red-700 dark:bg-red-900/20 dark:text-red-300" onClick={() => removeSchedule(idx)}>Xóa</button>

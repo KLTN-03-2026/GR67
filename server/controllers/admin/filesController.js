@@ -1,4 +1,35 @@
+const path = require("path");
+const fs = require("fs");
+const mammoth = require("mammoth");
 const File = require("../../models/File");
+
+// POST /admin/files/extract-docx (multipart, field: file) — trích văn bản thuần từ .docx
+const extractDocxText = async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ success: false, message: "Không có file" });
+    }
+    const ext = path.extname(file.originalname || "").toLowerCase();
+    if (ext !== ".docx") {
+      fs.unlink(file.path, () => {});
+      return res.status(400).json({ success: false, message: "Chỉ hỗ trợ file .docx" });
+    }
+    const result = await mammoth.extractRawText({ path: file.path });
+    fs.unlink(file.path, () => {});
+    res.status(200).json({
+      success: true,
+      text: result.value || "",
+      messages: result.messages || [],
+    });
+  } catch (error) {
+    console.error("Lỗi đọc docx (mammoth):", error);
+    if (req.file?.path) {
+      fs.unlink(req.file.path, () => {});
+    }
+    res.status(500).json({ success: false, message: "Không đọc được nội dung file docx" });
+  }
+};
 
 // POST /admin/files/upload (multipart/form-data)
 // field name: files (multiple)
@@ -29,5 +60,5 @@ const uploadFiles = async (req, res) => {
   }
 };
 
-module.exports = { uploadFiles };
+module.exports = { uploadFiles, extractDocxText };
 

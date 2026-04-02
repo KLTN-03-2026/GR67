@@ -49,10 +49,17 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (data.success) {
-        setSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
-        setTimeout(() => {
-          router.push('/');
-        }, 2000);
+        if (data.requireVerification && data.email) {
+          setSuccess("Đăng ký thành công! Kiểm tra email và nhập OTP để xác thực tài khoản.");
+          setTimeout(() => {
+            router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+          }, 1500);
+        } else {
+          setSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
+          setTimeout(() => {
+            router.push('/');
+          }, 2000);
+        }
       } else {
         setError(data.message);
       }

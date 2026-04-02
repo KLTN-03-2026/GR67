@@ -6,6 +6,7 @@ import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import { toDateInputValue } from "../../../../lib/dateFormat";
 import PasswordStrength from "../../../components/PasswordStrength";
+import InputField from "../../../components/InputField";
 
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
 const PencilIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>;
@@ -43,6 +44,11 @@ export default function AdminAccountsPage() {
   const [error, setError] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState(null);
+
+  const handleFieldChange = (e) => {
+    const { name, value } = e?.target || {};
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const selectedUser = useMemo(() => users.find((u) => u._id === selectedId) || null, [users, selectedId]);
   const isCreateMode = !selectedUser;
@@ -224,11 +230,33 @@ export default function AdminAccountsPage() {
         <section className="xl:col-span-4 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 p-4">
           <h3 className="text-lg font-semibold mb-4">{isCreateMode ? "Thêm Admin" : "Thông tin Admin"}</h3>
           <form onSubmit={handleSubmit} className="space-y-3">
-            <Input label="Họ tên" name="hovaten" value={formData.hovaten} onChange={setFormData} />
-            <Input label="Email" name="email" value={formData.email} onChange={setFormData} disabled={!isCreateMode} />
-            <Input label="Số điện thoại" name="soDienThoai" value={formData.soDienThoai} onChange={setFormData} />
-            <Input label="Địa chỉ" name="diachi" value={formData.diachi} onChange={setFormData} />
-            <Input label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"} name="password" type="password" value={formData.password} onChange={setFormData} />
+            <InputField label="Họ tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
+            <InputField
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleFieldChange}
+              disabled={!isCreateMode}
+            />
+            <InputField
+              label="Số điện thoại"
+              name="soDienThoai"
+              value={formData.soDienThoai}
+              onChange={handleFieldChange}
+            />
+            <InputField
+              label="Địa chỉ"
+              name="diachi"
+              value={formData.diachi}
+              onChange={handleFieldChange}
+            />
+            <InputField
+              label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"}
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleFieldChange}
+            />
             <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
             {formError && <p className="text-sm text-red-500">{formError}</p>}
             <button className="w-full py-2 bg-blue-600 text-white rounded-lg">{isCreateMode ? "Tạo mới" : "Lưu"}</button>
@@ -253,16 +281,4 @@ const StatCard = ({ title, value }) => (
     <p className="text-4xl font-bold text-gray-900 dark:text-white">{value}</p>
   </div>
 );
-
-const Input = ({ label, name, value, onChange, type = "text", disabled = false }) => (
-  <div>
-    <label className="text-sm text-gray-600 dark:text-gray-300">{label}</label>
-    <input
-      type={type}
-      disabled={disabled}
-      value={value}
-      onChange={(e) => onChange((prev) => ({ ...prev, [name]: e.target.value }))}
-      className="w-full mt-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 disabled:opacity-70"
-    />
-  </div>
-);
+// Không còn Input cục bộ: dùng chung InputField để thống nhất UI

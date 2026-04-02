@@ -51,7 +51,8 @@ const login = async (req, res) => {
       return res.status(403).json({
         success: false,
         message: 'Tài khoản chưa được xác thực. OTP đã được gửi đến email của bạn.',
-        redirectToVerify: true
+        redirectToVerify: true,
+        email: user.email
       });
     }
 
@@ -130,9 +131,14 @@ const register = async (req, res) => {
     await newUser.save();
     console.log('User registered successfully');
 
+    const otp = await newUser.generateOTP();
+    await sendOTP(email, otp);
+
     res.status(201).json({
       success: true,
-      message: 'Đăng ký thành công',
+      message: 'Đăng ký thành công. Vui lòng nhập mã OTP đã gửi đến email để hoàn tất xác thực trước khi đăng nhập.',
+      requireVerification: true,
+      email: newUser.email,
       user: {
         id: newUser._id,
         email: newUser.email,
@@ -261,7 +267,14 @@ const verifyOTP = async (req, res) => {
       });
     }
 
-    const isValidOTP = await user.verifyOTP(otp);
+    if (user.role !== 'student' && user.role !== 'teacher') {
+      return res.status(400).json({
+        success: false,
+        message: 'Loại tài khoản này không dùng xác thực OTP đăng nhập lần đầu'
+      });
+    }
+
+    const isValidOTP = await user.verifyOTP(otp, { markVerified: true });
     if (!isValidOTP) {
       return res.status(400).json({
         success: false,
@@ -306,6 +319,13 @@ const resendOTP = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Tài khoản đã được xác thực'
+      });
+    }
+
+    if (user.role !== 'student' && user.role !== 'teacher') {
+      return res.status(400).json({
+        success: false,
+        message: 'Loại tài khoản này không dùng gửi lại OTP xác thực đăng nhập'
       });
     }
 
@@ -391,7 +411,7 @@ const verifyPasswordResetOTP = async (req, res) => {
       });
     }
 
-    const isValidOTP = await user.verifyOTP(otp);
+    const isValidOTP = await user.verifyOTP(otp, { markVerified: false });
     if (!isValidOTP) {
       return res.status(400).json({
         success: false,
@@ -497,5 +517,6 @@ module.exports = {
   resendOTP,
   forgotPassword,
   verifyPasswordResetOTP,
-  resetPassword
+  resetPassword,
+  sendOTP
 };

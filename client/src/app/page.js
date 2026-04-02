@@ -69,8 +69,9 @@ export default function LoginPage() {
         setError(data.message);
         // If account not verified and OTP sent, redirect to verify page
         if (data.redirectToVerify) {
+          const em = data.email || email;
           setTimeout(() => {
-            router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
+            router.push(`/verify-otp?email=${encodeURIComponent(em)}`);
           }, 2000);
         }
       }

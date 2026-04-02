@@ -7,6 +7,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import { useTheme } from "../../../contexts/ThemeContext";
+import InputField from "../../../components/InputField";
 import { FiArrowLeft, FiPlus, FiEdit2, FiToggleLeft } from "react-icons/fi";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -278,12 +279,13 @@ export default function FacilityDetailPage() {
               >
                 Tên cơ sở
               </label>
-              <input
+              <InputField
                 name="Tencoso"
+                type="text"
                 value={formData.Tencoso}
                 onChange={handleChange}
                 required
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
+                inputClassName={`w-full px-3 py-2 border rounded-md text-sm ${
                   darkMode
                     ? "bg-gray-700 border-gray-600 text-gray-100"
                     : "bg-white border-gray-300 text-gray-900"
@@ -298,12 +300,13 @@ export default function FacilityDetailPage() {
               >
                 Địa chỉ
               </label>
-              <input
+              <InputField
                 name="diachi"
+                type="text"
                 value={formData.diachi}
                 onChange={handleChange}
                 required
-                className={`w-full px-3 py-2 border rounded-md text-sm ${
+                inputClassName={`w-full px-3 py-2 border rounded-md text-sm ${
                   darkMode
                     ? "bg-gray-700 border-gray-600 text-gray-100"
                     : "bg-white border-gray-300 text-gray-900"
@@ -319,12 +322,13 @@ export default function FacilityDetailPage() {
             >
               Mô tả
             </label>
-            <textarea
+              <InputField
               name="mota"
+                type="textarea"
               rows={3}
               value={formData.mota}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md text-sm ${
+                inputClassName={`w-full px-3 py-2 border rounded-md text-sm ${
                 darkMode
                   ? "bg-gray-700 border-gray-600 text-gray-100"
                   : "bg-white border-gray-300 text-gray-900"
@@ -561,12 +565,13 @@ function RoomFormPanel({ facility, room, onCancel, onSubmit }) {
           >
             Tên phòng
           </label>
-          <input
+          <InputField
             name="TenPhong"
+            type="text"
             value={formData.TenPhong}
             onChange={handleChange}
             required
-            className={`w-full px-3 py-2 border rounded-md text-xs ${
+            inputClassName={`w-full px-3 py-2 border rounded-md text-xs ${
               darkMode
                 ? "bg-gray-800 border-gray-600 text-gray-100"
                 : "bg-white border-gray-300 text-gray-900"
@@ -581,14 +586,14 @@ function RoomFormPanel({ facility, room, onCancel, onSubmit }) {
           >
             Sức chứa
           </label>
-          <input
+          <InputField
             type="number"
             min={1}
             name="succhua"
             value={formData.succhua}
             onChange={handleChange}
             required
-            className={`w-full px-3 py-2 border rounded-md text-xs ${
+            inputClassName={`w-full px-3 py-2 border rounded-md text-xs ${
               darkMode
                 ? "bg-gray-800 border-gray-600 text-gray-100"
                 : "bg-white border-gray-300 text-gray-900"

@@ -2,6 +2,7 @@ const NguoiDung = require('../../models/NguoiDung');
 const HocVien = require('../../models/HocVien');
 const GiangVien = require('../../models/GiangVien');
 const bcrypt = require('bcryptjs');
+const { sendOTP } = require('../authController');
 
 // ==========================================
 //  HELPER: xây dựng đối tượng filter chung
@@ -291,10 +292,13 @@ const createTeacher = async (req, res) => {
         const newUser = new NguoiDung({
             email, password, hovaten, soDienThoai, diachi, gioitinh: genderValue, ngaysinh,
             role: 'teacher',
-            daXacThuc: true,
+            daXacThuc: false,
             trangThaiHoatDong: true
         });
         await newUser.save();
+
+        const otp = await newUser.generateOTP();
+        await sendOTP(email, otp);
 
         // Tạo GiangVien profile
         const newGiangVien = new GiangVien({
@@ -312,7 +316,7 @@ const createTeacher = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'Tạo tài khoản giảng viên thành công',
+            message: 'Tạo tài khoản giảng viên thành công. OTP xác thực lần đầu đã gửi đến email; giảng viên cần nhập OTP rồi mới đăng nhập được.',
             data: { ...userResult, giangVienInfo: newGiangVien }
         });
     } catch (error) {
@@ -490,10 +494,13 @@ const createStudent = async (req, res) => {
         const newUser = new NguoiDung({
             email, password, hovaten, soDienThoai, diachi, gioitinh: genderValue, ngaysinh,
             role: 'student',
-            daXacThuc: true,
+            daXacThuc: false,
             trangThaiHoatDong: true
         });
         await newUser.save();
+
+        const otp = await newUser.generateOTP();
+        await sendOTP(email, otp);
 
         // Tạo HocVien profile
         const newHocVien = new HocVien({
@@ -509,7 +516,7 @@ const createStudent = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            message: 'Tạo tài khoản học viên thành công',
+            message: 'Tạo tài khoản học viên thành công. OTP xác thực lần đầu đã gửi đến email; học viên cần nhập OTP rồi mới đăng nhập được.',
             data: { ...userResult, hocVienInfo: newHocVien }
         });
     } catch (error) {

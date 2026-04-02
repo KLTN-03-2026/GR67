@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
-import DateInputField from "../../../components/DateInputField";
+import InputField from "../../../components/InputField";
 import { formatDateDdMmYyyy, toDateInputValue } from "../../../../lib/dateFormat";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -399,9 +399,9 @@ export default function AdminCourseDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
           <div className="lg:col-span-6 space-y-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tên khóa học</label>
-            <input
-              className={FIELD_CLASS}
-              title="Nhập tên khóa học"
+            <InputField
+              inputClassName={FIELD_CLASS}
+              name="tenkhoahoc"
               value={formData.tenkhoahoc}
               onChange={(e) => setFormData((p) => ({ ...p, tenkhoahoc: e.target.value }))}
               placeholder="Ví dụ: TOEIC Foundation T4-T6"
@@ -409,27 +409,44 @@ export default function AdminCourseDetailPage() {
           </div>
           <div className="lg:col-span-6 space-y-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Loại khóa học</label>
-            <select className={FIELD_CLASS} title="Chọn loại khóa học" value={formData.LoaiKhoaHocID} onChange={(e) => setFormData((p) => ({ ...p, LoaiKhoaHocID: e.target.value }))}>
-              <option value="">Chọn loại khóa học</option>
-              {courseTypes.map((ct, idx) => <option key={ct._id || idx} value={ct._id}>{ct.Tenloai}</option>)}
-            </select>
+            <InputField
+              type="select"
+              inputClassName={FIELD_CLASS}
+              name="LoaiKhoaHocID"
+              value={formData.LoaiKhoaHocID}
+              onChange={(e) => setFormData((p) => ({ ...p, LoaiKhoaHocID: e.target.value }))}
+              options={[
+                { value: "", label: "Chọn loại khóa học" },
+                ...(courseTypes || []).map((ct, idx) => ({ value: ct._id || idx, label: ct.Tenloai })),
+              ]}
+            />
           </div>
           <div className="lg:col-span-6 space-y-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Ngày khai giảng</label>
-            <DateInputField
-              title="Chọn ngày khai giảng"
+            <InputField
+              type="date"
+              inputClassName={FIELD_CLASS}
+              name="ngaykhaigiang"
               value={formData.ngaykhaigiang}
               onChange={(e) => setFormData((p) => ({ ...p, ngaykhaigiang: e.target.value }))}
-              className={`w-full p-0 ${FIELD_CLASS}`}
-              inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2 text-sm text-gray-900 shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
             />
           </div>
           <div className="lg:col-span-6 space-y-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Giảng viên</label>
-            <select className={FIELD_CLASS} title="Chọn giảng viên phụ trách khóa" value={formData.giangvien} onChange={(e) => setFormData((p) => ({ ...p, giangvien: e.target.value }))}>
-              <option value="">Chọn giảng viên</option>
-              {teachers.map((t, idx) => <option key={t.courseTeacherId || idx} value={t.courseTeacherId}>{t.hovaten || t.email}</option>)}
-            </select>
+            <InputField
+              type="select"
+              inputClassName={FIELD_CLASS}
+              name="giangvien"
+              value={formData.giangvien}
+              onChange={(e) => setFormData((p) => ({ ...p, giangvien: e.target.value }))}
+              options={[
+                { value: "", label: "Chọn giảng viên" },
+                ...(teachers || []).map((t, idx) => ({
+                  value: t.courseTeacherId || idx,
+                  label: t.hovaten || t.email,
+                })),
+              ]}
+            />
           </div>
         </div>
 
@@ -440,15 +457,39 @@ export default function AdminCourseDetailPage() {
           </div>
           {(formData.lichHoc || []).map((slot, idx) => (
             <div key={idx} className="grid grid-cols-1 md:grid-cols-5 gap-2 bg-gray-50 dark:bg-gray-900/30 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
-              <select className={FIELD_CLASS} value={slot.thu} onChange={(e) => updateSchedule(idx, "thu", Number(e.target.value))}>
-                {DAY_LABELS.map((d, i) => <option key={`${d}-${i}`} value={i}>{d}</option>)}
-              </select>
-              <input className={FIELD_CLASS} type="time" value={slot.gioBatDau} onChange={(e) => updateSchedule(idx, "gioBatDau", e.target.value)} />
-              <input className={FIELD_CLASS} type="time" value={slot.gioKetThuc} onChange={(e) => updateSchedule(idx, "gioKetThuc", e.target.value)} />
-              <select className={FIELD_CLASS} value={slot.phonghoc} onChange={(e) => updateSchedule(idx, "phonghoc", e.target.value)}>
-                <option value="">Chọn phòng</option>
-                {rooms.map((r, i) => <option key={r._id || i} value={r._id}>{r.TenPhong} - {r.CoSoName}</option>)}
-              </select>
+              <InputField
+                type="select"
+                inputClassName={FIELD_CLASS}
+                name="thu"
+                value={slot.thu}
+                onChange={(e) => updateSchedule(idx, "thu", Number(e.target.value))}
+                options={DAY_LABELS.map((d, i) => ({ value: i, label: d }))}
+              />
+              <InputField
+                type="time"
+                inputClassName={FIELD_CLASS}
+                name="gioBatDau"
+                value={slot.gioBatDau}
+                onChange={(e) => updateSchedule(idx, "gioBatDau", e.target.value)}
+              />
+              <InputField
+                type="time"
+                inputClassName={FIELD_CLASS}
+                name="gioKetThuc"
+                value={slot.gioKetThuc}
+                onChange={(e) => updateSchedule(idx, "gioKetThuc", e.target.value)}
+              />
+              <InputField
+                type="select"
+                inputClassName={FIELD_CLASS}
+                name="phonghoc"
+                value={slot.phonghoc}
+                onChange={(e) => updateSchedule(idx, "phonghoc", e.target.value)}
+                options={[
+                  { value: "", label: "Chọn phòng" },
+                  ...(rooms || []).map((r, i) => ({ value: r._id || i, label: `${r.TenPhong} - ${r.CoSoName}` })),
+                ]}
+              />
               <button type="button" className="px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30" onClick={() => removeSchedule(idx)}>Xóa</button>
             </div>
           ))}
@@ -464,14 +505,21 @@ export default function AdminCourseDetailPage() {
         <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
           <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Quản lý học viên trong khóa</h2>
           <div className="flex flex-col md:flex-row gap-2 mb-3">
-            <select className={`${FIELD_CLASS} flex-1`} value={selectedHocVienId} onChange={(e) => setSelectedHocVienId(e.target.value)} disabled={isCourseFull}>
-              <option value="">Chọn học viên để thêm</option>
-              {availableStudents.map((s, idx) => (
-                <option key={s.hocVienInfo?._id || idx} value={s.hocVienInfo?._id}>
-                  {s.hovaten || s.email} - {s.email}
-                </option>
-              ))}
-            </select>
+            <InputField
+              type="select"
+              inputClassName={`${FIELD_CLASS} flex-1`}
+              name="selectedHocVienId"
+              value={selectedHocVienId}
+              onChange={(e) => setSelectedHocVienId(e.target.value)}
+              disabled={isCourseFull}
+              options={[
+                { value: "", label: "Chọn học viên để thêm" },
+                ...(availableStudents || []).map((s, idx) => ({
+                  value: s.hocVienInfo?._id || idx,
+                  label: `${s.hovaten || s.email} - ${s.email}`,
+                })),
+              ]}
+            />
             <button type="button" onClick={addStudent} disabled={isCourseFull} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed">Thêm có sẵn</button>
             <button type="button" onClick={() => setStudentModalOpen(true)} disabled={isCourseFull} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed">Tạo mới học viên</button>
           </div>
@@ -553,8 +601,9 @@ export default function AdminCourseDetailPage() {
               <div className="p-5 grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Họ và tên *</label>
-                  <input
-                    className={FIELD_CLASS}
+                  <InputField
+                    inputClassName={FIELD_CLASS}
+                    name="hovaten"
                     title="Chỉ gồm chữ cái, khoảng trắng, dấu chấm hoặc gạch nối"
                     placeholder="Nguyễn Văn A"
                     value={studentForm.hovaten}
@@ -565,11 +614,12 @@ export default function AdminCourseDetailPage() {
                 </div>
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email *</label>
-                  <input
-                    className={FIELD_CLASS}
+                  <InputField
+                    type="email"
+                    inputClassName={FIELD_CLASS}
+                    name="email"
                     title="Nhập email hợp lệ, ví dụ: abc@gmail.com"
                     placeholder="abc@gmail.com"
-                    type="email"
                     value={studentForm.email}
                     onChange={(e) => setStudentForm((p) => ({ ...p, email: e.target.value }))}
                     pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
@@ -578,39 +628,66 @@ export default function AdminCourseDetailPage() {
                 </div>
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Mật khẩu *</label>
-                  <input className={FIELD_CLASS} title="Mật khẩu tối thiểu 6 ký tự" placeholder="Ít nhất 6 ký tự" type="password" minLength={6} value={studentForm.password} onChange={(e) => setStudentForm((p) => ({ ...p, password: e.target.value }))} required />
+                  <InputField
+                    type="password"
+                    inputClassName={FIELD_CLASS}
+                    name="password"
+                    title="Mật khẩu tối thiểu 6 ký tự"
+                    placeholder="Ít nhất 6 ký tự"
+                    minLength={6}
+                    value={studentForm.password}
+                    onChange={(e) => setStudentForm((p) => ({ ...p, password: e.target.value }))}
+                    required
+                  />
                 </div>
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Số điện thoại</label>
-                  <input
-                    className={FIELD_CLASS}
+                  <InputField
+                    inputClassName={FIELD_CLASS}
+                    name="soDienThoai"
                     title="Định dạng: 09xxxxxxxx hoặc +84xxxxxxxxx"
                     placeholder="09xxxxxxxx"
                     value={studentForm.soDienThoai}
                     onChange={(e) => setStudentForm((p) => ({ ...p, soDienThoai: e.target.value }))}
-                    pattern="^(0|\+84)\d{9,10}$"
+                    pattern="^(0|\\+84)\\d{9,10}$"
                   />
                 </div>
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Giới tính</label>
-                  <select className={FIELD_CLASS} title="Chọn giới tính" value={studentForm.gioitinh} onChange={(e) => setStudentForm((p) => ({ ...p, gioitinh: e.target.value }))}>
-                    <option value="Nam">Nam</option>
-                    <option value="Nữ">Nữ</option>
-                  </select>
+                  <InputField
+                    type="select"
+                    inputClassName={FIELD_CLASS}
+                    name="gioitinh"
+                    title="Chọn giới tính"
+                    value={studentForm.gioitinh}
+                    onChange={(e) => setStudentForm((p) => ({ ...p, gioitinh: e.target.value }))}
+                    options={[
+                      { value: "Nam", label: "Nam" },
+                      { value: "Nữ", label: "Nữ" },
+                    ]}
+                  />
                 </div>
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Ngày sinh</label>
-                  <DateInputField
-                    title="Chọn ngày sinh"
+                  <InputField
+                    type="date"
+                    inputClassName={FIELD_CLASS}
+                    name="ngaysinh"
                     value={studentForm.ngaysinh}
                     onChange={(e) => setStudentForm((p) => ({ ...p, ngaysinh: e.target.value }))}
-                    className={`w-full p-0 ${FIELD_CLASS}`}
-                    inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2 text-sm shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
+                    title="Chọn ngày sinh"
                   />
                 </div>
                 <div className="md:col-span-12 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Địa chỉ</label>
-                  <input className={FIELD_CLASS} title="Nhập địa chỉ liên hệ" placeholder="Số nhà, đường, quận/huyện, tỉnh/thành" value={studentForm.diachi} onChange={(e) => setStudentForm((p) => ({ ...p, diachi: e.target.value }))} />
+                  <InputField
+                    inputClassName={FIELD_CLASS}
+                    name="diachi"
+                    title="Nhập địa chỉ liên hệ"
+                    placeholder="Số nhà, đường, quận/huyện, tỉnh/thành"
+                    value={studentForm.diachi}
+                    onChange={(e) => setStudentForm((p) => ({ ...p, diachi: e.target.value }))}
+                  />
                 </div>
               </div>
               <div className="px-5 py-4 border-t flex justify-end gap-2">
@@ -633,29 +710,60 @@ export default function AdminCourseDetailPage() {
                 <button type="button" onClick={() => setSessionModal((p) => ({ ...p, isOpen: false }))}>Đóng</button>
               </div>
               <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
-                <DateInputField
+                <InputField
+                  type="date"
+                  inputClassName={FIELD_CLASS}
+                  name="ngayhoc"
                   value={sessionModal.ngayhoc}
                   onChange={(e) => setSessionModal((p) => ({ ...p, ngayhoc: e.target.value }))}
                   required
-                  className={`w-full p-0 ${FIELD_CLASS}`}
-                  inputClassName="date-input-field min-w-0 flex-1 rounded-l-lg border-0 bg-transparent px-3 py-2 text-sm shadow-none outline-none focus:ring-0 dark:bg-transparent dark:text-gray-100"
                 />
-                <select className={FIELD_CLASS} value={sessionModal.BaiHocID} onChange={(e) => setSessionModal((p) => ({ ...p, BaiHocID: e.target.value }))} required>
-                  <option value="">Chọn bài học</option>
-                  {lessons.map((ls) => (
-                    <option key={ls._id} value={ls._id}>
-                      {ls.thutu}. {ls.tenbai}
-                    </option>
-                  ))}
-                </select>
-                <input className={FIELD_CLASS} type="time" value={sessionModal.gioBatDau} onChange={(e) => setSessionModal((p) => ({ ...p, gioBatDau: e.target.value }))} required />
-                <input className={FIELD_CLASS} type="time" value={sessionModal.gioKetThuc} onChange={(e) => setSessionModal((p) => ({ ...p, gioKetThuc: e.target.value }))} required />
-                <select className={`${FIELD_CLASS} md:col-span-2`} value={sessionModal.phonghoc} onChange={(e) => setSessionModal((p) => ({ ...p, phonghoc: e.target.value }))} required>
-                  <option value="">Chọn phòng học</option>
-                  {rooms.map((r) => (
-                    <option key={r._id} value={r._id}>{r.TenPhong} - {r.CoSoName}</option>
-                  ))}
-                </select>
+                <InputField
+                  type="select"
+                  inputClassName={FIELD_CLASS}
+                  name="BaiHocID"
+                  value={sessionModal.BaiHocID}
+                  onChange={(e) => setSessionModal((p) => ({ ...p, BaiHocID: e.target.value }))}
+                  required
+                  options={[
+                    { value: "", label: "Chọn bài học" },
+                    ...(lessons || []).map((ls) => ({
+                      value: ls._id,
+                      label: `${ls.thutu}. ${ls.tenbai}`,
+                    })),
+                  ]}
+                />
+                <InputField
+                  type="time"
+                  inputClassName={FIELD_CLASS}
+                  name="gioBatDau"
+                  value={sessionModal.gioBatDau}
+                  onChange={(e) => setSessionModal((p) => ({ ...p, gioBatDau: e.target.value }))}
+                  required
+                />
+                <InputField
+                  type="time"
+                  inputClassName={FIELD_CLASS}
+                  name="gioKetThuc"
+                  value={sessionModal.gioKetThuc}
+                  onChange={(e) => setSessionModal((p) => ({ ...p, gioKetThuc: e.target.value }))}
+                  required
+                />
+                <InputField
+                  type="select"
+                  inputClassName={`${FIELD_CLASS} md:col-span-2`}
+                  name="phonghoc"
+                  value={sessionModal.phonghoc}
+                  onChange={(e) => setSessionModal((p) => ({ ...p, phonghoc: e.target.value }))}
+                  required
+                  options={[
+                    { value: "", label: "Chọn phòng học" },
+                    ...(rooms || []).map((r) => ({
+                      value: r._id,
+                      label: `${r.TenPhong} - ${r.CoSoName}`,
+                    })),
+                  ]}
+                />
               </div>
               <div className="px-5 py-4 border-t flex justify-end gap-2">
                 <button type="button" className="px-4 py-2 border rounded" onClick={() => setSessionModal((p) => ({ ...p, isOpen: false }))}>Hủy</button>

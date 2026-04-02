@@ -8,6 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import ConfirmModal from "../../components/ConfirmModal";
 import { useTheme } from "../../contexts/ThemeContext";
+import InputField from "../../components/InputField";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 const API_URL = `${API_BASE}/api/admin/facilities`;
@@ -193,12 +194,13 @@ export default function FacilitiesPage() {
         >
           <div className="relative w-full md:w-1/3 max-w-md">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
+            <InputField
               type="text"
-              placeholder="Tìm theo tên, địa chỉ..."
+              name="searchTerm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              placeholder="Tìm theo tên, địa chỉ..."
+              inputClassName={`w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 darkMode
                   ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
                   : "bg-white border-gray-300 text-gray-900 placeholder-gray-400"

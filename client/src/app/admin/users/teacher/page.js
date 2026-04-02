@@ -5,7 +5,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import PasswordStrength from "../../../components/PasswordStrength";
-import DateInputField from "../../../components/DateInputField";
+import InputField from "../../../components/InputField";
 import { toDateInputValue } from "../../../../lib/dateFormat";
 
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
@@ -47,6 +47,11 @@ export default function TeacherAccountsPage() {
   const [error, setError] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState(null);
+
+  const handleFieldChange = (e) => {
+    const { name, value } = e?.target || {};
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   useEffect(() => {
     if (!token) return;
@@ -256,15 +261,43 @@ export default function TeacherAccountsPage() {
           </div>
           <h3 className="font-semibold mb-3">{isCreateMode ? "Thêm giảng viên" : "Chi tiết giảng viên"}</h3>
           <form onSubmit={handleSave} className="space-y-3">
-            <Input label="Họ và tên" name="hovaten" value={formData.hovaten} onChange={setFormData} />
-            <Input label="Email" name="email" value={formData.email} onChange={setFormData} disabled={!isCreateMode} />
-            <Input label="Số điện thoại" name="soDienThoai" value={formData.soDienThoai} onChange={setFormData} />
-            <Input label="Ngày sinh" name="ngaysinh" type="date" value={formData.ngaysinh} onChange={setFormData} />
-            <Input label="Địa chỉ thường trú" name="diachi" value={formData.diachi} onChange={setFormData} />
-            <Input label="Trình độ cao nhất" name="TrinhDoHocVan" value={formData.TrinhDoHocVan} onChange={setFormData} />
-            <Input label="Kinh nghiệm (năm)" name="kinhnghiem" type="number" value={formData.kinhnghiem} onChange={setFormData} />
-            <Input label="Chuyên môn chính" name="chuyenmon" value={formData.chuyenmon} onChange={setFormData} />
-            <Input label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"} name="password" type="password" value={formData.password} onChange={setFormData} />
+            <InputField label="Họ và tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
+            <InputField
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleFieldChange}
+              disabled={!isCreateMode}
+            />
+            <InputField label="Số điện thoại" name="soDienThoai" value={formData.soDienThoai} onChange={handleFieldChange} />
+            <InputField label="Ngày sinh" name="ngaysinh" type="date" value={formData.ngaysinh} onChange={handleFieldChange} />
+            <InputField
+              label="Địa chỉ thường trú"
+              name="diachi"
+              value={formData.diachi}
+              onChange={handleFieldChange}
+            />
+            <InputField
+              label="Trình độ cao nhất"
+              name="TrinhDoHocVan"
+              value={formData.TrinhDoHocVan}
+              onChange={handleFieldChange}
+            />
+            <InputField
+              label="Kinh nghiệm (năm)"
+              name="kinhnghiem"
+              type="number"
+              value={formData.kinhnghiem}
+              onChange={handleFieldChange}
+            />
+            <InputField label="Chuyên môn chính" name="chuyenmon" value={formData.chuyenmon} onChange={handleFieldChange} />
+            <InputField
+              label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"}
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleFieldChange}
+            />
             <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
             {formError && <p className="text-sm text-red-500">{formError}</p>}
             <button className="w-full py-2 bg-green-600 text-white rounded-lg">{isCreateMode ? "Tạo mới" : "Cập nhật thông tin"}</button>
@@ -290,29 +323,4 @@ const StatCard = ({ title, value }) => (
   </div>
 );
 
-const Input = ({ label, name, value, onChange, type = "text", disabled = false }) => (
-  <div>
-    <label className="text-sm text-gray-600 dark:text-gray-300">{label}</label>
-    {type === "date" ? (
-      <div className="mt-1">
-        <DateInputField
-          name={name}
-          id={name}
-          value={value}
-          disabled={disabled}
-          onChange={(e) => onChange((prev) => ({ ...prev, [name]: e.target.value }))}
-          className="w-full rounded-lg border dark:border-gray-600 dark:bg-gray-800"
-          inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0 disabled:opacity-70 dark:bg-gray-800 dark:text-gray-100"
-        />
-      </div>
-    ) : (
-      <input
-        type={type}
-        disabled={disabled}
-        value={value}
-        onChange={(e) => onChange((prev) => ({ ...prev, [name]: type === "number" ? Number(e.target.value) : e.target.value }))}
-        className="w-full mt-1 px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 disabled:opacity-70"
-      />
-    )}
-  </div>
-);
+// Không còn Input cục bộ: dùng chung InputField cho thống nhất UI

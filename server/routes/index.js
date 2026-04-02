@@ -32,6 +32,10 @@ router.post('/reset-password', resetPassword);
 var facilitiesRouter = require('./admin/facilitiesRoutes');
 router.use('/admin/facilities', facilitiesRouter);
 
+/* ================== NOTIFICATIONS (ADMIN) ================== */
+const notificationsAdminRouter = require("./admin/notificationsRoutes");
+router.use("/admin/notifications", notificationsAdminRouter);
+
 /* ================== USER MANAGEMENT ROUTES ================== */
 const {
   adminRouter,

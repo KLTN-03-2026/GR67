@@ -6,6 +6,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 import { useNotification } from "../../contexts/NotificationContext";
 import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiArrowLeft, FiPaperclip } from "react-icons/fi";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
+import InputField from "../../components/InputField";
 
 
 export default function CourseTypesPage() {
@@ -191,24 +192,28 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="relative w-full md:w-1/2">
                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
+                <InputField
                   type="text"
-                  placeholder="Tìm kiếm khóa học"
+                  name="searchTerm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Tìm kiếm khóa học"
+                  inputClassName="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-                <select
+                <InputField
+                  type="select"
+                  name="filterCertificate"
                   value={filterCertificate}
                   onChange={(e) => setFilterCertificate(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-4 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="all">Tất cả chứng chỉ</option>
-                  <option value="TOEIC">TOEIC</option>
-                  <option value="IELTS">IELTS</option>
-                </select>
+                  inputClassName="border border-gray-300 rounded-lg px-4 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  options={[
+                    { value: "all", label: "Tất cả chứng chỉ" },
+                    { value: "TOEIC", label: "TOEIC" },
+                    { value: "IELTS", label: "IELTS" },
+                  ]}
+                />
                 <button
                   type="button"
                   onClick={onCreate}
@@ -293,31 +298,38 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
         <form id="create-course-type-form" onSubmit={submitCreate} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên loại khóa học</label>
-            <input
+            <InputField
+              type="text"
+              name="Tenloai"
               value={createForm.Tenloai}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, Tenloai: e.target.value }))}
+              onChange={(e) => setCreateForm((prev) => ({ ...prev, Tenloai: e.target.value }))}
               placeholder="Nhập tên khóa học..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loại chứng chỉ</label>
-            <select
+            <InputField
+              type="select"
+              name="ChungChi"
               value={createForm.ChungChi}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, ChungChi: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="TOEIC">TOEIC</option>
-              <option value="IELTS">IELTS</option>
-            </select>
+              onChange={(e) => setCreateForm((prev) => ({ ...prev, ChungChi: e.target.value }))}
+              inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              options={[
+                { value: "TOEIC", label: "TOEIC" },
+                { value: "IELTS", label: "IELTS" },
+              ]}
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mô tả</label>
-            <textarea
+            <InputField
+              type="textarea"
+              name="mota"
               value={createForm.mota}
-              onChange={(e) => setCreateForm(prev => ({ ...prev, mota: e.target.value }))}
+              onChange={(e) => setCreateForm((prev) => ({ ...prev, mota: e.target.value }))}
               rows={5}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </form>
@@ -366,6 +378,10 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
   const [activeViewerFile, setActiveViewerFile] = useState(null);
   const [pptSlideMode, setPptSlideMode] = useState(false);
 
+  const [docxPreviewLoading, setDocxPreviewLoading] = useState(false);
+  const [docxPreviewText, setDocxPreviewText] = useState("");
+  const [docxPreviewError, setDocxPreviewError] = useState("");
+
   useEffect(() => {
     setTypeForm({
       Tenloai: courseType?.Tenloai || "",
@@ -396,6 +412,79 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
     };
     run();
   }, [token, courseTypesApiUrl, courseType?._id]);
+
+  const isDocxFile = (f) => {
+    const type = String(f?.type || "").toLowerCase();
+    const url = String(f?.url || "").toLowerCase();
+    const originalName = String(f?.originalName || "").toLowerCase();
+    return (
+      type.includes("wordprocessingml.document") ||
+      url.endsWith(".docx") ||
+      originalName.endsWith(".docx") ||
+      /\.(docx)$/.test(url) ||
+      /\.(docx)$/.test(originalName)
+    );
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      if (!activeViewerFile || !isDocxFile(activeViewerFile)) {
+        setDocxPreviewText("");
+        setDocxPreviewError("");
+        setDocxPreviewLoading(false);
+        return;
+      }
+
+      const url = String(activeViewerFile.url || "");
+      if (!url) {
+        setDocxPreviewText("");
+        setDocxPreviewError("File không có đường dẫn.");
+        setDocxPreviewLoading(false);
+        return;
+      }
+
+      setDocxPreviewLoading(true);
+      setDocxPreviewText("");
+      setDocxPreviewError("");
+
+      try {
+        const fullUrl = url.startsWith("http") ? url : `${apiBase}${url}`;
+        const resp = await fetch(fullUrl);
+        if (!resp.ok) throw new Error("Không tải được file để trích nội dung docx.");
+        const blob = await resp.blob();
+
+        const extractUrl = `${apiBase}/api/admin/files/extract-docx`;
+        const formData = new FormData();
+        const fileName = String(activeViewerFile.originalName || "file.docx");
+        formData.append("file", blob, fileName);
+
+        const res2 = await fetch(extractUrl, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
+        const json = await res2.json().catch(() => ({}));
+        if (!res2.ok || !json.success) throw new Error(json.message || "Không trích được nội dung docx.");
+
+        if (!cancelled) {
+          setDocxPreviewText(String(json.text || ""));
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setDocxPreviewError(e?.message || "Lỗi trích nội dung docx");
+        }
+      } finally {
+        if (!cancelled) setDocxPreviewLoading(false);
+      }
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeViewerFile?._id, apiBase, token]);
 
   const openEditLesson = (ls) => {
     setLessonEditing(ls);
@@ -694,30 +783,37 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
               <form onSubmit={submitCourseType} className="px-5 py-4 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên loại khóa học</label>
-                  <input
+                  <InputField
+                    type="text"
+                    name="Tenloai"
                     value={typeForm.Tenloai}
-                    onChange={(e) => setTypeForm(prev => ({ ...prev, Tenloai: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) => setTypeForm((prev) => ({ ...prev, Tenloai: e.target.value }))}
+                    inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Loại chứng chỉ</label>
-                  <select
+                  <InputField
+                    type="select"
+                    name="ChungChi"
                     value={typeForm.ChungChi}
-                    onChange={(e) => setTypeForm(prev => ({ ...prev, ChungChi: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="TOEIC">TOEIC</option>
-                    <option value="IELTS">IELTS</option>
-                  </select>
+                    onChange={(e) => setTypeForm((prev) => ({ ...prev, ChungChi: e.target.value }))}
+                    inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    options={[
+                      { value: "TOEIC", label: "TOEIC" },
+                      { value: "IELTS", label: "IELTS" },
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mô tả</label>
-                  <textarea
+                  <InputField
+                    type="textarea"
+                    name="mota"
                     rows={6}
                     value={typeForm.mota}
-                    onChange={(e) => setTypeForm(prev => ({ ...prev, mota: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) => setTypeForm((prev) => ({ ...prev, mota: e.target.value }))}
+                    inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div className="flex items-center justify-end gap-3 pt-2">
@@ -774,33 +870,38 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
         <form id="lesson-form" onSubmit={submitLesson} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tên bài giảng</label>
-            <input
+            <InputField
+              type="text"
+              name="tenbai"
               value={lessonForm.tenbai}
-              onChange={(e) => setLessonForm(prev => ({ ...prev, tenbai: e.target.value }))}
+              onChange={(e) => setLessonForm((prev) => ({ ...prev, tenbai: e.target.value }))}
               placeholder="Tên bài giảng"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Thứ tự</label>
-              <input
+              <InputField
                 type="number"
+                name="thutu"
                 min={1}
                 max={9999}
                 value={lessonForm.thutu}
-                onChange={(e) => setLessonForm(prev => ({ ...prev, thutu: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => setLessonForm((prev) => ({ ...prev, thutu: e.target.value }))}
+                inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nội dung</label>
-            <textarea
+            <InputField
+              type="textarea"
+              name="mota"
               rows={5}
               value={lessonForm.mota}
-              onChange={(e) => setLessonForm(prev => ({ ...prev, mota: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setLessonForm((prev) => ({ ...prev, mota: e.target.value }))}
+              inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -889,6 +990,7 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
             ) : (
               (() => {
                 const { ok, isImage, isPdf, isVideo, isWord, isPpt, isExcel } = isPreviewable(activeViewerFile);
+                const isDocx = isDocxFile(activeViewerFile);
                 const url = String(activeViewerFile.url || "");
                 if (!url) {
                   return <div className="text-sm text-gray-500 dark:text-gray-400">File không có đường dẫn.</div>;
@@ -911,6 +1013,49 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
                     </video>
                   );
                 }
+                if (isDocx) {
+                  if (docxPreviewLoading) {
+                    return (
+                      <div className="text-sm text-gray-600 dark:text-gray-300">
+                        Đang trích nội dung từ file .docx...
+                      </div>
+                    );
+                  }
+                  if (docxPreviewError) {
+                    return (
+                      <div className="space-y-3">
+                        <div className="text-sm text-red-600 dark:text-red-400">{docxPreviewError}</div>
+                        <iframe
+                          title="docx-office-preview"
+                          src={officeEmbedUrl}
+                          className="w-full h-[55vh] rounded border border-gray-200 dark:border-gray-700"
+                        />
+                      </div>
+                    );
+                  }
+
+                  const text = String(docxPreviewText || "");
+                  const limited = text.length > 9000 ? `${text.slice(0, 9000)}\n\n...(đã cắt bớt để hiển thị)` : text;
+                  return (
+                    <div className="space-y-3">
+                      <pre className="w-full max-h-[55vh] overflow-auto whitespace-pre-wrap rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/20 p-3 text-sm text-gray-800 dark:text-gray-100">
+                        {limited || "Tài liệu rỗng hoặc không trích được nội dung."}
+                      </pre>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Nếu nội dung hiển thị chưa đủ, hãy mở file ở tab mới.
+                      </div>
+                      <a
+                        href={fullUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-sm"
+                      >
+                        Mở file
+                      </a>
+                    </div>
+                  );
+                }
+
                 if (isWord || isExcel || isPpt) {
                   return (
                     <div className="space-y-3">

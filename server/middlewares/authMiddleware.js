@@ -1,6 +1,15 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/NguoiDung');
 
+/**
+ * Giảng viên / học viên phải có daXacThuc === true mới được gọi API có JWT (tránh token cũ hoặc bất thường).
+ */
+const isStudentOrTeacherVerified = (user) => {
+  if (!user) return true;
+  if (user.role !== 'student' && user.role !== 'teacher') return true;
+  return user.daXacThuc === true;
+};
+
 const protect = async (req, res, next) => {
   let token;
 
@@ -17,6 +26,14 @@ const protect = async (req, res, next) => {
 
       if (!req.user) {
         return res.status(401).json({ success: false, message: 'Không được phép, user không tồn tại' });
+      }
+
+      if (!isStudentOrTeacherVerified(req.user)) {
+        return res.status(403).json({
+          success: false,
+          code: 'ACCOUNT_NOT_VERIFIED',
+          message: 'Tài khoản chưa xác thực OTP. Vui lòng đăng nhập và hoàn tất xác thực email.'
+        });
       }
 
       next();
@@ -55,4 +72,4 @@ const student = (req, res, next) => {
   }
 };
 
-module.exports = { protect, admin, teacher, student };
+module.exports = { protect, admin, teacher, student, isStudentOrTeacherVerified };
