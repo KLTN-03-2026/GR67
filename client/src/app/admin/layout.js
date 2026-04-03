@@ -6,7 +6,19 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import ConfirmModal from "../components/ConfirmModal";
 import { ThemeProvider } from "../contexts/ThemeContext";
-import { FiBell, FiMenu, FiX } from "react-icons/fi";
+import {
+  FiBell,
+  FiMenu,
+  FiX,
+  FiHome,
+  FiSettings,
+  FiUsers,
+  FiBookOpen,
+  FiBarChart2,
+  FiLogOut,
+  FiLayers,
+  FiClipboard,
+} from "react-icons/fi";
 
 export default function AdminLayout({ children }) {
   const { user, loading, isAuthenticated, isAdmin, logout } = useAuth();
@@ -92,13 +104,7 @@ export default function AdminLayout({ children }) {
               : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
         }`}
       >
-        <span
-          className={`flex-shrink-0 transform origin-left transition-transform duration-200 ${
-            collapsed
-              ? "scale-200 group-hover:scale-100"
-              : "scale-100"
-          }`}
-        >
+        <span className="flex-shrink-0 flex items-center justify-center h-5 w-5">
           {icon}
         </span>
         <span
@@ -135,11 +141,7 @@ export default function AdminLayout({ children }) {
                 : "text-gray-600 hover:bg-gray-100"
           }`}
         >
-          <span
-            className={`flex-shrink-0 transform origin-left transition-transform duration-200 ${
-              collapsed ? "scale-200 group-hover:scale-100" : "scale-100"
-            }`}
-          >
+          <span className="flex-shrink-0 flex items-center justify-center h-5 w-5">
             {icon}
           </span>
           <span
@@ -188,7 +190,7 @@ export default function AdminLayout({ children }) {
           <SidebarLink
             href="/admin"
             text="Tổng quan"
-            icon={<IconHome />}
+            icon={<FiHome className="h-5 w-5" />}
             collapsed={collapsed}
             onNavigate={onNavigate}
           />
@@ -203,7 +205,7 @@ export default function AdminLayout({ children }) {
           <SidebarLink
             href="/admin/facilities"
             text="Cơ sở"
-            icon={<IconBuilding />}
+            icon={<FiSettings className="h-5 w-5" />}
             collapsed={collapsed}
             onNavigate={onNavigate}
           />
@@ -217,28 +219,28 @@ export default function AdminLayout({ children }) {
           </p>
           <CollapsibleMenu
             text="Người dùng"
-            icon={<IconUsers />}
+            icon={<FiUsers className="h-5 w-5" />}
             baseRoute="/admin/users"
             collapsed={collapsed}
           >
             <SidebarLink
               href="/admin/users/admin"
               text="Quản trị viên"
-              icon={<IconDot />}
+              icon={<span className="h-2 w-2 rounded-full bg-current inline-block" />}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
             <SidebarLink
               href="/admin/users/teacher"
               text="Giảng viên"
-              icon={<IconDot />}
+              icon={<span className="h-2 w-2 rounded-full bg-current inline-block" />}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
             <SidebarLink
               href="/admin/users/student"
               text="Học viên"
-              icon={<IconDot />}
+              icon={<span className="h-2 w-2 rounded-full bg-current inline-block" />}
               collapsed={collapsed}
               onNavigate={onNavigate}
             />
@@ -254,14 +256,36 @@ export default function AdminLayout({ children }) {
           <SidebarLink
             href="/admin/course-types"
             text="Loại khóa học"
-            icon={<IconCategory />}
+            icon={<FiLayers className="h-5 w-5" />}
             collapsed={collapsed}
             onNavigate={onNavigate}
           />
           <SidebarLink
             href="/admin/courses"
             text="Khóa học"
-            icon={<IconBook />}
+            icon={<FiBookOpen className="h-5 w-5" />}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
+
+          <p
+            className={`px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2 ${
+              collapsed ? "hidden group-hover:block" : ""
+            }`}
+          >
+            Ôn tập
+          </p>
+          <SidebarLink
+            href="/admin/sample-tests"
+            text="Đề thi mẫu"
+            icon={<FiClipboard className="h-5 w-5" />}
+            collapsed={collapsed}
+            onNavigate={onNavigate}
+          />
+          <SidebarLink
+            href="/admin/practice-exercises"
+            text="Luyện tập"
+            icon={<FiLayers className="h-5 w-5 rotate-45" />}
             collapsed={collapsed}
             onNavigate={onNavigate}
           />
@@ -276,14 +300,14 @@ export default function AdminLayout({ children }) {
           <SidebarLink
             href="/admin/reports"
             text="Báo cáo thống kê"
-            icon={<IconChart />}
+            icon={<FiBarChart2 className="h-5 w-5" />}
             collapsed={collapsed}
             onNavigate={onNavigate}
           />
           <SidebarLink
             href="/admin/announcements"
             text="Thông báo"
-            icon={<IconBell />}
+            icon={<FiBell className="h-5 w-5" />}
             collapsed={collapsed}
             onNavigate={onNavigate}
           />
@@ -294,7 +318,9 @@ export default function AdminLayout({ children }) {
             onClick={() => setShowLogoutModal(true)}
             className="flex items-center w-full px-4 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
           >
-            <IconLogout />
+            <span className="flex items-center justify-center h-5 w-5">
+              <FiLogOut className="h-5 w-5" />
+            </span>
             <span
               className={`ml-3 font-medium whitespace-nowrap transition-opacity duration-200 ${
                 collapsed ? "hidden group-hover:inline" : "inline"
@@ -423,18 +449,63 @@ export default function AdminLayout({ children }) {
   );
 }
 
-// Icons (SVG)
-const IconHome = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
-const IconBuilding = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h6m-6 4h6m-6 4h6" /></svg>;
-const IconUsers = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 21a6 6 0 004.77-2.88" /></svg>;
-const IconCategory = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h7" /></svg>;
-const IconBook = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>;
-const IconChart = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>;
-const IconBell = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>;
-const IconLogout = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>;
-const IconChevronDown = ({ isOpen }) => <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ml-auto transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>;
-const IconDot = () => <svg viewBox="0 0 16 16" className="h-5 w-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="3"/></svg>;
-const IconSun = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
-const IconMoon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
+// Icons (SVG) cho theme
+const IconChevronDown = ({ isOpen }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className={`h-5 w-5 ml-auto transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+  </svg>
+);
+const IconSun = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+    />
+  </svg>
+);
+const IconMoon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    strokeWidth={2}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+    />
+  </svg>
+);
+
+const IconTest = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 11l3 3L22 4" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+  </svg>
+);
+
+const IconPractice = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+  </svg>
+);
 
 // (menu/header icons) used from react-icons/fi

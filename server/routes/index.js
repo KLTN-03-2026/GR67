@@ -64,6 +64,14 @@ router.use("/admin/files", filesRouter);
 const adminCoursesRouter = require("./admin/coursesRoutes");
 router.use("/admin/courses", adminCoursesRouter);
 
+/* ================== SAMPLE TESTS (ADMIN) ================== */
+const sampleTestsAdminRouter = require("./admin/sampleTestsRoutes");
+router.use("/admin/sample-tests", sampleTestsAdminRouter);
+
+/* ================== PRACTICE EXERCISES (ADMIN) ================== */
+const practiceExercisesAdminRouter = require("./admin/practiceExercisesRoutes");
+router.use("/admin/practice-exercises", practiceExercisesAdminRouter);
+
 // Giảng viên tự xem & cập nhật thông tin cá nhân
 // COMMENT LẠI ĐỂ TRÁNH XUNG ĐỘT: Route này đã được xử lý trong giangvienRoutes (được load ở app.js)
 // router.use('/teacher', teacherSelfRouter);
