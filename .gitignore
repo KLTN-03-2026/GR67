@@ -103,3 +103,15 @@ public/uploads/
 # Database (local)
 *.sqlite
 *.db
+
+# Python — attendanceService (điểm danh / nhận diện khuôn mặt)
+attendanceService/.venv/
+attendanceService/venv/
+attendanceService/**/__pycache__/
+attendanceService/**/*.py[cod]
+attendanceService/**/.pytest_cache/
+attendanceService/**/.mypy_cache/
+attendanceService/**/.ruff_cache/
+attendanceService/**/*.egg-info/
+attendanceService/dist/
+attendanceService/build/

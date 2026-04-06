@@ -1,120 +1,142 @@
 # Quản lý Trung tâm Tiếng Anh
 
-Ứng dụng web quản lý trung tâm ngoại ngữ: đăng ký / đăng nhập có OTP, quản trị (cơ sở, khóa học, người dùng, thông báo, đề mẫu, bài tập luyện…), và cổng giảng viên (lịch học, bài học, bài tập, học viên, đơn nghỉ phép…). Giao diện Next.js kết nối API REST Express + MongoDB.
+Hệ thống web quản lý trung tâm ngoại ngữ: **đăng ký / đăng nhập (OTP)**, **quản trị** (cơ sở, khóa học, người dùng, thông báo, đề mẫu, bài luyện tập, khóa kiosk…), **cổng giảng viên** (lịch, bài học, học viên, đơn nghỉ…) và **điểm danh kiosk** (nhận diện khuôn mặt qua camera).
+
+| Thành phần | Vai trò |
+|------------|---------|
+| `client/` | Giao diện Next.js (App Router) |
+| `server/` | API Express + MongoDB + WebSocket kiosk |
+| `attendanceService/` | Dịch vụ Python (FastAPI): embedding khuôn mặt từ ảnh / clip WebM |
 
 ## Công nghệ
 
-| Thành phần | Công nghệ |
-|------------|-----------|
+| Lớp | Công nghệ |
+|-----|-----------|
 | Frontend | [Next.js](https://nextjs.org) 16, React 19, Tailwind CSS 4 |
-| Backend | Node.js, Express, Mongoose (MongoDB) |
-| Auth | JWT (cookie / header tùy luồng), OTP email (Nodemailer) |
-| API docs | Swagger UI tại `/api-docs` trên server |
+| Backend | Node.js, Express, Mongoose (MongoDB), `ws` (kiosk), Socket.IO (nơi dùng) |
+| Điểm danh | Python 3.10+, FastAPI, Uvicorn, OpenCV (`opencv-python-headless`), `face_recognition` |
+| Auth | JWT; OTP email (Nodemailer) |
+| API docs | Swagger UI: `http://localhost:<PORT>/api-docs` |
 
 ## Cấu trúc thư mục
 
 ```
 QuanLyTrungTamTiengAnh/
-├── client/          # Ứng dụng Next.js (App Router)
-├── server/          # API Express, upload file, Swagger
+├── client/              # Next.js
+├── server/              # Express API, upload, Swagger
+└── attendanceService/   # FastAPI — encode ảnh / WebM → vector 128 chiều
 ```
 
 ## Yêu cầu môi trường
 
-- Node.js (khuyến nghị LTS hiện tại)
-- MongoDB (URI kết nối qua `MONGO_URI`)
+- **Node.js** (LTS khuyến nghị)
+- **MongoDB** (`MONGO_URI`)
+- **Python 3.10+** (chỉ khi dùng điểm danh khuôn mặt / kiosk)
 
-## Cài đặt
+---
 
-### 1. Backend (`server`)
+## 1. Backend (`server`)
 
 ```bash
 cd server
 npm install
 ```
 
-Tạo file `server/.env` (không commit file này). Ví dụ:
+Tạo `server/.env` (không commit). Tham khảo `server/.env.example`. Tối thiểu:
 
 ```env
-# Bắt buộc
 MONGO_URI=mongodb://127.0.0.1:27017/ten-database
 JWT_SECRET=chuoi-bi-mat-du-dai-cho-jwt
-
-# Cổng API (mặc định trong code là 3000 nếu không set)
 PORT=5000
-
-# Gốc web Next.js — phải khớp URL trình duyệt khi mở client (vd: http://localhost:3000)
 CORS_ORIGIN=http://localhost:3000
 
-# Tùy chọn — gửi OTP / quên mật khẩu (Gmail: dùng App Password)
-EMAIL_USER=email-cua-ban@gmail.com
-EMAIL_PASS=mat-khau-ung-dung-16-ky-tu
+# Dịch vụ điểm danh (Python) — bắt buộc nếu dùng kiosk / nhận diện
+ATTENDANCE_SERVICE_URL=http://127.0.0.1:8765
 ```
 
-Chạy development:
+Tùy chọn: email OTP (`EMAIL_USER`, `EMAIL_PASS`), hoặc `KIOSK_API_KEY` (legacy); có thể quản lý khóa kiosk trong admin (`/admin/kiosk-keys`), kiosk nhập dạng `prefix.suffix`.
+
+Chạy:
 
 ```bash
-npm run dev
+npm run dev    # development
+npm start      # production (sau khi cấu hình .env)
 ```
 
-Chạy production (sau khi đã cấu hình `.env`):
+API: `http://localhost:<PORT>` — Swagger: `/api-docs`.
 
-```bash
-npm start
-```
+---
 
-Khi chạy thành công, API phục vụ tại `http://localhost:<PORT>` (ví dụ `http://localhost:5000`). Swagger: `http://localhost:<PORT>/api-docs`.
-
-### 2. Frontend (`client`)
+## 2. Frontend (`client`)
 
 ```bash
 cd client
 npm install
 ```
 
-Tạo file `client/.env.local`:
+`client/.env.local`:
 
 ```env
-# URL gốc của API — nên trùng với PORT server (vd: 5000)
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
-**Lưu ý:** Một số màn hình (ví dụ quản lý cơ sở) chỉ dùng `NEXT_PUBLIC_API_URL` mà không có giá trị mặc định; nếu thiếu biến này, các trang đó có thể lỗi.
-
-Chạy development:
+Phải khớp `PORT` server và `CORS_ORIGIN`.
 
 ```bash
 npm run dev
+# http://localhost:3000 (hoặc cổng Next hiển thị)
+npm run build && npm start   # production
 ```
 
-Mặc định Next.js thường mở tại [http://localhost:3000](http://localhost:3000). Đảm bảo `CORS_ORIGIN` trên server trùng origin này.
+---
 
-Build production:
+## 3. Dịch vụ điểm danh (`attendanceService`)
+
+Python cung cấp HTTP cho Node: trích embedding khuôn mặt từ **ảnh JPEG** hoặc **đoạn WebM** (kiosk gửi qua WebSocket → server forward sang đây).
+
+Chi tiết cài đặt (venv, `dlib` trên Windows) xem thêm [`attendanceService/README.md`](attendanceService/README.md).
 
 ```bash
-npm run build
-npm start
+cd attendanceService
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# Linux/macOS: source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --host 127.0.0.1 --port 8765
 ```
 
-## Luồng khởi động local (gợi ý)
+Biến môi trường tùy chọn: `MAX_IMAGE_MB` (mặc định 8).
 
-1. Bật MongoDB.
-2. Terminal 1: `cd server && npm run dev` (đã set `PORT=5000` và `JWT_SECRET`, `MONGO_URI`).
-3. Terminal 2: `cd client && npm run dev` với `NEXT_PUBLIC_API_URL=http://localhost:5000`.
+**Endpoint chính**
 
-## Tài liệu API
+| Method | Đường dẫn | Mô tả |
+|--------|-----------|--------|
+| GET | `/health` | Kiểm tra sống |
+| POST | `/encode` | `multipart/form-data`, field `file`: ảnh → `{ encoding: number[128] }` |
+| POST | `/encode-webm` | `file`: clip WebM → embedding gộp nhiều khung |
+| POST | `/match` | JSON `probe` + `gallery` (tùy luồng gọi) |
 
-Sau khi server chạy, mở Swagger UI:
+---
 
-`http://localhost:<PORT>/api-docs`
+## Luồng khởi động local (đủ kiosk)
 
-Các route REST chính nằm dưới prefix `/api` (ví dụ `/api/login`, `/api/admin/...`).
+1. Bật **MongoDB**.
+2. **Terminal A — Python:** `cd attendanceService`, kích hoạt venv, `uvicorn app.main:app --host 127.0.0.1 --port 8765`.
+3. **Terminal B — API:** `cd server`, `npm run dev` (đã set `ATTENDANCE_SERVICE_URL`, `MONGO_URI`, `JWT_SECRET`, `CORS_ORIGIN`).
+4. **Terminal C — Web:** `cd client`, `npm run dev`, `NEXT_PUBLIC_API_URL` trỏ tới API.
 
-## Upload và tệp tĩnh
+Trang kiosk (đường dẫn trong app, ví dụ `/kiosk`): nhập mã kiosk → camera → WebSocket `/api/kiosk/ws` (sau auth) gửi segment WebM → Node gọi `ATTENDANCE_SERVICE_URL` → so khớp với học viên trong DB.
 
-Server phục vụ thư mục upload qua đường dẫn `/uploads/...` (cấu hình trong `server/app.js`). Đảm bảo thư mục upload tồn tại và có quyền ghi theo triển khai của bạn.
+---
 
-## Góp ý triển khai
+## Upload & file tĩnh
 
-- Đặt `JWT_SECRET` dài, ngẫu nhiên trên môi trường thật; không dùng giá trị mẫu trong README.
-- Client và server có thể deploy tách domain: cập nhật `NEXT_PUBLIC_API_URL` và `CORS_ORIGIN` cho đúng URL công khai.
+Server phục vụ upload qua `/uploads/...` (cấu hình trong `server/app.js`). Thư mục upload cần tồn tại và có quyền ghi khi triển khai.
+
+---
+
+## Triển khai an toàn
+
+- `JWT_SECRET` dài, ngẫu nhiên trên production; không commit `.env`.
+- Tách domain client/server: cập nhật `NEXT_PUBLIC_API_URL`, `CORS_ORIGIN`, và URL công khai cho kiosk nếu cần.
+- `ATTENDANCE_SERVICE_URL` chỉ nên reachable từ mạng tin cậy (thường cùng host hoặc VPC), không expose công khai không cần thiết.
