@@ -1,7 +1,10 @@
 require("dotenv").config();
+const http = require('http');
 var createError = require('http-errors');
 var express = require('express');
 const connectDB = require("./config/db");
+const { initSocket } = require("./socket/io");
+const { initKioskWs } = require("./socket/kioskWs");
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -68,7 +71,10 @@ const startServer = async () => {
     }
 
     await connectDB();
-    app.listen(PORT, () => {
+    const httpServer = http.createServer(app);
+    initSocket(httpServer);
+    initKioskWs(httpServer);
+    httpServer.listen(PORT, () => {
       console.log(`Server running at http://localhost:${PORT}`);
       console.log(`Swagger UI: http://localhost:${PORT}/api-docs`);
       const apiPaths = Object.keys(swaggerSpec.paths || {});

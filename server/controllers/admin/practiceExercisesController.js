@@ -2,6 +2,15 @@ const mongoose = require("mongoose");
 const LuyenTap = require("../../models/LuyenTap");
 const LuyenTapItem = require("../../models/LuyenTapItem");
 
+const BAI_LOAI_ALLOWED = ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect", "mixedNoFlashcard"];
+const ITEM_LOAI_ALL = ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect"];
+const ITEM_LOAI_MIXED_NO_FC = ["quiz", "trueFalse", "shortAnswer", "multiSelect"];
+
+function itemLoaiAllowedForExercise(exLoaiBai, loaiItem) {
+  if (exLoaiBai === "mixedNoFlashcard") return ITEM_LOAI_MIXED_NO_FC.includes(loaiItem);
+  return loaiItem === exLoaiBai;
+}
+
 function asObjectId(value) {
   if (!mongoose.Types.ObjectId.isValid(value)) return null;
   return new mongoose.Types.ObjectId(value);
@@ -28,8 +37,7 @@ exports.listPracticeExercises = async (req, res) => {
     }
 
     if (loaiBai) {
-      const allowed = ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect"];
-      const lb = normalizeEnum(loaiBai, allowed);
+      const lb = normalizeEnum(loaiBai, BAI_LOAI_ALLOWED);
       if (!lb) return res.status(400).json({ success: false, message: "loaiBai không hợp lệ." });
       query.loaiBai = lb;
     }
@@ -68,8 +76,7 @@ exports.createPracticeExercise = async (req, res) => {
     }
     if (!String(tenBai || "").trim()) return res.status(400).json({ success: false, message: "Vui lòng nhập tên bài." });
 
-    const allowed = ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect"];
-    const lb = normalizeEnum(loaiBai, allowed);
+    const lb = normalizeEnum(loaiBai, BAI_LOAI_ALLOWED);
     if (!lb) return res.status(400).json({ success: false, message: "loaiBai không hợp lệ." });
 
     const tg = thoiGianLamBai === undefined || thoiGianLamBai === null || thoiGianLamBai === ""
@@ -133,8 +140,7 @@ exports.updatePracticeExercise = async (req, res) => {
       }
     }
     if (req.body.loaiBai !== undefined) {
-      const allowed = ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect"];
-      const lb = normalizeEnum(req.body.loaiBai, allowed);
+      const lb = normalizeEnum(req.body.loaiBai, BAI_LOAI_ALLOWED);
       if (!lb) return res.status(400).json({ success: false, message: "loaiBai không hợp lệ." });
       update.loaiBai = lb;
     }
@@ -183,10 +189,17 @@ exports.createPracticeExerciseItem = async (req, res) => {
     const thuTu = Number(req.body.thuTu);
     const loaiItem = String(req.body.loaiItem || "").trim();
 
-    const allowed = ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect"];
     if (!Number.isFinite(thuTu) || thuTu < 1) return res.status(400).json({ success: false, message: "thuTu không hợp lệ." });
-    if (!allowed.includes(loaiItem)) return res.status(400).json({ success: false, message: "loaiItem không hợp lệ." });
-    if (loaiItem !== ex.loaiBai) return res.status(400).json({ success: false, message: "loaiItem phải trùng loaiBai của bài." });
+    if (!ITEM_LOAI_ALL.includes(loaiItem)) return res.status(400).json({ success: false, message: "loaiItem không hợp lệ." });
+    if (!itemLoaiAllowedForExercise(ex.loaiBai, loaiItem)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          ex.loaiBai === "mixedNoFlashcard"
+            ? "Bài hỗn hợp chỉ cho phép item: quiz, multiSelect, trueFalse, shortAnswer (không flashcard)."
+            : "loaiItem phải trùng loaiBai của bài.",
+      });
+    }
 
     const rawTf = req.body.dapAnDungBoolean;
     let parsedTf = null;
@@ -244,9 +257,16 @@ exports.updatePracticeExerciseItem = async (req, res) => {
 
     if (req.body.loaiItem !== undefined) {
       const loaiItem = String(req.body.loaiItem || "").trim();
-      const allowed = ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect"];
-      if (!allowed.includes(loaiItem)) return res.status(400).json({ success: false, message: "loaiItem không hợp lệ." });
-      if (loaiItem !== ex.loaiBai) return res.status(400).json({ success: false, message: "loaiItem phải trùng loaiBai của bài." });
+      if (!ITEM_LOAI_ALL.includes(loaiItem)) return res.status(400).json({ success: false, message: "loaiItem không hợp lệ." });
+      if (!itemLoaiAllowedForExercise(ex.loaiBai, loaiItem)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            ex.loaiBai === "mixedNoFlashcard"
+              ? "Bài hỗn hợp chỉ cho phép item: quiz, multiSelect, trueFalse, shortAnswer."
+              : "loaiItem phải trùng loaiBai của bài.",
+        });
+      }
       update.loaiItem = loaiItem;
     }
 

@@ -1,6 +1,13 @@
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 const { protect, admin } = require('../../middlewares/authMiddleware');
+const { registerStudentFace } = require('../../controllers/admin/faceEnrollmentController');
+
+const faceUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 8 * 1024 * 1024 },
+});
 
 const {
     // Admin CRUD
@@ -43,6 +50,11 @@ teacherAdminRouter.patch('/:id/password', resetTeacherPassword);    // Đặt l�
 const studentAdminRouter = express.Router();
 studentAdminRouter.use(protect, admin);
 
+studentAdminRouter.post(
+  '/:id/face',
+  faceUpload.single('image'),
+  registerStudentFace
+);
 studentAdminRouter.get('/', getAllStudents);                         // Lấy danh sách học viên
 studentAdminRouter.get('/:id', getStudentById);                     // Lấy chi tiết 1 học viên
 studentAdminRouter.post('/', createStudent);                        // Tạo tài khoản học viên

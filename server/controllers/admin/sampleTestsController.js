@@ -22,6 +22,20 @@ function normalizeFileIds(files) {
     .filter(Boolean);
 }
 
+const ALLOWED_LOAI_CAU_HOI = ["mcq", "multiSelect", "trueFalse", "shortAnswer"];
+
+function normalizeLuaChon(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr.map((x) => String(x ?? "").trim());
+}
+
+function isIndexArrayValid(indices, length) {
+  if (!Array.isArray(indices)) return false;
+  const uniq = new Set(indices);
+  if (uniq.size !== indices.length) return false;
+  return indices.every((i) => typeof i === "number" && Number.isInteger(i) && i >= 0 && i < length);
+}
+
 // GET /api/admin/sample-tests
 exports.listSampleTests = async (req, res) => {
   try {
@@ -271,15 +285,6 @@ exports.deleteSampleTestPart = async (req, res) => {
     const partId = asObjectId(req.params.partId);
     if (!testId || !partId) return res.status(400).json({ success: false, message: "Tham số không hợp lệ." });
 
-    const remainingQuestions = await DeThiMauCauHoi.countDocuments({
-      deThiMauID: testId,
-      deThiMauPhanID: { $ne: partId },
-    });
-
-    if (remainingQuestions <= 0) {
-      return res.status(400).json({ success: false, message: "Không thể xóa phần này vì đề sẽ không còn câu hỏi." });
-    }
-
     await DeThiMauCauHoi.deleteMany({ deThiMauID: testId, deThiMauPhanID: partId });
     await DeThiMauPhanNhom.deleteMany({ deThiMauPhanID: partId });
     await DeThiMauPhan.findOneAndDelete({ _id: partId, deThiMauID: testId });
@@ -400,47 +405,91 @@ exports.createSampleTestQuestion = async (req, res) => {
 
     const thuTu = Number(req.body.thuTu);
     const noiDung = String(req.body.noiDung || "").trim();
-    const luaChon = Array.isArray(req.body.luaChon) ? req.body.luaChon : [];
-    const dapAnDungIndex = Number(req.body.dapAnDungIndex);
     const giaiThich = String(req.body.giaiThich || "").trim();
-    const loaiCauHoi = String(req.body.loaiCauHoi || "mcq").trim().toLowerCase();
+    const loaiCauHoi = String(req.body.loaiCauHoi || "mcq").trim();
     const deThiMauPhanNhomID = req.body.deThiMauPhanNhomID ? asObjectId(req.body.deThiMauPhanNhomID) : null;
     if (req.body.deThiMauPhanNhomID && !deThiMauPhanNhomID) {
       return res.status(400).json({ success: false, message: "deThiMauPhanNhomID không hợp lệ." });
     }
 
-    // nếu có nhomID thì phải thuộc đúng part
     if (deThiMauPhanNhomID) {
       const nhom = await DeThiMauPhanNhom.findOne({ _id: deThiMauPhanNhomID, deThiMauPhanID: partId }).lean();
       if (!nhom) return res.status(400).json({ success: false, message: "Nhóm không thuộc part này." });
     }
 
     const files = normalizeFileIds(req.body.files);
+    const luaChonNorm = normalizeLuaChon(req.body.luaChon);
 
     if (!Number.isFinite(thuTu) || thuTu < 1) return res.status(400).json({ success: false, message: "thuTu không hợp lệ." });
     if (!noiDung) return res.status(400).json({ success: false, message: "Vui lòng nhập nội dung câu hỏi." });
-    if (!["mcq"].includes(loaiCauHoi)) return res.status(400).json({ success: false, message: "loaiCauHoi chỉ hỗ trợ mcq." });
-    if (!Number.isFinite(dapAnDungIndex) || dapAnDungIndex < 0 || dapAnDungIndex > 3) {
-      return res.status(400).json({ success: false, message: "dapAnDungIndex phải trong 0-3." });
+    if (!ALLOWED_LOAI_CAU_HOI.includes(loaiCauHoi)) {
+      return res.status(400).json({ success: false, message: "loaiCauHoi không hợp lệ." });
     }
 
-    const question = await DeThiMauCauHoi.create({
+    const base = {
       deThiMauID: testId,
       deThiMauPhanID: partId,
       deThiMauPhanNhomID: deThiMauPhanNhomID || null,
       thuTu,
       loaiCauHoi,
       noiDung,
-      luaChon,
-      dapAnDungIndex,
       giaiThich,
       files,
-    });
+      luaChon: [],
+      dapAnDungIndex: null,
+      dapAnDungIndices: [],
+      dapAnDungBoolean: null,
+      dapAnDungText: "",
+    };
+
+    if (loaiCauHoi === "mcq") {
+      if (luaChonNorm.length !== 4 || luaChonNorm.some((s) => !s)) {
+        return res.status(400).json({ success: false, message: "mcq cần đúng 4 lựa chọn (không rỗng)." });
+      }
+      const dapAnDungIndex = Number(req.body.dapAnDungIndex);
+      if (!Number.isInteger(dapAnDungIndex) || dapAnDungIndex < 0 || dapAnDungIndex > 3) {
+        return res.status(400).json({ success: false, message: "dapAnDungIndex phải từ 0 đến 3." });
+      }
+      base.luaChon = luaChonNorm;
+      base.dapAnDungIndex = dapAnDungIndex;
+    } else if (loaiCauHoi === "multiSelect") {
+      if (luaChonNorm.length !== 4 || luaChonNorm.some((s) => !s)) {
+        return res.status(400).json({ success: false, message: "multiSelect cần đúng 4 lựa chọn (không rỗng)." });
+      }
+      const dapAnDungIndices = Array.isArray(req.body.dapAnDungIndices) ? req.body.dapAnDungIndices.map(Number) : [];
+      if (!isIndexArrayValid(dapAnDungIndices, 4) || dapAnDungIndices.length === 0) {
+        return res.status(400).json({ success: false, message: "dapAnDungIndices không hợp lệ hoặc rỗng." });
+      }
+      base.luaChon = luaChonNorm;
+      base.dapAnDungIndices = dapAnDungIndices;
+    } else if (loaiCauHoi === "trueFalse") {
+      if (typeof req.body.dapAnDungBoolean !== "boolean") {
+        return res.status(400).json({ success: false, message: "trueFalse cần dapAnDungBoolean (boolean)." });
+      }
+      base.dapAnDungBoolean = req.body.dapAnDungBoolean;
+      base.luaChon = [];
+    } else if (loaiCauHoi === "shortAnswer") {
+      const dapAnDungText = String(req.body.dapAnDungText || "").trim();
+      if (!dapAnDungText) {
+        return res.status(400).json({ success: false, message: "shortAnswer cần dapAnDungText." });
+      }
+      base.dapAnDungText = dapAnDungText;
+      base.luaChon = [];
+    }
+
+    const question = await DeThiMauCauHoi.create(base);
 
     res.status(201).json({ success: true, message: "Tạo câu hỏi thành công!", data: question.toObject ? question.toObject() : question });
   } catch (error) {
     console.error("createSampleTestQuestion error:", error);
-    res.status(500).json({ success: false, message: "Lỗi máy chủ." });
+    if (error?.name === "ValidationError" && error.errors) {
+      const msg = Object.values(error.errors)
+        .map((e) => e.message)
+        .join(" ");
+      return res.status(400).json({ success: false, message: msg || "Dữ liệu không hợp lệ." });
+    }
+    const msg = error?.message && String(error.message).includes("cần") ? error.message : "Lỗi máy chủ.";
+    res.status(500).json({ success: false, message: msg });
   }
 };
 
@@ -452,13 +501,25 @@ exports.updateSampleTestQuestion = async (req, res) => {
     const questionId = asObjectId(req.params.questionId);
     if (!testId || !partId || !questionId) return res.status(400).json({ success: false, message: "Tham số không hợp lệ." });
 
-    const update = {};
-    if (req.body.thuTu !== undefined) update.thuTu = Number(req.body.thuTu);
-    if (req.body.noiDung !== undefined) update.noiDung = String(req.body.noiDung || "").trim();
-    if (req.body.luaChon !== undefined) update.luaChon = Array.isArray(req.body.luaChon) ? req.body.luaChon : [];
-    if (req.body.dapAnDungIndex !== undefined) update.dapAnDungIndex = Number(req.body.dapAnDungIndex);
-    if (req.body.giaiThich !== undefined) update.giaiThich = String(req.body.giaiThich || "").trim();
-    if (req.body.loaiCauHoi !== undefined) update.loaiCauHoi = String(req.body.loaiCauHoi || "").trim().toLowerCase();
+    const q = await DeThiMauCauHoi.findOne({ _id: questionId, deThiMauID: testId, deThiMauPhanID: partId });
+    if (!q) return res.status(404).json({ success: false, message: "Không tìm thấy câu hỏi." });
+
+    if (req.body.thuTu !== undefined) {
+      const t = Number(req.body.thuTu);
+      if (!Number.isFinite(t) || t < 1) return res.status(400).json({ success: false, message: "thuTu không hợp lệ." });
+      q.thuTu = t;
+    }
+    if (req.body.noiDung !== undefined) {
+      const nd = String(req.body.noiDung || "").trim();
+      if (!nd) return res.status(400).json({ success: false, message: "noiDung không hợp lệ." });
+      q.noiDung = nd;
+    }
+    if (req.body.giaiThich !== undefined) q.giaiThich = String(req.body.giaiThich || "").trim();
+    if (req.body.loaiCauHoi !== undefined) {
+      const lt = String(req.body.loaiCauHoi || "").trim();
+      if (!ALLOWED_LOAI_CAU_HOI.includes(lt)) return res.status(400).json({ success: false, message: "loaiCauHoi không hợp lệ." });
+      q.loaiCauHoi = lt;
+    }
     if (req.body.deThiMauPhanNhomID !== undefined) {
       const next = req.body.deThiMauPhanNhomID ? asObjectId(req.body.deThiMauPhanNhomID) : null;
       if (req.body.deThiMauPhanNhomID && !next) return res.status(400).json({ success: false, message: "deThiMauPhanNhomID không hợp lệ." });
@@ -466,33 +527,42 @@ exports.updateSampleTestQuestion = async (req, res) => {
         const nhom = await DeThiMauPhanNhom.findOne({ _id: next, deThiMauPhanID: partId }).lean();
         if (!nhom) return res.status(400).json({ success: false, message: "Nhóm không thuộc part này." });
       }
-      update.deThiMauPhanNhomID = next;
+      q.deThiMauPhanNhomID = next;
     }
     if (req.body.files !== undefined) {
-      update.files = normalizeFileIds(req.body.files);
+      q.files = normalizeFileIds(req.body.files);
+    }
+    if (req.body.luaChon !== undefined) {
+      q.luaChon = normalizeLuaChon(req.body.luaChon);
+    }
+    if (req.body.dapAnDungIndex !== undefined) {
+      const di = Number(req.body.dapAnDungIndex);
+      q.dapAnDungIndex = Number.isInteger(di) ? di : null;
+    }
+    if (req.body.dapAnDungIndices !== undefined) {
+      q.dapAnDungIndices = Array.isArray(req.body.dapAnDungIndices) ? req.body.dapAnDungIndices.map(Number) : [];
+    }
+    if (req.body.dapAnDungBoolean !== undefined) {
+      if (req.body.dapAnDungBoolean === null) q.dapAnDungBoolean = null;
+      else q.dapAnDungBoolean = Boolean(req.body.dapAnDungBoolean);
+    }
+    if (req.body.dapAnDungText !== undefined) {
+      q.dapAnDungText = String(req.body.dapAnDungText || "").trim();
     }
 
-    if (update.thuTu !== undefined && (!Number.isFinite(update.thuTu) || update.thuTu < 1)) {
-      return res.status(400).json({ success: false, message: "thuTu không hợp lệ." });
-    }
-    if (update.noiDung !== undefined && !update.noiDung) return res.status(400).json({ success: false, message: "noiDung không hợp lệ." });
-    if (update.dapAnDungIndex !== undefined && (!Number.isFinite(update.dapAnDungIndex) || update.dapAnDungIndex < 0 || update.dapAnDungIndex > 3)) {
-      return res.status(400).json({ success: false, message: "dapAnDungIndex phải trong 0-3." });
-    }
-    if (update.loaiCauHoi !== undefined && !["mcq"].includes(update.loaiCauHoi)) return res.status(400).json({ success: false, message: "loaiCauHoi chỉ hỗ trợ mcq." });
-
-    const updated = await DeThiMauCauHoi.findOneAndUpdate(
-      { _id: questionId, deThiMauID: testId, deThiMauPhanID: partId },
-      update,
-      { new: true }
-    ).lean();
-
-    if (!updated) return res.status(404).json({ success: false, message: "Không tìm thấy câu hỏi." });
-
+    await q.save();
+    const updated = q.toObject ? q.toObject() : q;
     res.status(200).json({ success: true, message: "Cập nhật câu hỏi thành công!", data: updated });
   } catch (error) {
     console.error("updateSampleTestQuestion error:", error);
-    res.status(500).json({ success: false, message: "Lỗi máy chủ." });
+    if (error?.name === "ValidationError" && error.errors) {
+      const msg = Object.values(error.errors)
+        .map((e) => e.message)
+        .join(" ");
+      return res.status(400).json({ success: false, message: msg || "Dữ liệu không hợp lệ." });
+    }
+    const msg = error?.message && String(error.message).includes("cần") ? error.message : "Lỗi máy chủ.";
+    res.status(500).json({ success: false, message: msg });
   }
 };
 

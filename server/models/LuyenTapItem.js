@@ -93,45 +93,44 @@ function isIndexArrayValid(indices, length) {
 
 luyenTapItemSchema.index({ luyenTapID: 1, thuTu: 1 });
 
-luyenTapItemSchema.pre("validate", function (next) {
+luyenTapItemSchema.pre("validate", function () {
   const item = this;
   switch (item.loaiItem) {
     case "flashcard":
       if (!isNonEmptyString(item.matTruoc) || !isNonEmptyString(item.matSau)) {
-        return next(new Error("flashcard cần có matTruoc và matSau."));
+        throw new Error("flashcard cần có matTruoc và matSau.");
       }
-      return next();
+      break;
     case "quiz": {
       if (!isStringArray4(item.luaChon)) {
-        return next(new Error("quiz cần luaChon gồm đúng 4 lựa chọn (không rỗng)."));
+        throw new Error("quiz cần luaChon gồm đúng 4 lựa chọn (không rỗng).");
       }
       if (typeof item.dapAnDungIndex !== "number") {
-        return next(new Error("quiz cần dapAnDungIndex (0-3)."));
+        throw new Error("quiz cần dapAnDungIndex (0-3).");
       }
-      return next();
+      break;
     }
     case "multiSelect": {
-      // Cho phép multiSelect dùng chung 4 lựa chọn như quiz
       if (!isStringArray4(item.luaChon)) {
-        return next(new Error("multiSelect cần luaChon gồm đúng 4 lựa chọn (không rỗng)."));
+        throw new Error("multiSelect cần luaChon gồm đúng 4 lựa chọn (không rỗng).");
       }
       if (!isIndexArrayValid(item.dapAnDungIndices, 4) || item.dapAnDungIndices.length === 0) {
-        return next(new Error("multiSelect cần dapAnDungIndices là mảng chỉ số đúng và không rỗng."));
+        throw new Error("multiSelect cần dapAnDungIndices là mảng chỉ số đúng và không rỗng.");
       }
-      return next();
+      break;
     }
     case "trueFalse":
       if (typeof item.dapAnDungBoolean !== "boolean") {
-        return next(new Error("trueFalse cần dapAnDungBoolean là true/false."));
+        throw new Error("trueFalse cần dapAnDungBoolean là true/false.");
       }
-      return next();
+      break;
     case "shortAnswer":
       if (!isNonEmptyString(item.dapAnDungText)) {
-        return next(new Error("shortAnswer cần dapAnDungText (không rỗng)."));
+        throw new Error("shortAnswer cần dapAnDungText (không rỗng).");
       }
-      return next();
+      break;
     default:
-      return next(new Error("loaiItem không hợp lệ."));
+      throw new Error("loaiItem không hợp lệ.");
   }
 });
 

@@ -3,6 +3,7 @@ const HocVien = require('../../models/HocVien');
 const GiangVien = require('../../models/GiangVien');
 const bcrypt = require('bcryptjs');
 const { sendOTP } = require('../authController');
+const { sanitizeHocVienPublic } = require('../../utils/sanitizeHocVien');
 
 // ==========================================
 //  HELPER: xây dựng đối tượng filter chung
@@ -439,7 +440,7 @@ const getAllStudents = async (req, res) => {
 
         const result = users.map(u => ({
             ...u,
-            hocVienInfo: hocVienMap[u._id.toString()] || null
+            hocVienInfo: sanitizeHocVienPublic(hocVienMap[u._id.toString()]) || null
         }));
 
         res.status(200).json({ success: true, count: result.length, data: result });
@@ -462,7 +463,10 @@ const getStudentById = async (req, res) => {
 
         const hocVienInfo = await HocVien.findOne({ userId: user._id }).lean();
 
-        res.status(200).json({ success: true, data: { ...user, hocVienInfo: hocVienInfo || null } });
+        res.status(200).json({
+            success: true,
+            data: { ...user, hocVienInfo: sanitizeHocVienPublic(hocVienInfo) || null }
+        });
     } catch (error) {
         console.error('Lỗi lấy chi tiết học viên:', error);
         res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
@@ -517,7 +521,7 @@ const createStudent = async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Tạo tài khoản học viên thành công. OTP xác thực lần đầu đã gửi đến email; học viên cần nhập OTP rồi mới đăng nhập được.',
-            data: { ...userResult, hocVienInfo: newHocVien }
+            data: { ...userResult, hocVienInfo: sanitizeHocVienPublic(newHocVien) }
         });
     } catch (error) {
         console.error('Lỗi tạo học viên:', error);
@@ -559,7 +563,7 @@ const updateStudent = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Cập nhật thông tin học viên thành công',
-            data: { ...user.toObject(), hocVienInfo }
+            data: { ...user.toObject(), hocVienInfo: sanitizeHocVienPublic(hocVienInfo) }
         });
     } catch (error) {
         console.error('Lỗi cập nhật học viên:', error);
@@ -681,7 +685,10 @@ const getStudentProfile = async (req, res) => {
 
         const hocVienInfo = await HocVien.findOne({ userId: req.user._id }).lean();
 
-        res.status(200).json({ success: true, data: { ...user, hocVienInfo: hocVienInfo || null } });
+        res.status(200).json({
+            success: true,
+            data: { ...user, hocVienInfo: sanitizeHocVienPublic(hocVienInfo) || null }
+        });
     } catch (error) {
         console.error('Lỗi lấy profile học viên:', error);
         res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
@@ -707,7 +714,7 @@ const updateStudentProfile = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Cập nhật thông tin cá nhân thành công',
-            data: { ...user.toObject(), hocVienInfo: hocVienInfo || null }
+            data: { ...user.toObject(), hocVienInfo: sanitizeHocVienPublic(hocVienInfo) || null }
         });
     } catch (error) {
         console.error('Lỗi cập nhật profile học viên:', error);

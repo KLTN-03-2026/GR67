@@ -60,5 +60,43 @@ const uploadFiles = async (req, res) => {
   }
 };
 
-module.exports = { uploadFiles, extractDocxText };
+const mammothHtmlOptions = {
+  convertImage: mammoth.images.imgElement(function (image) {
+    return image.read("base64").then(function (imageBuffer) {
+      return {
+        src: "data:" + image.contentType + ";base64," + imageBuffer,
+      };
+    });
+  }),
+};
+
+// POST /admin/files/extract-docx-html — HTML có <img> base64 (giữ ảnh trong Word)
+const extractDocxHtml = async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ success: false, message: "Không có file" });
+    }
+    const ext = path.extname(file.originalname || "").toLowerCase();
+    if (ext !== ".docx") {
+      fs.unlink(file.path, () => {});
+      return res.status(400).json({ success: false, message: "Chỉ hỗ trợ file .docx" });
+    }
+    const result = await mammoth.convertToHtml({ path: file.path }, mammothHtmlOptions);
+    fs.unlink(file.path, () => {});
+    res.status(200).json({
+      success: true,
+      html: result.value || "",
+      messages: result.messages || [],
+    });
+  } catch (error) {
+    console.error("Lỗi đọc docx HTML (mammoth):", error);
+    if (req.file?.path) {
+      fs.unlink(req.file.path, () => {});
+    }
+    res.status(500).json({ success: false, message: "Không đọc được HTML từ file docx" });
+  }
+};
+
+module.exports = { uploadFiles, extractDocxText, extractDocxHtml };
 

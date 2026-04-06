@@ -72,6 +72,14 @@ router.use("/admin/sample-tests", sampleTestsAdminRouter);
 const practiceExercisesAdminRouter = require("./admin/practiceExercisesRoutes");
 router.use("/admin/practice-exercises", practiceExercisesAdminRouter);
 
+/* ================== KIOSK API KEYS (ADMIN) ================== */
+const kioskKeysAdminRouter = require('./admin/kioskKeysRoutes');
+router.use('/admin/kiosk-keys', kioskKeysAdminRouter);
+
+/* ================== KIOSK (điểm danh khuôn mặt) ================== */
+const kioskRouter = require("./kioskRoutes");
+router.use("/kiosk", kioskRouter);
+
 // Giảng viên tự xem & cập nhật thông tin cá nhân
 // COMMENT LẠI ĐỂ TRÁNH XUNG ĐỘT: Route này đã được xử lý trong giangvienRoutes (được load ở app.js)
 // router.use('/teacher', teacherSelfRouter);

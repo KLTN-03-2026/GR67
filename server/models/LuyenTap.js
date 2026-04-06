@@ -17,7 +17,7 @@ const luyenTapSchema = new mongoose.Schema(
     loaiBai: {
       type: String,
       required: true,
-      enum: ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect"],
+      enum: ["flashcard", "quiz", "trueFalse", "shortAnswer", "multiSelect", "mixedNoFlashcard"],
       trim: true,
     },
     thoiGianLamBai: {
