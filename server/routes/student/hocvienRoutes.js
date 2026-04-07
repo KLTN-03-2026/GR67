@@ -17,6 +17,10 @@ router.get('/courses/:courseId/sessions', protect, leaveRequestController.getUpc
 router.get('/leave-requests', protect, leaveRequestController.getLeaveRequests);
 router.post('/leave-requests', protect, leaveRequestController.createLeaveRequest);
 
+// Assignment submit route
+const assignmentController = require('../../controllers/student/assignmentController');
+router.post('/assignments/submit', protect, assignmentController.submitAssignment);
+
 // Schedule routes
 router.get('/schedule', protect, scheduleController.getStudentSchedule);
 

@@ -22,8 +22,9 @@ exports.getLeaveRequests = async (req, res) => {
     // 2. Tìm tất cả Đăng ký khóa học của các khóa học do giảng viên này dạy
     // Aggregate data hoặc dùng populate deep
 
+    const mongoose = require('mongoose');
     let matchKhoaHoc = { giangvien: giangVien._id };
-    if (courseId) {
+    if (courseId && mongoose.isValidObjectId(courseId)) {
       matchKhoaHoc._id = courseId; // Giả sử query là courseId hợp lệ
     }
 

@@ -109,18 +109,32 @@ exports.getRollcallData = async (req, res) => {
     // Lấy trạng thái điểm danh hiện tại nếu đã lưu
     const diemDanhDaLuu = await ThamGiaBuoiHoc.find({ buoihocID: lessonId });
     const diemDanhMap = {};
+    const leaveRequestMap = {};
     diemDanhDaLuu.forEach(dd => {
       diemDanhMap[dd.dangkykhoahocID.toString()] = dd.trangthai;
+      if (dd.trangthai_duyet === 'approved') {
+        leaveRequestMap[dd.dangkykhoahocID.toString()] = true;
+      }
     });
 
-    const studentList = danhSachDangKy.map(dk => ({
-      dangkykhoahocID: dk._id,
-      studentId: dk.hocvienId?._id,
-      userId: dk.hocvienId?.userId?._id,
-      name: dk.hocvienId?.userId?.hovaten || dk.hocvienId?.userId?.email || "Thiếu tên",
-      code: dk.hocvienId?.userId?.email?.split('@')[0] || "HV",
-      status: diemDanhMap[dk._id.toString()] || "absent" // Mặc định là absent nếu chưa điểm danh
-    }));
+    const studentList = danhSachDangKy.map(dk => {
+      const isApprovedLeave = leaveRequestMap[dk._id.toString()];
+      let defaultStatus = diemDanhMap[dk._id.toString()] || "absent";
+      // Nếu trạng thái mặc định là absent mà có đơn xin nghỉ phép được duyệt thì chuyển thành excused
+      if (isApprovedLeave && defaultStatus === "absent") {
+        defaultStatus = "excused";
+      }
+
+      return {
+        dangkykhoahocID: dk._id,
+        studentId: dk.hocvienId?._id,
+        userId: dk.hocvienId?.userId?._id,
+        name: dk.hocvienId?.userId?.hovaten || dk.hocvienId?.userId?.email || "Thiếu tên",
+        code: dk.hocvienId?.userId?.email?.split('@')[0] || "HV",
+        status: defaultStatus,
+        hasApprovedLeave: isApprovedLeave || false
+      };
+    });
 
     return res.status(200).json({
       success: true,
