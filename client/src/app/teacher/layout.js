@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "../contexts/AuthContext";
 import ConfirmModal from "../components/ConfirmModal";
+import NotificationDropdown from "../components/NotificationDropdown";
 
 export default function TeacherLayout({ children }) {
   const { user, loading, isAuthenticated, isTeacher, logout } = useAuth();
@@ -154,6 +155,8 @@ export default function TeacherLayout({ children }) {
             <button onClick={toggleTheme} className={`p-2 rounded-full transition-colors ${darkMode ? "hover:bg-gray-700 text-yellow-400" : "hover:bg-gray-100 text-gray-600"}`} title="Đổi giao diện">
                {darkMode ? <IconSun /> : <IconMoon />}
             </button>
+
+            <NotificationDropdown />
 
             <div className="text-right">
               <p className={`text-sm font-medium ${darkMode ? "text-gray-200" : "text-gray-900"}`}>{user?.hovaten}</p>

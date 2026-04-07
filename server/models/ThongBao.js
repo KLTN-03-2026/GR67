@@ -16,10 +16,10 @@ const thongBaoSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'NguoiDung',
   },
-  // all | class | personal
+  // all | class | personal | assignment_submit
   targetType: {
     type: String,
-    enum: ['all', 'class', 'personal'],
+    enum: ['all', 'class', 'personal', 'assignment_submit'],
     default: 'all',
   },
   khoaHocId: {
@@ -53,6 +53,11 @@ const thongBaoSchema = new mongoose.Schema({
   trangthaidoc: {
     type: Boolean,
     default: false,
+  },
+
+  // URL để redirect nếu click vào thông báo
+  link: {
+    type: String
   },
 
   // Đã đọc: mảng user đã đọc

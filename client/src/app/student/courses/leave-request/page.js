@@ -1,11 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import DateInputField from "../../../components/DateInputField";
-import { useAuth } from "../../../contexts/AuthContext";
 
 export default function LeaveRequest() {
-  const { user } = useAuth();
   const [courses, setCourses] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [leaveRequests, setLeaveRequests] = useState([]);
@@ -20,21 +17,6 @@ export default function LeaveRequest() {
   const [message, setMessage] = useState('');
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
-  // Fetch initial data
-  useEffect(() => {
-    fetchCourses();
-    fetchLeaveRequests();
-  }, []);
-
-  // Fetch sessions when course changes
-  useEffect(() => {
-    if (formData.courseId) {
-      fetchSessions(formData.courseId);
-    } else {
-      setSessions([]);
-    }
-  }, [formData.courseId]);
 
   const fetchCourses = async () => {
     try {
@@ -86,6 +68,23 @@ export default function LeaveRequest() {
       console.error("Lỗi lấy lịch sử nghỉ phép:", err);
     }
   };
+
+  // Fetch initial data
+  useEffect(() => {
+    fetchCourses();
+    fetchLeaveRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fetch sessions when course changes
+  useEffect(() => {
+    if (formData.courseId) {
+      fetchSessions(formData.courseId);
+    } else {
+      setSessions([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.courseId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -218,34 +217,7 @@ export default function LeaveRequest() {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ngày bắt đầu *
-              </label>
-              <DateInputField
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                required
-                className="w-full rounded-md border border-gray-300"
-                inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ngày kết thúc *
-              </label>
-              <DateInputField
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                required
-                className="w-full rounded-md border border-gray-300"
-                inputClassName="date-input-field min-w-0 flex-1 px-3 py-2 text-sm outline-none border-0"
-              />
-            </div>
-          </div>
+
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -288,8 +260,8 @@ export default function LeaveRequest() {
                 </p>
               </div>
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${req.trangthai_duyet === 'approved' ? 'bg-green-100 text-green-800' :
-                  req.trangthai_duyet === 'rejected' ? 'bg-red-100 text-red-800' :
-                    'bg-yellow-100 text-yellow-800'
+                req.trangthai_duyet === 'rejected' ? 'bg-red-100 text-red-800' :
+                  'bg-yellow-100 text-yellow-800'
                 }`}>
                 {req.trangthai_duyet === 'approved' ? 'Đã duyệt' : req.trangthai_duyet === 'rejected' ? 'Bị từ chối' : 'Chờ duyệt'}
               </span>

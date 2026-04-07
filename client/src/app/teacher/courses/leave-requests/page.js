@@ -15,10 +15,6 @@ export default function LeaveRequests() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
       let url = `${apiUrl}/teacher/courses/leave-requests`;
 
-      const courseId = localStorage.getItem("selectedCourseId");
-      if (courseId) {
-        url += `?courseId=${courseId}`;
-      }
 
       const res = await fetch(url, {
         headers: {

@@ -244,13 +244,13 @@ function RollcallContent() {
 
                                             <button
                                                 disabled={viewMode}
-                                                onClick={() => toggleStatus(s.dangkykhoahocID, "absent")}
+                                                onClick={() => toggleStatus(s.dangkykhoahocID, s.hasApprovedLeave ? "excused" : "absent")}
                                                 className={`px-4 py-1.5 rounded text-sm font-medium transition ${s.status !== "present"
                                                     ? "bg-red-600 text-white shadow"
                                                     : "text-gray-600 hover:bg-gray-300"
                                                     } ${viewMode ? 'cursor-default' : ''}`}
                                             >
-                                                Vắng
+                                                {s.hasApprovedLeave ? "Vắng (Có phép)" : "Vắng"}
                                             </button>
                                         </div>
                                     </td>
