@@ -22,10 +22,6 @@ export default function AssignmentDetail() {
 
   useEffect(() => {
     let currentCourseId = courseId;
-    if (!currentCourseId) {
-      currentCourseId = localStorage.getItem("selectedCourseId");
-      setCourseIdState(currentCourseId);
-    }
 
     if (!id || !currentCourseId) {
       router.push("/student/courses/assignments");

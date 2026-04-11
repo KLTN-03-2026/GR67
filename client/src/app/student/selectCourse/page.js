@@ -26,7 +26,11 @@ function CourseListContent() {
 
         const data = await res.json();
         if (data.success) {
-          setCourses(data.data);
+          const mappedCourses = data.data.map(course => ({
+            ...course,
+            name: course.name || course.tenkhoahoc || "Khóa học chưa có tên"
+          }));
+          setCourses(mappedCourses);
         } else {
           setError(data.message || "Failed to fetch courses");
         }
@@ -48,7 +52,9 @@ function CourseListContent() {
     // Nếu có tham số redirect (ví dụ từ Sidebar link), chuyển hướng về đó
     // Nếu không, chuyển vào trang tổng quan hoặc chi tiết mặc định
     if (redirect) {
-      router.push(redirect);
+      const hasQueryParams = redirect.includes("?");
+      const suffix = hasQueryParams ? `&courseId=${course.id}` : `?courseId=${course.id}`;
+      router.push(`${redirect}${suffix}`);
     } else {
       router.push(`/student/courses/overview`);
     }

@@ -27,4 +27,8 @@ router.post('/assignments/submit', protect, upload.single('file'), assignmentCon
 // Schedule routes
 router.get('/schedule', protect, scheduleController.getStudentSchedule);
 
+// Dashboard routes
+const studentDashboardController = require('../../controllers/student/studentDashboardController');
+router.get('/overview', protect, studentDashboardController.getDashboardOverview);
+
 module.exports = router;

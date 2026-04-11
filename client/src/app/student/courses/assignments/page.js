@@ -14,11 +14,8 @@ export default function Assignments() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Ưu tiên đọc từ URL, nếu không có đọc từ localStorage
+    // Chỉ đọc từ URL
     let currentCourseId = searchParams.get('courseId');
-    if (!currentCourseId) {
-      currentCourseId = localStorage.getItem("selectedCourseId");
-    }
 
     if (!currentCourseId) {
       // Nếu không có courseId, chuyển hướng về trang chọn khóa học do user yêu cầu
@@ -27,9 +24,6 @@ export default function Assignments() {
     }
     
     setCourseId(currentCourseId);
-    
-    // Nếu trong URL không có mà có trong localStorage thì không bắt buộc phải đẩy lên URL, 
-    // nhưng nếu có trong URL thì ưu tiên dùng. 
     
     const fetchAssignments = async () => {
       try {
