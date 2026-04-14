@@ -12,8 +12,8 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md max-h-[80vh] bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-4">
+      <div className="w-full max-w-md max-h-[min(90vh,40rem)] bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
         <div className="px-6 py-5 border-b flex-shrink-0">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         </div>

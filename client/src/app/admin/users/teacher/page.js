@@ -244,13 +244,6 @@ export default function TeacherAccountsPage() {
         <section className="admin-card overflow-hidden xl:col-span-8">
           <div className="admin-card-head flex items-center justify-between">
             <h2 className="font-semibold text-lg text-[color:var(--admin-sidebar-fg)]">Danh sách Giảng viên</h2>
-            <button
-              type="button"
-              onClick={() => { setSelectedId(null); setFormData(emptyForm); }}
-              className="admin-btn-accent-sm admin-btn-accent hidden items-center gap-1 xl:inline-flex"
-            >
-              <PlusIcon /> Thêm mới
-            </button>
             <button type="button" onClick={openCreateModal} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1 xl:hidden">
               <PlusIcon /> Thêm giảng viên
             </button>
@@ -356,7 +349,7 @@ export default function TeacherAccountsPage() {
 
       {mobileFormOpen ? (
         <div className="fixed inset-0 z-[70] bg-black/40 flex items-center justify-center px-4">
-          <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div className="w-full max-w-xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-base font-bold text-gray-900 dark:text-gray-100">
@@ -372,7 +365,7 @@ export default function TeacherAccountsPage() {
                 Đóng
               </button>
             </div>
-            <div className="px-6 py-5">
+            <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">
               <form onSubmit={handleSave} className="space-y-3">
                 <InputField label="Họ và tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
                 <InputField

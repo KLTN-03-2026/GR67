@@ -238,13 +238,6 @@ export default function StudentAccountsPage() {
         <section className="admin-card overflow-hidden xl:col-span-8">
           <div className="admin-card-head flex items-center justify-between">
             <h2 className="font-semibold text-lg text-[color:var(--admin-sidebar-fg)]">Danh sách học viên</h2>
-            <button
-              type="button"
-              onClick={() => { setSelectedId(null); setFormData(emptyForm); }}
-              className="admin-btn-accent-sm admin-btn-accent hidden items-center gap-1 xl:inline-flex"
-            >
-              <PlusIcon /> Thêm mới
-            </button>
             <button type="button" onClick={openCreateModal} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1 xl:hidden">
               <PlusIcon /> Thêm học viên
             </button>

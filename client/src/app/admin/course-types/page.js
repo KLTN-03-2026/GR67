@@ -1184,8 +1184,8 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
 function Modal({ isOpen, title, onClose, children, footer }) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-4">
+      <div className="w-full max-w-2xl max-h-[min(92vh,50rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
         <div className="px-6 py-5 border-b dark:border-gray-700 flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
@@ -1194,7 +1194,7 @@ function Modal({ isOpen, title, onClose, children, footer }) {
             Đóng
           </button>
         </div>
-        <div className="px-6 py-5">{children}</div>
+        <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">{children}</div>
         {footer ? (
           <div className="px-6 py-4 flex justify-end gap-3 border-t bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
             {footer}

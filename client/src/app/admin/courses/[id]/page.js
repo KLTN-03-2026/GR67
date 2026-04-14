@@ -646,13 +646,13 @@ export default function AdminCourseDetailPage() {
 
       {studentModalOpen ? (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl">
+          <div className="w-full max-w-xl max-h-[min(92vh,52rem)] rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden flex flex-col">
             <form onSubmit={createAndAddStudent}>
               <div className="px-5 py-4 border-b flex justify-between items-center">
                 <h3 className="text-lg font-semibold">Tạo học viên mới và thêm vào khóa</h3>
                 <button type="button" onClick={() => setStudentModalOpen(false)}>Đóng</button>
               </div>
-              <div className="p-5 grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="p-5 grid grid-cols-1 md:grid-cols-12 gap-4 overflow-y-auto flex-1 min-h-0">
                 <div className="md:col-span-6 space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Họ và tên *</label>
                   <InputField
@@ -757,13 +757,13 @@ export default function AdminCourseDetailPage() {
 
       {sessionModal.isOpen ? (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl">
+          <div className="w-full max-w-xl max-h-[min(92vh,52rem)] rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-2xl overflow-hidden flex flex-col">
             <form onSubmit={saveSession}>
               <div className="px-5 py-4 border-b flex justify-between items-center">
                 <h3 className="text-lg font-semibold">{sessionModal.mode === "edit" ? "Sửa buổi học" : "Thêm buổi học"}</h3>
                 <button type="button" onClick={() => setSessionModal((p) => ({ ...p, isOpen: false }))}>Đóng</button>
               </div>
-              <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto flex-1 min-h-0">
                 <InputField
                   type="date"
                   inputClassName={FIELD_CLASS}

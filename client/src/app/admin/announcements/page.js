@@ -781,8 +781,8 @@ export default function AdminAnnouncementsPage() {
         )}
 
         {createOpen ? (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 px-4 pointer-events-auto">
-            <div className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 px-4 py-4 pointer-events-auto">
+            <div className="w-full max-w-3xl max-h-[min(92vh,56rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
               <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="text-base font-bold text-gray-900 dark:text-gray-100">Thêm thông báo</div>
@@ -797,7 +797,7 @@ export default function AdminAnnouncementsPage() {
                 </button>
               </div>
 
-              <form onSubmit={submitCreate} className="px-6 py-5 space-y-4">
+              <form onSubmit={submitCreate} className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Đối tượng</label>
@@ -922,8 +922,8 @@ export default function AdminAnnouncementsPage() {
         ) : null}
 
         {editOpen ? (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 px-4 pointer-events-auto">
-            <div className="w-full max-w-xl bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 px-4 py-4 pointer-events-auto">
+            <div className="w-full max-w-xl max-h-[min(92vh,48rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
               <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <div className="text-base font-bold text-gray-900 dark:text-gray-100">Chỉnh sửa thông báo</div>
@@ -937,7 +937,7 @@ export default function AdminAnnouncementsPage() {
                   Đóng
                 </button>
               </div>
-              <div className="px-6 py-5 space-y-4">
+              <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0">
                 <div>
                   <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Tiêu đề</label>
                   <InputField

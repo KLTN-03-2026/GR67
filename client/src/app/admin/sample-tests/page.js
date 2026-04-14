@@ -15,8 +15,8 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 function Modal({ isOpen, title, onClose, children, footer, maxWidthClassName = "max-w-3xl" }) {
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className={`w-full ${maxWidthClassName} bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden`}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-4">
+      <div className={`w-full ${maxWidthClassName} max-h-[min(92vh,56rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col`}>
         <div className="px-6 py-5 border-b dark:border-gray-700 flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
@@ -29,7 +29,7 @@ function Modal({ isOpen, title, onClose, children, footer, maxWidthClassName = "
             Đóng
           </button>
         </div>
-        <div className="px-6 py-5 max-h-[80vh] overflow-y-auto">{children}</div>
+        <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">{children}</div>
         {footer ? <div className="px-6 py-4 flex justify-end gap-3 border-t bg-gray-50 dark:bg-gray-800 dark:border-gray-700">{footer}</div> : null}
       </div>
     </div>
@@ -405,7 +405,7 @@ function stripMarkersFromHtml(html) {
 /** Đáp án đúng: ** ở đầu (sau khi bỏ tag / trim) hoặc cặp **...** */
 function hasAnswerStarMarker(html) {
   const plain = stripTagsPreview(html).trim();
-  if (/^\*\*/.test(plain)) return true;
+  if (/^[^\p{L}\p{N}]*\*\*/u.test(plain)) return true;
   return /\*\*[\s\S]*?\*\*/.test(String(html || ""));
 }
 
@@ -413,6 +413,7 @@ function stripAnswerStarMarker(html) {
   let s = String(html || "").trim();
   s = s.replace(/\*\*([\s\S]*?)\*\*/g, "$1");
   s = s.replace(/^(<p\b[^>]*>)(\s|&nbsp;)*\*\*(\s|&nbsp;)*/i, "$1");
+  s = s.replace(/^[^\p{L}\p{N}]*\*\*\s*/u, "");
   s = s.replace(/^\s*\*\*\s*/, "");
   return s.trim();
 }
@@ -429,6 +430,42 @@ function isEssentiallyBoldParagraph(p) {
   });
   const norm = (s) => s.replace(/\s+/g, " ").trim();
   return norm(strongAccum) === norm(t);
+}
+
+function isQuestionStemByNumbering(text) {
+  const t = String(text || "").replace(/\s+/g, " ").trim();
+  return /^\d+\s*[\.\)]\s+\S+/.test(t);
+}
+
+function isOptionLine(text) {
+  const t = String(text || "").replace(/\s+/g, " ").trim();
+  return /^(?:\*\*\s*)?[A-Da-d]\s*[\.\)]\s+\S+/.test(t);
+}
+
+function buildImportLinesFromRoot(root) {
+  const lines = [];
+  const blocks = Array.from(root.querySelectorAll("p, li"));
+  for (const block of blocks) {
+    const rawHtml = String(block?.innerHTML || "");
+    if (!rawHtml.trim()) continue;
+    const segs = rawHtml.split(/<br\s*\/?>/gi);
+    const paraBold = isEssentiallyBoldParagraph(block);
+    if (!segs.length) continue;
+    for (let i = 0; i < segs.length; i++) {
+      const segHtml = String(segs[i] || "").trim();
+      if (!segHtml) continue;
+      const plain = stripTagsPreview(segHtml).replace(/\s+/g, " ").trim();
+      const hasImg = /<img\b/i.test(segHtml);
+      if (!plain && !hasImg) continue;
+      lines.push({
+        html: segHtml,
+        plainOneLine: plain,
+        hasImg,
+        isBoldStemCandidate: paraBold && segs.length === 1 && i === 0,
+      });
+    }
+  }
+  return lines;
 }
 
 function inferPrefixType(text) {
@@ -515,10 +552,10 @@ function parseQuestionsFromDocxHtml(html) {
   const root = new DOMParser().parseFromString(`<div id="docx-root">${html}</div>`, "text/html").getElementById("docx-root");
   if (!root) return { questions, errors: ["Không parse được HTML."] };
 
-  const paragraphs = Array.from(root.querySelectorAll("p"));
+  const lines = buildImportLinesFromRoot(root);
   let current = null;
   let collectingStem = false;
-  /** Tên nhóm từ dòng //tên — áp dụng cho các câu sau cho đến dòng // khác */
+  /** Tên nhóm từ dòng //tên; dòng // sẽ kết thúc nhóm hiện tại */
   let currentGroupName = null;
 
   const flush = () => {
@@ -713,30 +750,49 @@ function parseQuestionsFromDocxHtml(html) {
     current = null;
   };
 
-  for (const p of paragraphs) {
-    const plainOneLine = (p.textContent || "").replace(/\s+/g, " ").trim();
-    const groupLine = plainOneLine.match(/^\/\/\s*(.+)$/);
+  for (const line of lines) {
+    const plainOneLine = line.plainOneLine;
+    if (!plainOneLine) continue;
+    const groupLine = plainOneLine.match(/^\/\/\s*(.*)$/);
     if (groupLine) {
+      flush();
       const gName = String(groupLine[1] || "").trim();
-      if (gName) currentGroupName = gName;
+      currentGroupName = gName || null;
       continue;
     }
-    if (isEssentiallyBoldParagraph(p)) {
+    const startsByNumbering = isQuestionStemByNumbering(plainOneLine);
+    const startsByBold = line.isBoldStemCandidate;
+    if (startsByNumbering || startsByBold) {
       flush();
-      current = { stemParts: [p.innerHTML], optParts: [], importGroupName: currentGroupName };
+      current = { stemParts: [line.html], optParts: [], importGroupName: currentGroupName };
       collectingStem = true;
       continue;
     }
     if (!current) continue;
-    const inner = p.innerHTML;
-    const hasImg = !!p.querySelector("img");
-    if (collectingStem) {
-      if (hasImg || !hasAnswerStarMarker(String(inner))) {
-        current.stemParts.push(inner);
-        continue;
-      }
+    const inner = line.html;
+    const hasImg = line.hasImg;
+    const startsOptionByLabel = isOptionLine(plainOneLine);
+    const startsOptionByAnswerMark = hasAnswerStarMarker(String(inner));
+
+    if (!hasImg && (startsOptionByLabel || startsOptionByAnswerMark)) {
       collectingStem = false;
+      current.optParts.push(inner);
+      continue;
     }
+
+    // Fallback: nếu đã có stem và gặp dòng text tiếp theo (không phải nhóm/câu mới),
+    // coi là lựa chọn ngay cả khi không có nhãn A/B/C/D.
+    if (!hasImg && collectingStem && current.stemParts.length >= 1) {
+      collectingStem = false;
+      current.optParts.push(inner);
+      continue;
+    }
+
+    if (collectingStem) {
+      current.stemParts.push(inner);
+      continue;
+    }
+
     current.optParts.push(inner);
   }
   flush();
@@ -1833,10 +1889,14 @@ function SampleTestEditor({
               </div>
             </details>
             <div className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-              Word: đoạn <strong>in đậm</strong> = câu hỏi; đoạn thường = lựa chọn; đáp án đúng: <code>**</code> ở <strong>đầu dòng</strong> hoặc bọc <code>**...**</code>.{" "}
+              Word: đoạn <strong>in đậm</strong> = câu hỏi <strong>hoặc</strong> dòng bắt đầu bằng <code>1.</code>, <code>2)</code>...; đoạn thường = lựa chọn; đáp án đúng: <code>**</code> ở{" "}
+              <strong>đầu dòng</strong> hoặc bọc <code>**...**</code>.{" "}
               <strong>Không cần tiền tố</strong> nếu: có <code>[Đ]</code>/<code>[đ]</code>/<code>[d]</code>/<code>[Đúng]</code> hoặc <code>[S]</code>/<code>[Sai]</code> trong stem hoặc đáp → đúng/sai; chỉ{" "}
               <strong>một</strong> dòng đáp và <strong>không</strong> có <code>**</code> → trả lời ngắn; <strong>≥2</strong> trong <strong>4</strong> lựa chọn có <code>**</code> → chọn nhiều; đúng{" "}
-              <strong>1</strong> dòng có <code>**</code> trong <strong>4</strong> lựa chọn → MCQ. Dòng <code>//tên nhóm</code> (vd. <code>//3-4</code>) gom câu trong part. Tuỳ chọn <code>[MCQ]</code> <code>[MULTI]</code>{" "}
+              <strong>1</strong> dòng có <code>**</code> trong <strong>4</strong> lựa chọn → MCQ. Lựa chọn có thể là nhiều dòng thường liên tiếp,{" "}
+              <strong>không bắt buộc</strong> phải có nhãn <code>A/B/C/D</code> (nếu có nhãn <code>A.</code>, <code>B)</code>... vẫn hỗ trợ). Nhóm là tuỳ chọn:{" "}
+              <code>//tên nhóm</code> (vd. <code>//3-4</code>) để bắt đầu/chuyển nhóm;{" "}
+              <code>//</code> để kết thúc nhóm hiện tại. Tuỳ chọn <code>[MCQ]</code> <code>[MULTI]</code>{" "}
               <code>[TF]</code> <code>[SA]</code>. Ảnh inline giữ khi import.
             </div>
           </section>
@@ -2278,9 +2338,9 @@ function SampleTestEditor({
               <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">[SA]</code> vẫn dùng được để ép kiểu như trước (vd. <code>[TF]</code> một dòng kèm <code>[Đ]</code> sau <code>[TF]</code>).
             </p>
             <p>
-              <strong>Nhóm trong part:</strong> một dòng riêng <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">//tên nhóm</code> (ví dụ{" "}
-              <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">//3-4</code>) — các câu phía sau thuộc nhóm đó cho đến dòng{" "}
-              <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">//</code> khác. Nhóm chưa có sẽ được tạo khi nhập.
+              <strong>Nhóm trong part (không bắt buộc):</strong> một dòng riêng <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">//tên nhóm</code> (ví dụ{" "}
+              <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">//3-4</code>) để bắt đầu/chuyển sang nhóm đó. Dòng{" "}
+              <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">//</code> dùng để kết thúc nhóm hiện tại. Nhóm chưa có sẽ được tạo khi nhập.
             </p>
             <WordImportVisualSample />
             <div>
@@ -2677,10 +2737,6 @@ export default function SampleTestsPage() {
               title="Quản lý đề thi mẫu"
               subtitle="Tạo/sửa/xóa đề TOEIC/IELTS và quản lý phần/câu hỏi"
             />
-            <button type="button" onClick={openCreate} className="admin-btn-accent h-fit shrink-0 self-start sm:self-center">
-              <FiPlus className="shrink-0" />
-              Thêm đề
-            </button>
           </div>
 
           <AdminCard className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
@@ -2704,6 +2760,10 @@ export default function SampleTestsPage() {
                 options={chungChiOptions}
                 inputClassName="border border-gray-300 rounded-lg px-4 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              <button type="button" onClick={openCreate} className="admin-btn-accent h-fit shrink-0">
+                <FiPlus className="shrink-0" />
+                Thêm đề
+              </button>
             </div>
           </AdminCard>
 

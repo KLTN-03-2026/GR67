@@ -273,7 +273,7 @@ export default function AdminKioskKeysPage() {
 
       {fullKeyModal.open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-6 space-y-4 border dark:border-gray-700">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full max-h-[min(92vh,42rem)] p-6 space-y-4 border dark:border-gray-700 overflow-y-auto">
             <h3 className="font-semibold text-gray-900 dark:text-white">{fullKeyModal.title}</h3>
             <textarea
               readOnly
