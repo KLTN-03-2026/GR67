@@ -5,6 +5,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import { FiPaperclip } from "react-icons/fi";
 import InputField from "../../components/InputField";
+import AdminPageTitle from "../components/AdminPageTitle";
+import AdminCard from "../components/AdminCard";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -320,17 +322,16 @@ export default function AdminAnnouncementsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 min-h-full bg-gray-50 dark:bg-gray-950">
-      <div className="max-w-6xl mx-auto space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Thông báo nội bộ (Admin)</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Gửi thông báo nội bộ theo toàn bộ hệ thống / theo lớp / theo cá nhân. Lưu trong DB (không gửi ra ngoài email).</p>
-        </div>
+    <div className="max-w-7xl mx-auto space-y-6">
+      <AdminPageTitle
+        title="Thông báo nội bộ (Admin)"
+        subtitle="Gửi thông báo nội bộ theo toàn bộ hệ thống / theo lớp / theo cá nhân. Lưu trong DB (không gửi ra ngoài email)."
+      />
 
         {tab === "send" ? (
           <div className="grid grid-cols-3 md:grid-cols-4 gap-4 items-start">
             <div className="col-span-2 md:col-span-3">
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 space-y-4">
+              <AdminCard className="space-y-4 p-4 md:p-6">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
                   <div className="space-y-1">
                     <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">Danh sách thông báo</div>
@@ -345,11 +346,7 @@ export default function AdminAnnouncementsPage() {
                       placeholder="Tìm theo tiêu đề hoặc nội dung..."
                       inputClassName="w-[260px] max-w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-sm"
                     />
-                    <button
-                      type="button"
-                      onClick={() => fetchNotifications({ nextPage: 1 })}
-                      className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700"
-                    >
+                    <button type="button" onClick={() => fetchNotifications({ nextPage: 1 })} className="admin-btn-accent-sm admin-btn-accent">
                       Tìm
                     </button>
                   </div>
@@ -410,11 +407,7 @@ export default function AdminAnnouncementsPage() {
                             </td>
                             <td className="px-3 py-3 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => openEdit(n)}
-                                  className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700"
-                                >
+                                <button type="button" onClick={() => openEdit(n)} className="admin-btn-accent-sm admin-btn-accent text-xs">
                                   Sửa
                                 </button>
                                 <button
@@ -454,13 +447,11 @@ export default function AdminAnnouncementsPage() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </AdminCard>
             </div>
             <div className="col-span-1">
-              <form
-                onSubmit={submit}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 space-y-4"
-              >
+              <AdminCard className="p-4 md:p-6">
+              <form onSubmit={submit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Đối tượng</label>
@@ -656,30 +647,23 @@ export default function AdminAnnouncementsPage() {
               >
                 Làm mới
               </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-4 py-2.5 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
-              >
+              <button type="submit" disabled={loading} className="admin-btn-accent disabled:opacity-70 disabled:cursor-not-allowed">
                 {loading ? "Đang gửi..." : "Gửi thông báo"}
               </button>
             </div>
           </form>
+          </AdminCard>
             </div>
           </div>
         ) : (
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 md:p-6 space-y-4">
+          <AdminCard className="space-y-4 p-4 md:p-6">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="space-y-1">
                 <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">Danh sách thông báo</div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{listTotal} bản ghi</div>
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <button
-                  type="button"
-                  onClick={openCreate}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-700"
-                >
+                <button type="button" onClick={openCreate} className="admin-btn-accent-sm admin-btn-accent">
                   + Thêm thông báo
                 </button>
                 <InputField
@@ -690,11 +674,7 @@ export default function AdminAnnouncementsPage() {
                   placeholder="Tìm theo tiêu đề hoặc nội dung..."
                   inputClassName="w-[260px] max-w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-sm"
                 />
-                <button
-                  type="button"
-                  onClick={() => fetchNotifications({ nextPage: 1 })}
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700"
-                >
+                <button type="button" onClick={() => fetchNotifications({ nextPage: 1 })} className="admin-btn-accent-sm admin-btn-accent">
                   Tìm
                 </button>
               </div>
@@ -755,11 +735,7 @@ export default function AdminAnnouncementsPage() {
                         </td>
                         <td className="px-3 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <button
-                              type="button"
-                              onClick={() => openEdit(n)}
-                              className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold hover:bg-blue-700"
-                            >
+                            <button type="button" onClick={() => openEdit(n)} className="admin-btn-accent-sm admin-btn-accent text-xs">
                               Sửa
                             </button>
                             <button
@@ -801,7 +777,7 @@ export default function AdminAnnouncementsPage() {
                 </button>
               </div>
             </div>
-          </div>
+          </AdminCard>
         )}
 
         {createOpen ? (
@@ -1005,7 +981,6 @@ export default function AdminAnnouncementsPage() {
             </div>
           </div>
         ) : null}
-      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import { toDateInputValue } from "../../../../lib/dateFormat";
 import PasswordStrength from "../../../components/PasswordStrength";
 import InputField from "../../../components/InputField";
+import AdminPageTitle from "../../components/AdminPageTitle";
 
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
 const PencilIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>;
@@ -210,28 +211,22 @@ export default function AdminAccountsPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý Quản trị viên</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Quản lý danh sách và thông tin tài khoản admin hệ thống.</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <AdminPageTitle
+        title="Quản lý Quản trị viên"
+        subtitle="Quản lý danh sách và thông tin tài khoản admin hệ thống."
+      />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <StatCard title="Tổng số quản trị viên" value={stats.total} />
       </div>
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-        <section className="xl:col-span-8 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700">
-          <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-            <h2 className="font-semibold text-lg text-gray-900 dark:text-white">Danh sách Admin</h2>
-            <button
-              onClick={handleCreateNew}
-              className="hidden xl:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm items-center gap-1"
-            >
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+        <section className="admin-card overflow-hidden xl:col-span-8">
+          <div className="admin-card-head flex items-center justify-between">
+            <h2 className="font-semibold text-lg text-[color:var(--admin-sidebar-fg)]">Danh sách Admin</h2>
+            <button type="button" onClick={handleCreateNew} className="admin-btn-accent-sm admin-btn-accent hidden items-center gap-1 xl:inline-flex">
               <PlusIcon /> Thêm
             </button>
-            <button
-              onClick={openCreateModal}
-              className="xl:hidden px-3 py-2 bg-blue-600 text-white rounded-lg text-sm flex items-center gap-1"
-            >
+            <button type="button" onClick={openCreateModal} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1 xl:hidden">
               <PlusIcon /> Thêm Admin
             </button>
           </div>
@@ -258,7 +253,7 @@ export default function AdminAccountsPage() {
                     setSelectedId(u._id);
                     if (isCompactLayout) setMobileFormOpen(true);
                   }}
-                  className={`border-t dark:border-gray-700 cursor-pointer ${selectedId === u._id ? "bg-blue-50/70 dark:bg-blue-900/20" : ""}`}
+                  className={`cursor-pointer border-t border-[color:var(--admin-border)] ${selectedId === u._id ? "bg-[color:var(--admin-accent-subtle)]" : ""}`}
                 >
                   <td className="px-4 py-3"><div className="font-medium">{u.hovaten}</div></td>
                   <td className="px-4 py-3">{u.email}</td>
@@ -281,7 +276,7 @@ export default function AdminAccountsPage() {
           </table>
         </section>
 
-        <section className="hidden xl:block xl:col-span-4 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 p-4">
+        <section className="admin-card hidden p-4 xl:col-span-4 xl:block">
           <h3 className="text-lg font-semibold mb-4">{isCreateMode ? "Thêm Admin" : "Thông tin Admin"}</h3>
           <form onSubmit={handleSubmit} className="space-y-3">
             <InputField label="Họ tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
@@ -313,7 +308,7 @@ export default function AdminAccountsPage() {
             />
             <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
             {formError && <p className="text-sm text-red-500">{formError}</p>}
-            <button className="w-full py-2 bg-blue-600 text-white rounded-lg">{isCreateMode ? "Tạo mới" : "Lưu"}</button>
+            <button type="submit" className="admin-btn-accent w-full justify-center py-2">{isCreateMode ? "Tạo mới" : "Lưu"}</button>
           </form>
         </section>
       </div>
@@ -367,7 +362,7 @@ export default function AdminAccountsPage() {
                 />
                 <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
                 {formError && <p className="text-sm text-red-500">{formError}</p>}
-                <button className="w-full py-2 bg-blue-600 text-white rounded-lg">
+                <button type="submit" className="admin-btn-accent w-full justify-center py-2">
                   {isCreateMode ? "Tạo mới" : "Lưu"}
                 </button>
               </form>
@@ -388,9 +383,9 @@ export default function AdminAccountsPage() {
 }
 
 const StatCard = ({ title, value }) => (
-  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border dark:border-gray-700">
-    <p className="text-sm text-gray-500">{title}</p>
-    <p className="text-4xl font-bold text-gray-900 dark:text-white">{value}</p>
+  <div className="admin-card p-4">
+    <p className="admin-page-subtitle !mt-0">{title}</p>
+    <p className="text-4xl font-bold text-[color:var(--admin-sidebar-fg)]">{value}</p>
   </div>
 );
 // Không còn Input cục bộ: dùng chung InputField để thống nhất UI

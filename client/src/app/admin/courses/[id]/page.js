@@ -7,6 +7,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import InputField from "../../../components/InputField";
+import AdminCard from "../../components/AdminCard";
 import { formatDateDdMmYyyy, toDateInputValue } from "../../../../lib/dateFormat";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -389,36 +390,35 @@ export default function AdminCourseDetailPage() {
   if (!course) return <div className="p-6">Không tìm thấy khóa học.</div>;
 
   return (
-    <div className="p-4 md:p-6 space-y-5 bg-gray-50 dark:bg-gray-950 min-h-full">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <div className="admin-card flex flex-col gap-4 p-6 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Sửa khóa học</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Chỉnh thông tin khóa học, lịch học và quản lý học viên.
-          </p>
+          <h1 className="admin-page-title">Sửa khóa học</h1>
+          <p className="admin-page-subtitle !mt-1">Chỉnh thông tin khóa học, lịch học và quản lý học viên.</p>
         </div>
-        <Link href="/admin/courses" className="w-fit px-4 py-2 rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+        <Link href="/admin/courses" className="admin-btn-outline w-fit shrink-0">
           Quay lại danh sách
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Tổng học viên hiện tại</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{students.length}</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Số buổi học</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{(course.buoiHoc || []).length}</div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-          <div className="text-sm text-gray-500 dark:text-gray-400">Số học viên tối đa</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{course.soHocVienToiDa || "-"}</div>
-        </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <AdminCard className="p-4">
+          <div className="text-sm text-[color:var(--admin-sidebar-fg-muted)]">Tổng học viên hiện tại</div>
+          <div className="text-2xl font-bold text-[color:var(--admin-sidebar-fg)]">{students.length}</div>
+        </AdminCard>
+        <AdminCard className="p-4">
+          <div className="text-sm text-[color:var(--admin-sidebar-fg-muted)]">Số buổi học</div>
+          <div className="text-2xl font-bold text-[color:var(--admin-sidebar-fg)]">{(course.buoiHoc || []).length}</div>
+        </AdminCard>
+        <AdminCard className="p-4">
+          <div className="text-sm text-[color:var(--admin-sidebar-fg-muted)]">Số học viên tối đa</div>
+          <div className="text-2xl font-bold text-[color:var(--admin-sidebar-fg)]">{course.soHocVienToiDa || "-"}</div>
+        </AdminCard>
       </div>
 
-      <form onSubmit={saveCourse} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 space-y-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Sửa thông tin khóa học</h2>
+      <AdminCard className="p-5">
+      <form onSubmit={saveCourse} className="space-y-4">
+        <h2 className="text-lg font-semibold text-[color:var(--admin-sidebar-fg)]">Sửa thông tin khóa học</h2>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
           <div className="lg:col-span-6 space-y-1">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Tên khóa học</label>
@@ -548,15 +548,16 @@ export default function AdminCourseDetailPage() {
           ))}
         </div>
         <div className="flex justify-end">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-60" disabled={saving}>
+          <button type="submit" className="admin-btn-accent disabled:opacity-60" disabled={saving}>
             {saving ? "Đang lưu..." : "Lưu thay đổi"}
           </button>
         </div>
       </form>
+      </AdminCard>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-          <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Quản lý học viên trong khóa</h2>
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+        <AdminCard className="p-5">
+          <h2 className="mb-3 text-lg font-semibold text-[color:var(--admin-sidebar-fg)]">Quản lý học viên trong khóa</h2>
           <div className="flex flex-col md:flex-row gap-2 mb-3">
             <InputField
               type="select"
@@ -592,12 +593,12 @@ export default function AdminCourseDetailPage() {
               </div>
             ))}
           </div>
-        </section>
+        </AdminCard>
 
-        <section className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-          <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Danh sách buổi học và trạng thái chỉnh sửa</h2>
+        <AdminCard className="p-5">
+          <h2 className="mb-3 text-lg font-semibold text-[color:var(--admin-sidebar-fg)]">Danh sách buổi học và trạng thái chỉnh sửa</h2>
           <div className="mb-3">
-            <button type="button" onClick={openCreateSessionModal} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button type="button" onClick={openCreateSessionModal} className="admin-btn-accent-sm admin-btn-accent">
               + Thêm buổi học riêng
             </button>
           </div>
@@ -631,7 +632,7 @@ export default function AdminCourseDetailPage() {
               </div>
             ))}
           </div>
-        </section>
+        </AdminCard>
       </div>
 
       <ConfirmModal

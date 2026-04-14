@@ -16,6 +16,8 @@ import {
   FiBarChart2,
   FiTrendingUp,
 } from "react-icons/fi";
+import AdminPageTitle from "./components/AdminPageTitle";
+import AdminCard from "./components/AdminCard";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const DASHBOARD_URL = `${API_BASE}/api/admin/dashboard`;
 
@@ -252,20 +254,21 @@ export default function AdminDashboard() {
   }, [counts]);
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Tổng quan</h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
-          Chào mừng quay lại,{" "}
-          <span className="font-semibold text-blue-600 dark:text-blue-400">{displayName}</span>. Đây là bảng điều khiển
-          trung tâm — số liệu cập nhật khi tải trang.
+    <div className="mx-auto max-w-7xl space-y-8">
+      <AdminPageTitle title="Tổng quan">
+        <p className="admin-page-subtitle mt-2 leading-relaxed">
+          Chào mừng quay lại, <span className="admin-accent-link">{displayName}</span>. Đây là bảng điều khiển trung
+          tâm — số liệu cập nhật khi tải trang.
         </p>
-      </div>
+      </AdminPageTitle>
 
       {loading ? (
-        <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-400">
-          <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent" />
-          <span className="ml-3 text-sm">Đang tải số liệu…</span>
+        <div className="flex items-center justify-center gap-3 py-16 text-[var(--admin-sidebar-fg-muted)]">
+          <div
+            className="h-10 w-10 animate-spin rounded-full border-2 border-[var(--admin-accent)] border-t-transparent"
+            aria-hidden
+          />
+          <span className="text-sm">Đang tải số liệu…</span>
         </div>
       ) : null}
 
@@ -288,87 +291,76 @@ export default function AdminDashboard() {
       {!loading && !error && counts ? (
         <>
           <section>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
-              Số liệu nhanh
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <h2 className="admin-sidebar-nav-label mb-3 px-0">Số liệu nhanh</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {kpiCards.map((card) => (
-                <div
-                  key={card.title}
-                  className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex gap-4 items-start"
-                >
-                  <div className="p-2.5 rounded-lg bg-gray-50 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300">
-                    <card.icon className="w-5 h-5" aria-hidden />
+                <AdminCard key={card.title} className="flex items-start gap-4 p-5">
+                  <div className="rounded-lg bg-[var(--admin-accent-subtle)] p-2.5 text-[var(--admin-accent)]">
+                    <card.icon className="h-5 w-5" aria-hidden />
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300">{card.title}</h3>
-                    <p className={`text-3xl font-bold mt-1 tabular-nums ${card.accent}`}>{card.value}</p>
+                    <h3 className="text-sm font-medium text-[var(--admin-sidebar-fg-muted)]">{card.title}</h3>
+                    <p className={`mt-1 text-3xl font-bold tabular-nums ${card.accent}`}>{card.value}</p>
                   </div>
-                </div>
+                </AdminCard>
               ))}
             </div>
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                  <FiClipboard className="w-4 h-4" aria-hidden />
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <AdminCard className="p-5">
+                <h3 className="flex items-center gap-2 text-sm font-medium text-[var(--admin-sidebar-fg)]">
+                  <FiClipboard className="h-4 w-4" aria-hidden />
                   Đề thi mẫu
                 </h3>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2 tabular-nums">
-                  {counts.sampleTests}
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                  <FiLayers className="w-4 h-4" aria-hidden />
+                <p className="mt-2 text-2xl font-bold tabular-nums text-[var(--admin-sidebar-fg)]">{counts.sampleTests}</p>
+              </AdminCard>
+              <AdminCard className="p-5">
+                <h3 className="flex items-center gap-2 text-sm font-medium text-[var(--admin-sidebar-fg)]">
+                  <FiLayers className="h-4 w-4" aria-hidden />
                   Bài luyện tập
                 </h3>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2 tabular-nums">
-                  {counts.practiceExercises}
-                </p>
-              </div>
+                <p className="mt-2 text-2xl font-bold tabular-nums text-[var(--admin-sidebar-fg)]">{counts.practiceExercises}</p>
+              </AdminCard>
             </div>
           </section>
 
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-              <h2 className="text-sm font-semibold text-gray-800 dark:text-white mb-4">Cơ cấu người dùng</h2>
+          <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <AdminCard className="p-6">
+              <h2 className="mb-4 text-sm font-semibold text-[var(--admin-sidebar-fg)]">Cơ cấu người dùng</h2>
               <PeopleBarChart hocVien={counts.hocVien} giangVien={counts.giangVien} admins={counts.admins} />
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-              <h2 className="text-sm font-semibold text-gray-800 dark:text-white flex items-center gap-2 mb-1">
-                <FiTrendingUp className="w-4 h-4" aria-hidden />
+            </AdminCard>
+            <AdminCard className="p-6">
+              <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--admin-sidebar-fg)]">
+                <FiTrendingUp className="h-4 w-4" aria-hidden />
                 Đăng ký học viên (7 ngày) — theo cơ sở
               </h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+              <p className="mb-3 text-xs text-[var(--admin-sidebar-fg-muted)]">
                 Theo cơ sở ghi trên khóa học đăng ký đầu tiên (CoSoId); khóa cũ chưa có CoSoId thì suy từ phòng ca đầu trong lịch.
               </p>
               {facilityChart.dates.length > 0 && facilityChart.series.length > 0 ? (
                 <RegistrationsByFacilityChart dates={facilityChart.dates} series={facilityChart.series} />
               ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400">Chưa có dữ liệu trong 7 ngày.</p>
+                <p className="text-sm text-[var(--admin-sidebar-fg-muted)]">Chưa có dữ liệu trong 7 ngày.</p>
               )}
-            </div>
+            </AdminCard>
           </section>
         </>
       ) : null}
 
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
-          Lối tắt chức năng
-        </h2>
+        <h2 className="admin-sidebar-nav-label mb-3 px-0">Lối tắt chức năng</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {SHORTCUTS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="group flex items-center gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:border-blue-200 dark:hover:border-blue-800 hover:shadow transition-all"
+              className="admin-card group flex items-center gap-3 p-4 transition-all hover:border-[var(--admin-accent)] hover:shadow-md"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-700/80 text-blue-600 dark:text-blue-400 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/40">
+              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--admin-accent-subtle)] text-[var(--admin-accent)] transition-colors group-hover:opacity-90">
                 <item.icon className="w-5 h-5" aria-hidden />
               </span>
               <span className="flex-1 min-w-0">
-                <span className="block font-medium text-gray-900 dark:text-white text-sm truncate">{item.label}</span>
-                <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                <span className="block truncate text-sm font-medium text-[var(--admin-sidebar-fg)]">{item.label}</span>
+                <span className="text-[11px] text-[var(--admin-sidebar-fg-muted)]">
                   {item.hotkey === "—" ? "Chưa gán phím" : `Alt+Shift+${item.hotkey}`}
                 </span>
               </span>
@@ -377,22 +369,31 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-sm font-semibold text-gray-800 dark:text-white mb-3">Phím tắt (toàn khu vực Admin)</h2>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-          Giữ <kbd className="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 font-mono text-[11px]">Alt</kbd> +{" "}
-          <kbd className="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-700 font-mono text-[11px]">Shift</kbd> + chữ cái.
-          Không hoạt động khi đang gõ trong ô nhập liệu.
+      <AdminCard className="p-6">
+        <h2 className="mb-3 text-sm font-semibold text-[var(--admin-sidebar-fg)]">Phím tắt (toàn khu vực Admin)</h2>
+        <p className="mb-4 text-xs text-[var(--admin-sidebar-fg-muted)]">
+          Giữ{" "}
+          <kbd className="rounded bg-[var(--admin-sidebar-hover)] px-1 py-0.5 font-mono text-[11px] text-[var(--admin-sidebar-fg)]">
+            Alt
+          </kbd>{" "}
+          +{" "}
+          <kbd className="rounded bg-[var(--admin-sidebar-hover)] px-1 py-0.5 font-mono text-[11px] text-[var(--admin-sidebar-fg)]">
+            Shift
+          </kbd>{" "}
+          + chữ cái. Không hoạt động khi đang gõ trong ô nhập liệu.
         </p>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
+        <ul className="grid grid-cols-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
           {HOTKEY_ROWS.map((row) => (
-            <li key={row.combo} className="flex justify-between gap-4 border-b border-gray-100 dark:border-gray-700/80 pb-2">
-              <span className="text-gray-600 dark:text-gray-300">{row.desc}</span>
-              <kbd className="shrink-0 font-mono text-xs text-gray-800 dark:text-gray-200">{row.combo}</kbd>
+            <li
+              key={row.combo}
+              className="flex justify-between gap-4 border-b border-[var(--admin-border)] pb-2 text-[var(--admin-sidebar-fg)]"
+            >
+              <span className="text-[var(--admin-sidebar-fg-muted)]">{row.desc}</span>
+              <kbd className="shrink-0 font-mono text-xs">{row.combo}</kbd>
             </li>
           ))}
         </ul>
-      </section>
+      </AdminCard>
     </div>
   );
 }

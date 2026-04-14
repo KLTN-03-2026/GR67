@@ -6,6 +6,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import ConfirmModal from "../../components/ConfirmModal";
 import InputField from "../../components/InputField";
+import AdminPageTitle from "../components/AdminPageTitle";
+import AdminCard from "../components/AdminCard";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const DAY_LABELS = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
@@ -257,18 +259,17 @@ export default function AdminCoursesPage() {
     [courses]
   );
   return (
-    <div className="p-4 md:p-6 min-h-full bg-gray-50 dark:bg-gray-950">
-      <div className="max-w-7xl mx-auto space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản lý khóa học</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Danh sách, tạo mới và cập nhật lịch học theo API admin/courses.</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <StatCard title="Tổng khóa học" value={stats.total} />
-          <StatCard title="Chưa khai giảng" value={stats.notStarted} />
-          <StatCard title="Đã có lịch học" value={stats.hasSchedule} />
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex flex-col lg:flex-row flex-wrap gap-3 items-end">
+    <div className="mx-auto max-w-7xl space-y-4">
+      <AdminPageTitle
+        title="Quản lý khóa học"
+        subtitle="Danh sách, tạo mới và cập nhật lịch học theo API admin/courses."
+      />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <StatCard title="Tổng khóa học" value={stats.total} />
+        <StatCard title="Chưa khai giảng" value={stats.notStarted} />
+        <StatCard title="Đã có lịch học" value={stats.hasSchedule} />
+      </div>
+      <AdminCard className="flex flex-col flex-wrap gap-3 p-4 lg:flex-row lg:items-end">
           <InputField
             type="select"
             containerClassName="flex-1 min-w-[10rem]"
@@ -325,10 +326,22 @@ export default function AdminCoursesPage() {
             onChange={(e) => setFilters((p) => ({ ...p, month: e.target.value }))}
             options={MONTH_FILTER_OPTIONS}
           />
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shrink-0" onClick={() => fetchCourses()}>Lọc</button>
-          <button className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700" onClick={openCreateModal}>Thêm khóa học</button>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-x-auto">
+          <button
+            type="button"
+            className="shrink-0 rounded-md px-4 py-2 text-white transition-opacity hover:opacity-90 bg-[var(--admin-accent)]"
+            onClick={() => fetchCourses()}
+          >
+            Lọc
+          </button>
+          <button
+            type="button"
+            className="rounded-md bg-emerald-600 px-4 py-2 text-white transition-opacity hover:opacity-90 dark:bg-emerald-700"
+            onClick={openCreateModal}
+          >
+            Thêm khóa học
+          </button>
+      </AdminCard>
+        <AdminCard className="overflow-x-auto p-0">
           <table className="w-full text-sm text-left">
             <thead className="bg-gray-50 dark:bg-gray-700/60 text-xs uppercase">
               <tr>
@@ -369,8 +382,7 @@ export default function AdminCoursesPage() {
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
+        </AdminCard>
       <CourseModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -616,10 +628,10 @@ function CourseModal({ isOpen, onClose, data, setData, teachers, courseTypes, fa
 }
 function StatCard({ title, value }) {
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="text-sm text-gray-500 dark:text-gray-400">{title}</h3>
-      <p className="text-3xl font-semibold text-gray-900 dark:text-white">{value}</p>
-    </div>
+    <AdminCard className="p-4">
+      <h3 className="text-sm text-[var(--admin-sidebar-fg-muted)]">{title}</h3>
+      <p className="text-3xl font-semibold tabular-nums text-[var(--admin-sidebar-fg)]">{value}</p>
+    </AdminCard>
   );
 }
 function buildValidatePayload(formData) {

@@ -8,6 +8,7 @@ import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import { useTheme } from "../../../contexts/ThemeContext";
 import InputField from "../../../components/InputField";
+import AdminCard from "../../components/AdminCard";
 import { FiArrowLeft, FiPlus, FiEdit2, FiToggleLeft } from "react-icons/fi";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
@@ -217,7 +218,7 @@ export default function FacilityDetailPage() {
 
   if (error) {
     return (
-      <div className="p-6 min-h-full flex flex-col items-center justify-center space-y-3 bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200">
+      <div className="flex min-h-[40vh] flex-col items-center justify-center space-y-3 text-gray-800 dark:text-gray-200">
         <p className="text-sm text-red-500">{error}</p>
         <Link
           href="/admin/facilities"
@@ -236,40 +237,20 @@ export default function FacilityDetailPage() {
   const rooms = facility.phongHocList || [];
 
   return (
-    <div className="p-6 min-h-full bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200">
-      <div className="max-w-5xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+    <div className="max-w-5xl mx-auto space-y-6 text-gray-800 dark:text-gray-200">
+        <div className="admin-card flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-xl font-semibold">
-              Chỉnh sửa cơ sở
-            </h1>
-            <p
-              className={`text-xs mt-1 ${
-                darkMode ? "text-gray-400" : "text-gray-500"
-              }`}
-            >
-              Cập nhật thông tin cơ sở và quản lý phòng học.
-            </p>
+            <h1 className="admin-page-title">Chỉnh sửa cơ sở</h1>
+            <p className="admin-page-subtitle !mt-1">Cập nhật thông tin cơ sở và quản lý phòng học.</p>
           </div>
-          <button
-            onClick={() => router.push("/admin/facilities")}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs border transition-colors ${
-              darkMode
-                ? "border-gray-600 text-gray-200 bg-gray-800 hover:bg-gray-700"
-                : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
-            }`}
-          >
-            <FiArrowLeft className="h-3.5 w-3.5" />
+          <button type="button" onClick={() => router.push("/admin/facilities")} className="admin-btn-outline h-fit shrink-0 text-xs">
+            <FiArrowLeft className="h-3.5 w-3.5 shrink-0" />
             Quay lại danh sách
           </button>
         </div>
 
-        <form
-          onSubmit={handleSubmitFacility}
-          className={`rounded-lg shadow-sm p-5 space-y-4 ${
-            darkMode ? "bg-gray-800" : "bg-white"
-          }`}
-        >
+        <AdminCard className="p-5">
+        <form onSubmit={handleSubmitFacility} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label
@@ -347,31 +328,22 @@ export default function FacilityDetailPage() {
             >
               Hủy
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
-            >
+            <button type="submit" className="admin-btn-accent text-sm">
               Lưu thay đổi
             </button>
           </div>
         </form>
+        </AdminCard>
 
-        <div
-          className={`rounded-lg shadow-sm p-5 space-y-4 md:space-y-0 md:grid md:grid-cols-4 md:gap-4 ${
-            darkMode ? "bg-gray-800" : "bg-white"
-          }`}
-        >
+        <AdminCard className="space-y-4 p-5 md:grid md:grid-cols-4 md:gap-4 md:space-y-0">
           {/* Bảng phòng học bên trái */}
           <div className="space-y-3 md:col-span-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold">
                 Phòng học ({rooms.length})
               </h2>
-              <button
-                onClick={openAddRoom}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700"
-              >
-                <FiPlus className="h-3.5 w-3.5" />
+              <button type="button" onClick={openAddRoom} className="admin-btn-accent-sm admin-btn-accent inline-flex items-center gap-1.5 text-xs">
+                <FiPlus className="h-3.5 w-3.5 shrink-0" />
                 Thêm phòng
               </button>
             </div>
@@ -489,8 +461,7 @@ export default function FacilityDetailPage() {
               onSubmit={handleSubmitRoom}
             />
           </div>
-        </div>
-      </div>
+        </AdminCard>
 
       <ConfirmModal
         isOpen={statusConfirmOpen}
@@ -615,10 +586,7 @@ function RoomFormPanel({ facility, room, onCancel, onSubmit }) {
               Hủy chỉnh sửa
             </button>
           )}
-          <button
-            type="submit"
-            className="px-4 py-1.5 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700"
-          >
+          <button type="submit" className="admin-btn-accent-sm admin-btn-accent text-xs">
             {isEdit ? "Lưu phòng" : "Thêm phòng"}
           </button>
         </div>

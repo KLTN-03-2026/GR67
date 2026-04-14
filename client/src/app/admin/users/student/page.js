@@ -6,6 +6,7 @@ import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
 import PasswordStrength from "../../../components/PasswordStrength";
 import InputField from "../../../components/InputField";
+import AdminPageTitle from "../../components/AdminPageTitle";
 import { formatDateDdMmYyyy, toDateInputValue } from "../../../../lib/dateFormat";
 
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
@@ -226,30 +227,25 @@ export default function StudentAccountsPage() {
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý Học viên</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Quản lý danh sách và thông tin tài khoản học viên hệ thống.</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="max-w-7xl mx-auto space-y-6">
+      <AdminPageTitle title="Quản lý Học viên" subtitle="Quản lý danh sách và thông tin tài khoản học viên hệ thống." />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <StatCard title="Tổng số học viên" value={stats.total} />
         <StatCard title="Số học viên mới" value={stats.newlyRegistered} />
         <StatCard title="Số học viên đang học" value={stats.studying} />
       </div>
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
-        <section className="xl:col-span-8 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700">
-          <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center">
-            <h2 className="font-semibold text-lg text-gray-900 dark:text-white">Danh sách học viên</h2>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+        <section className="admin-card overflow-hidden xl:col-span-8">
+          <div className="admin-card-head flex items-center justify-between">
+            <h2 className="font-semibold text-lg text-[color:var(--admin-sidebar-fg)]">Danh sách học viên</h2>
             <button
+              type="button"
               onClick={() => { setSelectedId(null); setFormData(emptyForm); }}
-              className="hidden xl:flex px-3 py-2 bg-blue-600 text-white rounded-lg text-sm items-center gap-1"
+              className="admin-btn-accent-sm admin-btn-accent hidden items-center gap-1 xl:inline-flex"
             >
               <PlusIcon /> Thêm mới
             </button>
-            <button
-              onClick={openCreateModal}
-              className="xl:hidden px-3 py-2 bg-blue-600 text-white rounded-lg text-sm flex items-center gap-1"
-            >
+            <button type="button" onClick={openCreateModal} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1 xl:hidden">
               <PlusIcon /> Thêm học viên
             </button>
           </div>
@@ -277,7 +273,7 @@ export default function StudentAccountsPage() {
                     setSelectedId(u._id);
                     if (isCompactLayout) setMobileFormOpen(true);
                   }}
-                  className={`border-t dark:border-gray-700 cursor-pointer ${selectedId === u._id ? "bg-blue-50/70 dark:bg-blue-900/20" : ""}`}
+                  className={`cursor-pointer border-t border-[color:var(--admin-border)] ${selectedId === u._id ? "bg-[color:var(--admin-accent-subtle)]" : ""}`}
                 >
                   <td className="px-4 py-3">
                     <div className="font-medium">{u.hovaten}</div>
@@ -304,7 +300,7 @@ export default function StudentAccountsPage() {
           </table>
         </section>
 
-        <section className="hidden xl:block xl:col-span-4 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 p-4">
+        <section className="admin-card hidden p-4 xl:col-span-4 xl:block">
           <div className="flex gap-6 border-b dark:border-gray-700 mb-4">
             <button className="pb-2 text-blue-600 border-b-2 border-blue-600 text-sm font-medium">Thông tin học viên</button>
             <button type="button" className="pb-2 text-sm text-gray-500">Khóa học</button>
@@ -351,7 +347,7 @@ export default function StudentAccountsPage() {
               onRegistered={handleFaceRegistered}
             />
             {formError && <p className="text-sm text-red-500">{formError}</p>}
-            <button className="w-full py-2 bg-green-600 text-white rounded-lg">{isCreateMode ? "Tạo mới" : "Cập nhật thông tin"}</button>
+            <button type="submit" className="admin-btn-accent w-full justify-center py-2">{isCreateMode ? "Tạo mới" : "Cập nhật thông tin"}</button>
           </form>
         </section>
       </div>
@@ -416,7 +412,7 @@ export default function StudentAccountsPage() {
                   onRegistered={handleFaceRegistered}
                 />
                 {formError && <p className="text-sm text-red-500">{formError}</p>}
-                <button className="w-full py-2 bg-green-600 text-white rounded-lg">
+                <button type="submit" className="admin-btn-accent w-full justify-center py-2">
                   {isCreateMode ? "Tạo mới" : "Cập nhật thông tin"}
                 </button>
               </form>
@@ -437,9 +433,9 @@ export default function StudentAccountsPage() {
 }
 
 const StatCard = ({ title, value }) => (
-  <div className="bg-white dark:bg-gray-800 p-4 rounded-xl border dark:border-gray-700">
-    <h3 className="text-sm text-gray-500">{title}</h3>
-    <p className="text-4xl font-bold text-gray-900 dark:text-white">{value}</p>
+  <div className="admin-card p-4">
+    <h3 className="admin-page-subtitle !mt-0">{title}</h3>
+    <p className="text-4xl font-bold text-[color:var(--admin-sidebar-fg)]">{value}</p>
   </div>
 );
 

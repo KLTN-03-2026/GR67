@@ -9,6 +9,8 @@ import { useNotification } from "../../contexts/NotificationContext";
 import ConfirmModal from "../../components/ConfirmModal";
 import { useTheme } from "../../contexts/ThemeContext";
 import InputField from "../../components/InputField";
+import AdminPageTitle from "../components/AdminPageTitle";
+import AdminCard from "../components/AdminCard";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 const API_URL = `${API_BASE}/api/admin/facilities`;
@@ -181,17 +183,10 @@ export default function FacilitiesPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 min-h-full bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200">
-      <div className="max-w-7xl mx-auto space-y-4">
-        <div>
-          <h1 className="text-xl font-semibold">Danh sách cơ sở</h1>
-        </div>
+    <div className="max-w-7xl mx-auto space-y-6 text-gray-800 dark:text-gray-200">
+      <AdminPageTitle title="Danh sách cơ sở" subtitle="Quản lý cơ sở và phòng học — tìm kiếm, thêm mới, chỉnh sửa." />
 
-        <div
-          className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-lg shadow-sm ${
-            darkMode ? "bg-gray-800" : "bg-white"
-          }`}
-        >
+        <AdminCard className="flex flex-col md:flex-row items-center justify-between gap-4 p-4">
           <div className="relative w-full md:w-1/3 max-w-md">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <InputField
@@ -212,19 +207,15 @@ export default function FacilitiesPage() {
             <button
               onClick={handleCreateAndEditFacility}
               disabled={creatingFacility}
-              className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="admin-btn-accent disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <FiPlus className="h-5 w-5" />
+              <FiPlus className="h-5 w-5 shrink-0" />
               {creatingFacility ? "Đang tạo..." : "Thêm cơ sở"}
             </button>
           </div>
-        </div>
+        </AdminCard>
 
-        <div
-          className={`rounded-lg shadow-sm overflow-hidden ${
-            darkMode ? "bg-gray-800" : "bg-white"
-          }`}
-        >
+        <AdminCard className="overflow-hidden p-0">
           <div className="overflow-x-auto">
             <table
               className={`w-full text-sm text-left ${
@@ -349,8 +340,7 @@ export default function FacilitiesPage() {
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
+      </AdminCard>
 
       <ConfirmModal
         isOpen={statusConfirmOpen}

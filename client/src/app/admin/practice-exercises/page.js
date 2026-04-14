@@ -7,6 +7,8 @@ import ConfirmModal from "../../components/ConfirmModal";
 import InputField from "../../components/InputField";
 import { FiPlus, FiSearch, FiTrash2, FiEdit2 } from "react-icons/fi";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
+import AdminPageTitle from "../components/AdminPageTitle";
+import AdminCard from "../components/AdminCard";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -310,30 +312,23 @@ function PracticeExerciseEditor({
   const itemModalLoai = effectiveItemLoai(localEx, itemForm);
 
   return (
-    <div className="p-4 md:p-6 min-h-full">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-4 flex items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto space-y-6">
+        <div className="admin-card flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{isCreate ? "Tạo bài luyện tập" : "Chỉnh sửa bài luyện tập"}</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <h1 className="admin-page-title">{isCreate ? "Tạo bài luyện tập" : "Chỉnh sửa bài luyện tập"}</h1>
+            <p className="admin-page-subtitle !mt-1">
               Quản lý item theo loại bài; bài <strong className="font-medium">hỗn hợp</strong> cho phép từng câu là quiz / multi / TF / short (không flashcard).
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
-          >
+          <button type="button" onClick={onBack} className="admin-btn-outline h-fit shrink-0">
             Quay lại
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <section className="lg:col-span-5 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="px-5 py-4 border-b dark:border-gray-700">
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">Thông tin bài</div>
-              </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          <section className="space-y-6 lg:col-span-5">
+            <AdminCard className="overflow-hidden p-0">
+              <div className="admin-card-head">Thông tin bài</div>
               <form
                 className="px-5 py-4 space-y-4"
                 onSubmit={(e) => {
@@ -408,25 +403,25 @@ function PracticeExerciseEditor({
                 </div>
 
                 <div className="flex items-center justify-end gap-3 pt-2">
-                  <button type="submit" className="px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">
+                  <button type="submit" className="admin-btn-accent">
                     {isCreate ? "Lưu & tạo bài" : "Lưu metadata"}
                   </button>
                 </div>
               </form>
-            </div>
+            </AdminCard>
           </section>
 
-          <section className="lg:col-span-7 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="px-5 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-4">
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">Danh sách item</div>
+          <section className="space-y-6 lg:col-span-7">
+            <AdminCard className="overflow-hidden p-0">
+              <div className="admin-card-head flex flex-wrap items-center justify-between gap-4">
+                <span>Danh sách item</span>
                 <button
                   type="button"
                   onClick={() => (localEx.loaiBai ? openCreateItem() : null)}
                   disabled={!exerciseId}
-                  className={`inline-flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold ${exerciseId ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
+                  className={`inline-flex items-center gap-2 rounded-md text-sm font-semibold ${exerciseId ? "admin-btn-accent-sm admin-btn-accent" : "cursor-not-allowed bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400"}`}
                 >
-                  <FiPlus />
+                  <FiPlus className="shrink-0" />
                   Thêm item
                 </button>
               </div>
@@ -467,7 +462,7 @@ function PracticeExerciseEditor({
                   </div>
                 )}
               </div>
-            </div>
+            </AdminCard>
           </section>
         </div>
 
@@ -668,7 +663,6 @@ function PracticeExerciseEditor({
           }}
           confirmText="Xóa"
         />
-      </div>
     </div>
   );
 }
@@ -819,26 +813,20 @@ export default function PracticeExercisesPage() {
 
   if (mode === "list") {
     return (
-      <div className="p-4 md:p-6 min-h-full">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-4 flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản lý luyện tập</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                CRUD bài luyện tập và item; loại hỗn hợp (không flashcard): mỗi câu chọn quiz, chọn nhiều, đúng/sai hoặc trả lời ngắn.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={openCreate}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-            >
-              <FiPlus />
+      <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <AdminPageTitle
+              className="mb-0 flex-1"
+              title="Quản lý luyện tập"
+              subtitle="CRUD bài luyện tập và item; loại hỗn hợp (không flashcard): mỗi câu chọn quiz, chọn nhiều, đúng/sai hoặc trả lời ngắn."
+            />
+            <button type="button" onClick={openCreate} className="admin-btn-accent h-fit shrink-0 self-start sm:self-center">
+              <FiPlus className="shrink-0" />
               Thêm bài
             </button>
           </div>
 
-          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+          <AdminCard className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="relative w-full lg:w-1/2">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <InputField
@@ -858,9 +846,9 @@ export default function PracticeExercisesPage() {
                 inputClassName="border border-gray-300 rounded-lg px-4 py-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-          </div>
+          </AdminCard>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <AdminCard className="overflow-hidden p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -918,7 +906,7 @@ export default function PracticeExercisesPage() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </AdminCard>
 
           <ConfirmModal
             isOpen={confirmDeleteOpen}
@@ -931,7 +919,6 @@ export default function PracticeExercisesPage() {
             }}
             confirmText="Xóa"
           />
-        </div>
       </div>
     );
   }

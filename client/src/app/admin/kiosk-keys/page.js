@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../../components/ConfirmModal";
+import AdminPageTitle from "../components/AdminPageTitle";
+import AdminCard from "../components/AdminCard";
 import { FiKey, FiLock, FiUnlock, FiRefreshCw, FiTrash2, FiCopy } from "react-icons/fi";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
@@ -132,17 +134,24 @@ export default function AdminKioskKeysPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <FiKey className="inline" />
-          Mã kiosk điểm danh
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Tạo khóa đặt tên, hiển thị đầy đủ một lần khi tạo hoặc đổi secret. Kiosk nhập{" "}
-          <code className="text-xs bg-gray-100 dark:bg-gray-800 px-1 rounded">prefix.suffix</code>.
-        </p>
-      </div>
+    <div className="max-w-7xl mx-auto space-y-6">
+      <AdminPageTitle
+        title={
+          <span className="inline-flex items-center gap-2">
+            <FiKey className="inline shrink-0 text-[color:var(--admin-accent)]" aria-hidden />
+            Mã kiosk điểm danh
+          </span>
+        }
+        subtitle={
+          <>
+            Tạo khóa đặt tên, hiển thị đầy đủ một lần khi tạo hoặc đổi secret. Kiosk nhập{" "}
+            <code className="text-xs rounded px-1 py-0.5 bg-[color:var(--admin-sidebar-hover)] text-[color:var(--admin-sidebar-fg)]">
+              prefix.suffix
+            </code>
+            .
+          </>
+        }
+      />
 
       {error ? (
         <div className="rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 px-4 py-2 text-sm">
@@ -150,8 +159,8 @@ export default function AdminKioskKeysPage() {
         </div>
       ) : null}
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 p-4 space-y-3">
-        <h2 className="font-medium text-gray-900 dark:text-white">Tạo khóa mới</h2>
+      <AdminCard className="p-4 space-y-3">
+        <h2 className="font-semibold text-[color:var(--admin-sidebar-fg)]">Tạo khóa mới</h2>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
           <div className="flex-1">
             <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Tên hiển thị</label>
@@ -167,17 +176,15 @@ export default function AdminKioskKeysPage() {
             type="button"
             disabled={creating || !tenMoi.trim()}
             onClick={createKey}
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="admin-btn-accent disabled:opacity-50"
           >
             {creating ? "Đang tạo..." : "Tạo khóa"}
           </button>
         </div>
-      </div>
+      </AdminCard>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 overflow-hidden">
-        <div className="px-4 py-3 border-b dark:border-gray-700 font-medium text-gray-900 dark:text-white">
-          Danh sách khóa
-        </div>
+      <AdminCard className="overflow-hidden p-0">
+        <div className="admin-card-head">Danh sách khóa</div>
         {loading ? (
           <div className="p-8 text-center text-gray-500 text-sm">Đang tải...</div>
         ) : list.length === 0 ? (
@@ -262,7 +269,7 @@ export default function AdminKioskKeysPage() {
             </table>
           </div>
         )}
-      </div>
+      </AdminCard>
 
       {fullKeyModal.open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -284,7 +291,7 @@ export default function AdminKioskKeysPage() {
               <button
                 type="button"
                 onClick={() => setFullKeyModal({ open: false, value: "", title: "" })}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm"
+                className="admin-btn-accent text-sm"
               >
                 Đã lưu
               </button>

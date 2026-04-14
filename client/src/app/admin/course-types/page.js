@@ -7,6 +7,8 @@ import { useNotification } from "../../contexts/NotificationContext";
 import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiArrowLeft, FiPaperclip } from "react-icons/fi";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
 import InputField from "../../components/InputField";
+import AdminPageTitle from "../components/AdminPageTitle";
+import AdminCard from "../components/AdminCard";
 
 /** Khớp logic server/utils/lessonOrder.js — phát hiện cần confirmReorder */
 function getMaxThuTuLesson(lessons) {
@@ -84,9 +86,9 @@ export default function CourseTypesPage() {
 }
 
 const StatCard = ({ title, value }) => (
-  <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
-    <p className="mt-1 text-3xl font-semibold text-gray-900 dark:text-white">{value}</p>
+  <div className="admin-card p-4">
+    <h3 className="admin-page-subtitle !mt-0">{title}</h3>
+    <p className="mt-1 text-3xl font-semibold text-[color:var(--admin-sidebar-fg)]">{value}</p>
   </div>
 );
 
@@ -210,23 +212,22 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
   };
 
   return (
-    <div className="p-4 md:p-6 min-h-full">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản Lý Phân loại khóa học</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Thêm, sửa, xóa và tìm kiếm các loại khóa học trong hệ thống.</p>
-        </div>
+    <div className="max-w-7xl mx-auto space-y-6">
+        <AdminPageTitle
+          title="Quản Lý Phân loại khóa học"
+          subtitle="Thêm, sửa, xóa và tìm kiếm các loại khóa học trong hệ thống."
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <StatCard title="Tổng số" value={stats.total} />
           <StatCard title="TOEIC" value={stats.toeic} />
           <StatCard title="IELTS" value={stats.ielts} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Main list */}
-          <section className="lg:col-span-12">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+          <section className="lg:col-span-12 space-y-4">
+            <AdminCard className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
               <div className="relative w-full md:w-1/2">
                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <InputField
@@ -251,18 +252,14 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
                     { value: "IELTS", label: "IELTS" },
                   ]}
                 />
-                <button
-                  type="button"
-                  onClick={onCreate}
-                  className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-                >
-                  <FiPlus className="h-5 w-5" />
+                <button type="button" onClick={onCreate} className="admin-btn-accent">
+                  <FiPlus className="h-5 w-5 shrink-0" />
                   Thêm mới
                 </button>
               </div>
-            </div>
+            </AdminCard>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <AdminCard className="overflow-hidden p-0">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -304,10 +301,9 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
                   </tbody>
                 </table>
               </div>
-            </div>
+            </AdminCard>
           </section>
         </div>
-      </div>
 
       <Modal
         isOpen={isCreateModalOpen}
@@ -762,34 +758,23 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
   };
 
   return (
-    <div className="p-4 md:p-6 min-h-full">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Chỉnh sửa loại khóa học</h1>
-          </div>
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700"
-          >
-            <FiArrowLeft className="w-5 h-5" />
+    <div className="max-w-7xl mx-auto space-y-6">
+        <div className="admin-card flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="admin-page-title">Chỉnh sửa loại khóa học</h1>
+          <button type="button" onClick={onBack} className="admin-btn-outline">
+            <FiArrowLeft className="h-5 w-5 shrink-0" />
             Quay lại
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Left: lessons list + form (giống ảnh 2) */}
           <section className="lg:col-span-8 space-y-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="px-5 py-4 border-b dark:border-gray-700 flex items-center justify-between">
                 <div className="text-sm font-semibold text-gray-900 dark:text-white">Danh sách bài giảng</div>
-                <button
-                  type="button"
-                  onClick={resetLessonForm}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700"
-                >
-                  <FiPlus className="w-5 h-5" />
+                <button type="button" onClick={resetLessonForm} className="admin-btn-accent-sm admin-btn-accent">
+                  <FiPlus className="h-5 w-5 shrink-0" />
                   Thêm mới
                 </button>
               </div>
@@ -906,7 +891,7 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
                   >
                     Hủy
                   </button>
-                  <button type="submit" className="px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700">
+                  <button type="submit" className="admin-btn-accent">
                     Lưu
                   </button>
                 </div>
@@ -914,7 +899,6 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
             </div>
           </aside>
         </div>
-      </div>
 
       <ConfirmModal
         isOpen={isDeleteLessonOpen}
