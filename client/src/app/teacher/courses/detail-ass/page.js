@@ -91,6 +91,43 @@ function AssignmentDetailContent() {
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState("");
 
+    // Toast state
+    const [toastMessage, setToastMessage] = useState(null);
+
+    const showToast = (msg, type = "error") => {
+        setToastMessage({ text: msg, type });
+        setTimeout(() => setToastMessage(null), 3000);
+    };
+
+    const handleRemind = async (student) => {
+        try {
+            if (!student.userId) {
+                showToast("Không tìm thấy ID người dùng để gửi thông báo", "error");
+                return;
+            }
+            const token = localStorage.getItem("token");
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+            const response = await fetch(`${apiUrl}/teacher/assignments/${assignmentId}/remind`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ userId: student.userId })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                showToast(`Đã gửi nhắc nhở tới ${student.name}`, "success");
+            } else {
+                showToast(data.message || "Lỗi gửi nhắc nhở", "error");
+            }
+        } catch (error) {
+            console.error("Lỗi gửi nhắc nhở:", error);
+            showToast("Lỗi kết nối máy chủ", "error");
+        }
+    };
+
     useEffect(() => {
         if (!assignmentId) {
             setError("Không tìm thấy bài tập");
@@ -364,7 +401,7 @@ function AssignmentDetailContent() {
                                             </button>
                                         ) : (
                                             <button
-                                                onClick={() => alert(`Đã gửi nhắc nhở tới ${s.email}`)}
+                                                onClick={() => handleRemind(s)}
                                                 className="px-3 py-1.5 text-sm rounded-md bg-orange-50 text-orange-700 hover:bg-orange-600 hover:text-white transition-colors"
                                             >
                                                 Nhắc nhở
@@ -428,6 +465,13 @@ function AssignmentDetailContent() {
                             )}
                         </div>
                     </div>
+                </div>
+            )}
+
+            {/* TOAST MESSAGE */}
+            {toastMessage && (
+                <div className={`fixed bottom-6 right-6 px-6 py-3 rounded-lg shadow-xl text-white font-medium transition-all transform z-50 ${toastMessage.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+                    {toastMessage.text}
                 </div>
             )}
         </div>

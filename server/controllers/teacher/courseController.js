@@ -223,8 +223,20 @@ exports.getStudentsByCourse = async (req, res) => {
         }
       });
 
-    const formattedData = registrations.map(reg => {
+    const formattedData = await Promise.all(registrations.map(async (reg) => {
       const nguoiDung = reg.hocvienId?.userId || {};
+      
+      // Calculate real absent days from ThamGiaBuoiHoc collection for an accurate ratio
+      const actualAbsentDays = await ThamGiaBuoiHoc.countDocuments({
+         dangkykhoahocID: reg._id,
+         trangthai: { $in: ['absent', 'excused'] }
+      });
+
+      const actualAttendedDays = await ThamGiaBuoiHoc.countDocuments({
+         dangkykhoahocID: reg._id,
+         trangthai: { $in: ['present', 'lated'] }
+      });
+
       return {
         id: reg._id, // Sử dụng ID của đăng ký làm primary key để thao tác dễ hơn
         originStudentId: reg.hocvienId?._id,
@@ -233,9 +245,10 @@ exports.getStudentsByCourse = async (req, res) => {
         phone: nguoiDung.soDienThoai || 'Chưa cập nhật',
         gender: nguoiDung.gioitinh ? 'Nam' : 'Nữ',
         registrationDate: reg.createdAt,
-        absentDays: reg.so_ngay_nghi || 0
+        absentDays: actualAbsentDays,
+        attendedDays: actualAttendedDays
       };
-    });
+    }));
 
     res.status(200).json({ success: true, data: formattedData });
   } catch (error) {

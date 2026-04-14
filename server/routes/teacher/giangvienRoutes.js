@@ -43,6 +43,7 @@ router.post("/courses/:courseId/assignments", protect, upload.single("file"), as
 router.get("/assignments/:id", protect, assignmentController.getAssignmentById);
 router.put("/assignments/:id", protect, upload.single("file"), assignmentController.updateAssignment);
 router.get("/assignments/:id/submissions", protect, assignmentController.getSubmissionsForAssignment);
+router.post("/assignments/:id/remind", protect, assignmentController.remindStudent);
 router.delete("/assignments/:id", protect, assignmentController.deleteAssignment);
 
 // nộp bài / chấm điểm

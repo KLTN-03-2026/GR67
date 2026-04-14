@@ -74,7 +74,7 @@ export default function NotificationDropdown() {
       });
       if (res.ok) {
         setNotifications(prev => prev.map(n => 
-          n._id === id ? { ...n, readByUserIds: [...n.readByUserIds, user?._id] } : n
+          n._id === id ? { ...n, readByUserIds: [...n.readByUserIds, user?.id || user?._id] } : n
         ));
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
@@ -93,7 +93,7 @@ export default function NotificationDropdown() {
       if (res.ok) {
         setNotifications(prev => prev.map(n => ({
           ...n,
-          readByUserIds: [...n.readByUserIds, user?._id]
+          readByUserIds: [...n.readByUserIds, user?.id || user?._id]
         })));
         setUnreadCount(0);
       }
@@ -141,7 +141,7 @@ export default function NotificationDropdown() {
             ) : (
               <ul className="divide-y divide-gray-50">
                 {notifications.slice(0, 10).map((notif) => {
-                  const isRead = notif.readByUserIds.includes(user?._id);
+                  const isRead = notif.readByUserIds.includes(user?.id || user?._id);
                   return (
                     <li 
                       key={notif._id} 

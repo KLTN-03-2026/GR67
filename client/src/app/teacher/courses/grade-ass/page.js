@@ -62,6 +62,12 @@ function GradeAssignmentContent() {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [removedFileIds, setRemovedFileIds] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [toastMessage, setToastMessage] = useState(null);
+
+    const showToast = (msg, type = "error") => {
+        setToastMessage({ text: msg, type });
+        setTimeout(() => setToastMessage(null), 3000);
+    };
 
     useEffect(() => {
         if (!submissionId || submissionId === "null" || submissionId === "undefined") {
@@ -100,8 +106,9 @@ function GradeAssignmentContent() {
     };
 
     const handleSaveGrade = async () => {
-        if (diem === "" || diem < 0) {
-            alert("Vui lòng nhập điểm hợp lệ.");
+        const maxDiem = submission?.baitapID?.diem || 100;
+        if (diem === "" || Number(diem) < 0 || Number(diem) > maxDiem) {
+            showToast(`Vui lòng nhập điểm hợp lệ (từ 0 đến ${maxDiem}).`, "error");
             return;
         }
 
@@ -130,14 +137,16 @@ function GradeAssignmentContent() {
 
             const data = await response.json();
             if (data.success) {
-                alert("Chấm điểm thành công!");
-                router.push(`/teacher/courses/detail-ass?id=${assignmentId}`);
+                showToast("Chấm điểm thành công!", "success");
+                setTimeout(() => {
+                    router.push(`/teacher/courses/detail-ass?id=${assignmentId}`);
+                }, 1500);
             } else {
-                alert(data.message || "Có lỗi xảy ra khi chấm điểm.");
+                showToast(data.message || "Có lỗi xảy ra khi chấm điểm.", "error");
             }
         } catch (err) {
             console.error(err);
-            alert("Lỗi kết nối máy chủ.");
+            showToast("Lỗi kết nối máy chủ.", "error");
         } finally {
             setIsSubmitting(false);
         }
@@ -262,6 +271,8 @@ function GradeAssignmentContent() {
                             <div className="flex items-center gap-3">
                                 <input
                                     type="number"
+                                    min="0"
+                                    max={maxDiem}
                                     value={diem}
                                     onChange={(e) => setDiem(e.target.value)}
                                     className="w-24 p-2 border-2 border-blue-500 rounded-lg text-xl font-bold text-center focus:outline-none focus:ring-0 focus:border-blue-600"
@@ -359,6 +370,13 @@ function GradeAssignmentContent() {
                     </div>
                 </div>
             </div>
+
+            {/* TOAST MESSAGE */}
+            {toastMessage && (
+                <div className={`fixed bottom-6 right-6 px-6 py-3 rounded-lg shadow-xl text-white font-medium transition-all transform z-50 ${toastMessage.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
+                    {toastMessage.text}
+                </div>
+            )}
         </div>
     );
 }

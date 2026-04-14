@@ -4,6 +4,7 @@ const BaiTap = require("../../models/BaiTap");
 const DangKyKhoaHoc = require("../../models/DangKyKhoaHoc");
 const NopBai = require("../../models/NopBai");
 const FileModel = require("../../models/File"); // Đổi tên để không bị trùng File toàn cục
+const ThongBao = require("../../models/ThongBao");
 
 // Lấy danh sách bài tập của một khóa học (dành cho giảng viên)
 exports.getAssignments = async (req, res) => {
@@ -88,6 +89,33 @@ exports.createAssignment = async (req, res) => {
       diem: Number(diem) || 100,
       file: fileId || null
     });
+
+    // === GỬI THÔNG BÁO CHO TẤT CẢ HỌC VIÊN TRONG KHÓA HỌC ===
+    try {
+      const registrations = await DangKyKhoaHoc.find({ KhoaHocID: courseId })
+        .populate({
+          path: "hocvienId",
+          select: "userId",
+        });
+      
+      const studentUserIds = registrations
+        .map(reg => reg.hocvienId?.userId)
+        .filter(Boolean);
+
+      if (studentUserIds.length > 0) {
+        await ThongBao.create({
+            tieuDe: `Bài tập mới: ${newAssignment.tieude}`,
+            createdBy: req.user._id,
+            targetType: "class",
+            khoaHocId: courseId,
+            userID: studentUserIds,
+            noidung: `Khóa học vừa có bài tập mới "${newAssignment.tieude}". Hạn nộp là ${formatDateDdMmYyyy(newAssignment.hannop, "--")}. Vui lòng kiểm tra và hoàn thành đúng hạn.`,
+            link: `/student/courses/detail-ass?id=${newAssignment._id}` 
+        });
+      }
+    } catch (notifyError) {
+      console.error("Lỗi gửi thông báo bài tập mới:", notifyError);
+    }
 
     res.status(201).json({
       success: true,
@@ -222,6 +250,7 @@ exports.getSubmissionsForAssignment = async (req, res) => {
       return {
         registrationId: reg._id,
         studentId: reg.hocvienId?._id,
+        userId: nguoiDung._id,
         name: nguoiDung.hovaten || "Học viên không xác định",
         email: nguoiDung.email || "Chưa cập nhật",
         status: submission ? (submission.trangthai === "đã chấm" ? "graded" : "submitted") : "notSubmitted",
@@ -390,5 +419,37 @@ exports.gradeSubmission = async (req, res) => {
   } catch (error) {
     console.error("Lỗi chấm điểm:", error);
     res.status(500).json({ success: false, message: "Lỗi server khi chấm điểm: " + error.message, errorStack: error.stack });
+  }
+};
+
+// Nhắc nhở học viên chưa nộp bài
+exports.remindStudent = async (req, res) => {
+  try {
+    const { id } = req.params; // assignment ID
+    const { userId } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ success: false, message: "ID bài tập không hợp lệ" });
+    }
+
+    const assignment = await BaiTap.findById(id);
+    if (!assignment) {
+        return res.status(404).json({ success: false, message: "Không tìm thấy bài tập" });
+    }
+
+    await ThongBao.create({
+        tieuDe: `Nhắc nhở: Nộp bài tập "${assignment.tieude}"`,
+        createdBy: req.user._id,
+        targetType: "personal",
+        khoaHocId: assignment.khoahocID,
+        userID: [userId],
+        noidung: `Bạn chưa nộp bài tập "${assignment.tieude}". Hạn nộp là ${formatDateDdMmYyyy(assignment.hannop, "--")}. Vui lòng kiểm tra và nộp bài!`,
+        link: `/student/courses/detail-ass?id=${id}` 
+    });
+
+    res.status(200).json({ success: true, message: "Đã gửi nhắc nhở thành công" });
+  } catch (error) {
+    console.error("Lỗi nhắc nhở học viên:", error);
+    res.status(500).json({ success: false, message: "Lỗi server" });
   }
 };

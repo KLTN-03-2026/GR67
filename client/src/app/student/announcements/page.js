@@ -42,7 +42,7 @@ export default function Announcements() {
       });
       // Cập nhật lại local state
       setAnnouncements(prev => prev.map(a =>
-        a._id === id ? { ...a, readByUserIds: [...a.readByUserIds, user?._id] } : a
+        a._id === id ? { ...a, readByUserIds: [...a.readByUserIds, user?.id || user?._id] } : a
       ));
     } catch (error) {
       console.error("Lỗi đánh dấu đã đọc:", error);
@@ -94,7 +94,7 @@ export default function Announcements() {
           ) : announcements.length === 0 ? (
             <div className="p-8 text-center text-gray-500">Chưa có thông báo nào.</div>
           ) : announcements.map((item) => {
-            const isRead = item.readByUserIds?.includes(user?._id);
+            const isRead = item.readByUserIds?.includes(user?.id || user?._id);
             return (
               <div
                 key={item._id}
