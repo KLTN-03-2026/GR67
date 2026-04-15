@@ -1,6 +1,6 @@
 const { WebSocketServer } = require('ws');
-const { encodeWebmBuffer } = require('../services/attendancePythonClient');
-const { recognizeFromProbe } = require('../services/kioskRecognitionService');
+const { recognizeWebmBuffer } = require('../services/attendancePythonClient');
+const { mapPythonRecognizeToKioskPayload } = require('../services/kioskRecognitionService');
 const { validateKioskCredential } = require('../services/kioskKeyAuthService');
 
 const KIOSK_WS_PATH = '/api/kiosk/ws';
@@ -71,8 +71,8 @@ function initKioskWs(httpServer) {
 
       processing = true;
       try {
-        const probe = await encodeWebmBuffer(buf);
-        const result = await recognizeFromProbe(probe);
+        const py = await recognizeWebmBuffer(buf);
+        const result = await mapPythonRecognizeToKioskPayload(py);
         if (ws.readyState === 1) {
           ws.send(JSON.stringify({ type: 'recognize', ...result }));
         }

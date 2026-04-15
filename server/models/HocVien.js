@@ -8,7 +8,8 @@ const hocVienSchema = new mongoose.Schema({
     unique: true,
     note: "Liên kết 1-1 với NguoiDung"
   },
-  faceDescriptor: {
+  /** Embedding InsightFace 512 chiều (đã chuẩn hóa khi lưu tùy pipeline). */
+  faceEmbedding: {
     type: [Number],
     default: []
   }

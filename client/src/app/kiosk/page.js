@@ -26,19 +26,50 @@ export default function KioskPage() {
   modalOpenRef.current = !!modal;
   const mrRef = useRef(null);
 
-  const resetRecognition = useCallback((fromIdleTimeout = false) => {
-    setModal(null);
-    setLastRecognize(null);
-    setStatusLine(
-      fromIdleTimeout
-        ? "Hết thời gian chờ — đang nhận diện lại..."
-        : "Hướng mặt vào camera — đang nhận diện lại..."
-    );
-  }, []);
+  const reportMisidentification = useCallback(
+    async (hocvienId) => {
+      if (!credential || !hocvienId) return;
+      try {
+        await fetch(`${API_BASE}/api/kiosk/misidentification`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Kiosk-Key": credential,
+          },
+          body: JSON.stringify({ hocvienId }),
+        });
+      } catch {
+        /* ignore */
+      }
+    },
+    [credential]
+  );
+
+  const resetRecognition = useCallback(
+    (options) => {
+      const fromIdleTimeout = options?.fromIdleTimeout === true;
+      const reportBadMatch = options?.reportBadMatch === true;
+
+      if (reportBadMatch) {
+        const id =
+          modal?.match?.hocvienId || lastRecognize?.match?.hocvienId;
+        if (id) void reportMisidentification(id);
+      }
+
+      setModal(null);
+      setLastRecognize(null);
+      setStatusLine(
+        fromIdleTimeout
+          ? "Hết thời gian chờ — đang nhận diện lại..."
+          : "Hướng mặt vào camera — đang nhận diện lại..."
+      );
+    },
+    [modal, lastRecognize, reportMisidentification]
+  );
 
   useEffect(() => {
     if (!modal || confirming) return undefined;
-    const t = setTimeout(() => resetRecognition(true), CONFIRM_IDLE_MS);
+    const t = setTimeout(() => resetRecognition({ fromIdleTimeout: true }), CONFIRM_IDLE_MS);
     return () => clearTimeout(t);
   }, [modal, confirming, resetRecognition]);
 
@@ -359,7 +390,7 @@ export default function KioskPage() {
 
   if (!hydrated) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center text-gray-400 text-sm">
+      <div className="fixed inset-0 flex items-center justify-center bg-[var(--kiosk-void)] text-[var(--kiosk-muted)] text-sm">
         Đang tải...
       </div>
     );
@@ -367,29 +398,45 @@ export default function KioskPage() {
 
   if (!credential) {
     return (
-      <div className="fixed inset-0 bg-gray-950 flex flex-col items-center justify-center p-6 text-white">
-        <h1 className="text-xl font-semibold mb-2 text-center">Điểm danh kiosk</h1>
-        <p className="text-sm text-gray-400 text-center max-w-md mb-6">
-          Nhập mã đầy đủ do quản trị viên cấp (dạng{" "}
-          <span className="font-mono text-gray-300">prefix.suffix</span>).
-        </p>
-        {keyError ? <p className="text-red-400 text-sm mb-2">{keyError}</p> : null}
-        <input
-          type="password"
-          autoComplete="off"
-          value={keyInput}
-          onChange={(e) => setKeyInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && saveCredential(keyInput)}
-          placeholder="Dán mã kiosk"
-          className="w-full max-w-md rounded-lg bg-black/50 border border-white/20 px-4 py-3 text-sm font-mono text-white placeholder:text-gray-600 mb-4"
+      <div className="fixed inset-0 flex flex-col items-center justify-center p-6 bg-[var(--kiosk-void)] text-[#e8eaef] kiosk-noise relative overflow-hidden">
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-[#0f1419] via-[var(--kiosk-void)] to-[#121a24] pointer-events-none"
+          aria-hidden
         />
-        <button
-          type="button"
-          onClick={() => saveCredential(keyInput)}
-          className="w-full max-w-md py-3 rounded-lg bg-blue-600 hover:bg-blue-700 font-medium text-sm"
-        >
-          Tiếp tục
-        </button>
+        <div className="relative z-[1] w-full max-w-md space-y-6 kiosk-reveal">
+          <p className="text-[0.65rem] uppercase tracking-[0.35em] text-[var(--kiosk-muted)] text-center font-[family-name:var(--font-kiosk-sans)]">
+            Check-in
+          </p>
+          <h1
+            className="text-center text-3xl sm:text-4xl leading-tight text-[#f0f2f6] font-[family-name:var(--font-kiosk-display)] font-semibold"
+          >
+            Điểm danh
+            <span className="block text-lg sm:text-xl font-normal text-[var(--kiosk-muted)] mt-1 font-[family-name:var(--font-kiosk-sans)]">
+              Kiosk nhận diện
+            </span>
+          </h1>
+          <p className="text-sm text-center text-[var(--kiosk-muted)] leading-relaxed">
+            Nhập mã do quản trị cấp{" "}
+            <span className="font-mono text-[#c8cdd8]">prefix.suffix</span>
+          </p>
+          {keyError ? <p className="text-center text-sm text-red-400/90">{keyError}</p> : null}
+          <input
+            type="password"
+            autoComplete="off"
+            value={keyInput}
+            onChange={(e) => setKeyInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && saveCredential(keyInput)}
+            placeholder="Mã kiosk"
+            className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-sm font-mono text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-[var(--kiosk-accent)]/50"
+          />
+          <button
+            type="button"
+            onClick={() => saveCredential(keyInput)}
+            className="w-full rounded-2xl bg-[var(--kiosk-accent)] py-3.5 text-sm font-semibold text-white shadow-lg shadow-orange-950/40 hover:brightness-110 transition-[filter]"
+          >
+            Tiếp tục
+          </button>
+        </div>
       </div>
     );
   }
@@ -408,8 +455,8 @@ export default function KioskPage() {
           : null;
 
   return (
-    <div className="fixed inset-0 h-[100dvh] w-screen overflow-hidden flex flex-row bg-black">
-      <div className="relative flex-[2] min-w-0 min-h-0 bg-neutral-900">
+    <div className="fixed inset-0 h-[100dvh] w-screen overflow-hidden flex flex-row bg-[var(--kiosk-void)]">
+      <div className="relative flex-[1.65] min-w-0 min-h-0 bg-black">
         <video
           ref={videoRef}
           autoPlay
@@ -417,133 +464,160 @@ export default function KioskPage() {
           muted
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute top-0 left-0 right-0 z-10 bg-black/55 text-white text-sm py-2.5 px-4 flex items-center justify-between gap-3">
-          <span className="font-medium">Điểm danh khuôn mặt</span>
+        <div
+          className="pointer-events-none absolute inset-0 kiosk-camera-vignette kiosk-noise"
+          aria-hidden
+        />
+        <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between gap-3 px-4 py-3 bg-gradient-to-b from-black/70 to-transparent">
+          <span className="text-xs uppercase tracking-[0.2em] text-white/80 font-[family-name:var(--font-kiosk-sans)]">
+            Camera
+          </span>
           <button
             type="button"
             onClick={clearCredential}
-            className="text-xs px-3 py-1.5 rounded-md border border-white/35 hover:bg-white/10 shrink-0"
+            className="pointer-events-auto text-xs px-3 py-1.5 rounded-full border border-white/25 text-white/90 hover:bg-white/10 shrink-0"
           >
             Đổi mã
           </button>
         </div>
         {camError ? (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/85 text-red-300 text-sm px-4 text-center">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/90 text-red-300/95 text-sm px-4 text-center">
             {camError}
           </div>
         ) : null}
-        <div className="absolute bottom-0 left-0 right-0 z-10 bg-black/55 text-gray-100 text-sm px-4 py-3">
-          <p className="text-center leading-snug">{statusLine}</p>
+        <div className="absolute bottom-0 left-0 right-0 z-10 px-4 py-4 bg-gradient-to-t from-black/80 to-transparent">
+          <p className="text-center text-sm text-white/90 leading-snug font-[family-name:var(--font-kiosk-sans)]">
+            {statusLine}
+          </p>
+          {!camError && cameraReady ? (
+            <div className="flex justify-center mt-3">
+              <span className="kiosk-scan-hint h-1 w-24 rounded-full bg-[var(--kiosk-accent)]/80" />
+            </div>
+          ) : null}
         </div>
       </div>
 
-      <aside className="flex flex-1 min-w-[min(100%,280px)] max-w-[40vw] flex-col bg-white text-gray-900 border-l border-gray-200 shadow-xl">
-        <div className="shrink-0 border-b border-gray-100 px-5 py-5 flex justify-center items-center bg-gray-50/80">
-          <div
-            className="flex h-[5.5rem] w-full max-w-[200px] items-center justify-center rounded-xl bg-gray-200/90 text-center text-xs font-medium text-gray-500 px-3"
-            aria-hidden
-          >
-            Logo trung tâm
-          </div>
-        </div>
+      <aside
+        className="flex flex-1 min-w-[min(100%,300px)] max-w-[42vw] flex-col border-l border-[var(--kiosk-line)] shadow-[-12px_0_40px_rgba(0,0,0,0.12)] bg-[var(--kiosk-panel)] text-[var(--kiosk-ink)]"
+      >
+        <header className="shrink-0 px-6 py-6 border-b border-[var(--kiosk-line)] bg-gradient-to-br from-white/80 to-[#ebe6dc]/90">
+          <p className="text-[0.65rem] uppercase tracking-[0.3em] text-[var(--kiosk-muted)] mb-2 font-[family-name:var(--font-kiosk-sans)]">
+            Trung tâm
+          </p>
+          <div className="h-px w-12 bg-[var(--kiosk-accent)] mb-3" aria-hidden />
+          <p className="font-[family-name:var(--font-kiosk-display)] text-xl font-semibold text-[var(--kiosk-ink)] leading-snug">
+            EMC
+          </p>
+          <p className="text-xs text-[var(--kiosk-muted)] mt-1 font-[family-name:var(--font-kiosk-sans)]">
+            Điểm danh tự động
+          </p>
+        </header>
 
         <div className="flex min-h-0 flex-1 flex-col">
-          <section className="flex flex-1 flex-col justify-center border-b border-gray-100 px-5 py-6 min-h-0 overflow-y-auto">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
-              Thông tin học viên
+          <section className="flex flex-1 flex-col justify-center border-b border-[var(--kiosk-line)] px-6 py-8 min-h-0 overflow-y-auto">
+            <h2 className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-[var(--kiosk-muted)] mb-5 font-[family-name:var(--font-kiosk-sans)]">
+              Học viên
             </h2>
             {match ? (
-              <div className="flex flex-col items-center text-center gap-3">
-                <div
-                  className="h-24 w-24 shrink-0 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 ring-4 ring-gray-100"
-                  aria-hidden
-                />
+              <div className="kiosk-reveal flex flex-col gap-5 text-center">
                 <div>
-                  <p className="text-xl font-bold text-gray-900 leading-tight">{match.hovaten}</p>
+                  <p
+                    className="text-2xl sm:text-[1.65rem] font-semibold text-[var(--kiosk-ink)] leading-tight font-[family-name:var(--font-kiosk-display)]"
+                  >
+                    {match.hovaten}
+                  </p>
                   {match.email ? (
-                    <p className="text-sm text-gray-500 mt-1 break-all">{match.email}</p>
+                    <p className="text-sm text-[var(--kiosk-muted)] mt-2 break-all font-[family-name:var(--font-kiosk-sans)]">
+                      {match.email}
+                    </p>
                   ) : null}
-                  <p className="mt-2 inline-block rounded-md bg-gray-100 px-3 py-1 font-mono text-sm text-gray-700">
-                    Mã: {match.maHocVienDisplay}
+                  <p className="mt-4 inline-block rounded-xl bg-[var(--kiosk-accent-soft)] px-4 py-2 font-mono text-sm text-[var(--kiosk-accent)] border border-[var(--kiosk-accent)]/20">
+                    Mã {match.maHocVienDisplay}
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={resetRecognition}
+                  onClick={() => resetRecognition({ reportBadMatch: true })}
                   disabled={confirming}
-                  className="mt-2 w-full max-w-[220px] py-2.5 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 text-sm font-medium hover:bg-amber-100 disabled:opacity-50"
+                  className="w-full max-w-xs mx-auto py-3 rounded-2xl border border-[var(--kiosk-accent)]/35 bg-white/60 text-[var(--kiosk-accent)] text-sm font-semibold hover:bg-white disabled:opacity-50 font-[family-name:var(--font-kiosk-sans)] transition-colors"
                 >
-                  Không phải tôi — nhận diện lại
+                  Không phải tôi — quét lại
                 </button>
               </div>
             ) : (
-              <p className="text-center text-gray-400 text-sm leading-relaxed px-2">
-                Hướng mặt vào camera. Thông tin học viên sẽ hiển thị sau khi nhận diện.
+              <p className="text-center text-[var(--kiosk-muted)] text-sm leading-relaxed px-1 font-[family-name:var(--font-kiosk-sans)]">
+                Hướng mặt vào camera. Tên và mã học viên hiển thị sau khi nhận diện.
               </p>
             )}
           </section>
 
-          <section className="flex flex-1 flex-col px-5 py-6 min-h-0 overflow-y-auto">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
-              Khóa học &amp; buổi học
+          <section className="flex flex-1 flex-col px-6 py-8 min-h-0 overflow-y-auto">
+            <h2 className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-[var(--kiosk-muted)] mb-5 font-[family-name:var(--font-kiosk-sans)]">
+              Buổi học
             </h2>
             {modal && session ? (
-              <div className="flex flex-col gap-4 flex-1 min-h-0">
-                <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 text-sm space-y-2 text-gray-700">
+              <div className="flex flex-col gap-5 flex-1 min-h-0 kiosk-reveal">
+                <div className="rounded-2xl border border-[var(--kiosk-line)] bg-white/70 p-5 text-sm space-y-3 text-[var(--kiosk-ink)] shadow-sm font-[family-name:var(--font-kiosk-sans)]">
                   <p>
-                    <span className="text-gray-500">Khóa học:</span>{" "}
-                    <span className="font-semibold text-gray-900">{session.tenkhoahoc}</span>
+                    <span className="text-[var(--kiosk-muted)]">Khóa học</span>
+                    <br />
+                    <span className="font-semibold text-base">{session.tenkhoahoc}</span>
                   </p>
                   <p>
-                    <span className="text-gray-500">Buổi học:</span>{" "}
+                    <span className="text-[var(--kiosk-muted)]">Thời gian</span>
+                    <br />
                     {fmtTime(session.giobatdau)} — {fmtTime(session.gioketthuc)}
                   </p>
                   {session.late ? (
-                    <p className="text-amber-700 font-medium text-sm pt-1">
-                      Đến trong khung trễ — vẫn có thể điểm danh.
+                    <p className="text-[var(--kiosk-accent)] font-medium text-sm pt-1">
+                      Trễ trong khung — vẫn có thể điểm danh.
                     </p>
                   ) : null}
                 </div>
-                <p className="text-sm font-semibold text-gray-900">Xác nhận điểm danh?</p>
-                <p className="text-xs text-gray-500">
+                <p className="text-base font-semibold text-[var(--kiosk-ink)] font-[family-name:var(--font-kiosk-display)]">
+                  Xác nhận điểm danh?
+                </p>
+                <p className="text-xs text-[var(--kiosk-muted)] font-[family-name:var(--font-kiosk-sans)]">
                   Tự động quét lại sau {CONFIRM_IDLE_MS / 1000}s nếu không chọn.
                 </p>
-                <div className="flex flex-col gap-2 mt-auto pt-2">
+                <div className="flex flex-col gap-3 mt-auto pt-2">
                   <button
                     type="button"
                     disabled={confirming}
                     onClick={confirmAttendance}
-                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm disabled:opacity-50 transition-colors"
+                    className="w-full py-3.5 rounded-2xl bg-[var(--kiosk-ink)] text-white font-semibold text-sm disabled:opacity-50 hover:bg-black transition-colors font-[family-name:var(--font-kiosk-sans)]"
                   >
                     {confirming ? "Đang gửi..." : "Xác nhận điểm danh"}
                   </button>
                   <button
                     type="button"
                     disabled={confirming}
-                    onClick={resetRecognition}
-                    className="w-full py-2.5 rounded-xl border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+                    onClick={() => resetRecognition({ reportBadMatch: true })}
+                    className="w-full py-3 rounded-2xl border border-[var(--kiosk-line)] text-[var(--kiosk-muted)] text-sm font-medium hover:bg-white/80 disabled:opacity-50 font-[family-name:var(--font-kiosk-sans)]"
                   >
                     Không phải tôi / Hủy
                   </button>
                 </div>
               </div>
             ) : session && match ? (
-              <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 text-sm space-y-2 text-gray-700">
+              <div className="rounded-2xl border border-[var(--kiosk-line)] bg-white/70 p-5 text-sm space-y-2 text-[var(--kiosk-ink)] font-[family-name:var(--font-kiosk-sans)]">
                 <p>
-                  <span className="text-gray-500">Khóa học:</span>{" "}
-                  <span className="font-semibold text-gray-900">{session.tenkhoahoc}</span>
+                  <span className="text-[var(--kiosk-muted)]">Khóa học</span>{" "}
+                  <span className="font-semibold">{session.tenkhoahoc}</span>
                 </p>
                 <p>
-                  <span className="text-gray-500">Buổi học:</span>{" "}
+                  <span className="text-[var(--kiosk-muted)]">Buổi</span>{" "}
                   {fmtTime(session.giobatdau)} — {fmtTime(session.gioketthuc)}
                 </p>
-                {windowHint ? <p className="text-amber-800 text-sm pt-1">{windowHint}</p> : null}
+                {windowHint ? <p className="text-[var(--kiosk-accent)] text-sm pt-1">{windowHint}</p> : null}
               </div>
             ) : match && windowHint ? (
-              <p className="text-sm text-amber-800 leading-relaxed">{windowHint}</p>
+              <p className="text-sm text-[var(--kiosk-accent)] leading-relaxed font-[family-name:var(--font-kiosk-sans)]">
+                {windowHint}
+              </p>
             ) : (
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Thông tin lớp học và buổi học sẽ hiện khi đủ điều kiện điểm danh.
+              <p className="text-[var(--kiosk-muted)] text-sm leading-relaxed font-[family-name:var(--font-kiosk-sans)]">
+                Lịch buổi học hiển thị khi đủ điều kiện điểm danh.
               </p>
             )}
           </section>

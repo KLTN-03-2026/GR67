@@ -1,14 +1,14 @@
 /**
- * Không trả về vector faceDescriptor cho client; chỉ cờ hasFaceDescriptor.
+ * Không trả về vector faceEmbedding cho client; chỉ cờ hasFaceEmbedding.
  */
 function sanitizeHocVienPublic(hv) {
   if (!hv) return null;
-  const raw = typeof hv.toObject === 'function' ? hv.toObject() : { ...hv };
-  const fd = raw.faceDescriptor;
-  delete raw.faceDescriptor;
+  const raw = typeof hv.toObject === "function" ? hv.toObject() : { ...hv };
+  const fe = raw.faceEmbedding;
+  delete raw.faceEmbedding;
   return {
     ...raw,
-    hasFaceDescriptor: Array.isArray(fd) && fd.length === 128,
+    hasFaceEmbedding: Array.isArray(fe) && fe.length === 512,
   };
 }
 

@@ -336,7 +336,7 @@ export default function StudentAccountsPage() {
               token={token}
               apiBase={API_BASE}
               studentId={selectedUser?._id}
-              hasFaceDescriptor={!!selectedUser?.hocVienInfo?.hasFaceDescriptor}
+              hasFaceEmbedding={!!selectedUser?.hocVienInfo?.hasFaceEmbedding}
               onRegistered={handleFaceRegistered}
             />
             {formError && <p className="text-sm text-red-500">{formError}</p>}
@@ -401,7 +401,7 @@ export default function StudentAccountsPage() {
                   token={token}
                   apiBase={API_BASE}
                   studentId={selectedUser?._id}
-                  hasFaceDescriptor={!!selectedUser?.hocVienInfo?.hasFaceDescriptor}
+                  hasFaceEmbedding={!!selectedUser?.hocVienInfo?.hasFaceEmbedding}
                   onRegistered={handleFaceRegistered}
                 />
                 {formError && <p className="text-sm text-red-500">{formError}</p>}
@@ -437,7 +437,7 @@ function FaceEnrollmentSection({
   token,
   apiBase,
   studentId,
-  hasFaceDescriptor,
+  hasFaceEmbedding,
   onRegistered,
 }) {
   const videoRef = useRef(null);
@@ -514,7 +514,7 @@ function FaceEnrollmentSection({
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
         <label className="text-sm text-gray-600 dark:text-gray-300">Nhận diện khuôn mặt</label>
-        {hasFaceDescriptor ? (
+        {hasFaceEmbedding ? (
           <span className="text-xs text-green-600 dark:text-green-400">Đã đăng ký</span>
         ) : (
           <span className="text-xs text-amber-600 dark:text-amber-400">Chưa đăng ký</span>

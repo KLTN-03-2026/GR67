@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Client (Next.js)
 
-## Getting Started
+Thư mục `client/` là giao diện Next.js (App Router) cho hệ thống quản lý trung tâm và kiosk điểm danh.
 
-First, run the development server:
+## Chạy local
+
+Cài dependencies và chạy dev server:
 
 ```bash
+cd client
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở `http://localhost:3000` (hoặc port Next hiển thị).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Biến môi trường
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Tạo `client/.env.local`:
 
-## Learn More
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
 
-To learn more about Next.js, take a look at the following resources:
+Giá trị này phải trỏ tới API Node (`server/`) và khớp cấu hình CORS.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Kiosk UI
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Route kiosk: `/kiosk`
+- Xác thực: nhập mã kiosk `prefix.suffix`
+- Kiosk gửi WebM chunk qua WebSocket `/api/kiosk/ws` để server nhận diện realtime
+- Sau khi nhận diện: hiển thị thông tin + yêu cầu người dùng **Xác nhận** / **Không phải tôi**
 
-## Deploy on Vercel
+## Build production
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm start
+```

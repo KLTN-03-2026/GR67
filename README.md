@@ -14,7 +14,7 @@
 |-----|-----------|
 | Frontend | [Next.js](https://nextjs.org) 16, React 19, Tailwind CSS 4 |
 | Backend | Node.js, Express, Mongoose (MongoDB), `ws` (kiosk), Socket.IO (nơi dùng) |
-| Điểm danh | Python 3.10+, FastAPI, Uvicorn, OpenCV (`opencv-python-headless`), `face_recognition` |
+| Điểm danh | Python 3.10+, FastAPI, Uvicorn, OpenCV (`opencv-python-headless`), InsightFace (ONNXRuntime GPU/CPU), FAISS |
 | Auth | JWT; OTP email (Nodemailer) |
 | API docs | Swagger UI: `http://localhost:<PORT>/api-docs` |
 
@@ -24,7 +24,7 @@
 QuanLyTrungTamTiengAnh/
 ├── client/              # Next.js
 ├── server/              # Express API, upload, Swagger
-└── attendanceService/   # FastAPI — encode ảnh / WebM → vector 128 chiều
+└── attendanceService/   # FastAPI — InsightFace + FAISS (512-D) + liveness
 ```
 
 ## Yêu cầu môi trường
@@ -92,9 +92,7 @@ npm run build && npm start   # production
 
 ## 3. Dịch vụ điểm danh (`attendanceService`)
 
-Python cung cấp HTTP cho Node: trích embedding khuôn mặt từ **ảnh JPEG** hoặc **đoạn WebM** (kiosk gửi qua WebSocket → server forward sang đây).
-
-Chi tiết cài đặt (venv, `dlib` trên Windows) xem thêm [`attendanceService/README.md`](attendanceService/README.md).
+Python cung cấp HTTP cho Node: **enroll** (tạo embedding 512 chiều), **recognize realtime** (WebM multi-frame + passive liveness) và **FAISS index trong RAM**.
 
 ```bash
 cd attendanceService
@@ -105,16 +103,27 @@ pip install -r requirements.txt
 uvicorn app.main:app --host 127.0.0.1 --port 8765
 ```
 
-Biến môi trường tùy chọn: `MAX_IMAGE_MB` (mặc định 8).
+Biến môi trường tùy chọn (Python):
+
+```env
+MAX_IMAGE_MB=8
+INSIGHTFACE_CTX_ID=0                 # 0 = GPU, -1 = CPU
+MATCH_MIN_SIMILARITY=0.45            # ngưỡng cosine similarity
+LIVENESS_MIN_LAPLACIAN_VAR=25.0      # ngưỡng texture
+LIVENESS_MIN_FRAMES=3                # số frame tối thiểu có mặt
+RECOGNITION_COOLDOWN_SEC=4.0         # giảm spam nhận diện cùng 1 người
+```
 
 **Endpoint chính**
 
 | Method | Đường dẫn | Mô tả |
 |--------|-----------|--------|
-| GET | `/health` | Kiểm tra sống |
-| POST | `/encode` | `multipart/form-data`, field `file`: ảnh → `{ encoding: number[128] }` |
-| POST | `/encode-webm` | `file`: clip WebM → embedding gộp nhiều khung |
-| POST | `/match` | JSON `probe` + `gallery` (tùy luồng gọi) |
+| GET | `/health` | Trạng thái + size index |
+| POST | `/reload` | JSON `{ items: [{ hocvienId, embedding:number[512] }] }` để rebuild FAISS |
+| POST | `/add-user` | JSON `{ hocvienId, embedding:number[512] }` cập nhật nhanh (tùy chọn) |
+| POST | `/enroll` | `multipart/form-data` field `file`: ảnh → `{ embedding:number[512] }` |
+| POST | `/recognize` | `multipart/form-data` field `file`: clip WebM → `{ hocvienId?, similarity, liveness_ok }` |
+| POST | `/recognize-image` | `multipart/form-data` field `file`: ảnh → `{ hocvienId?, ... }` |
 
 ---
 
@@ -125,7 +134,19 @@ Biến môi trường tùy chọn: `MAX_IMAGE_MB` (mặc định 8).
 3. **Terminal B — API:** `cd server`, `npm run dev` (đã set `ATTENDANCE_SERVICE_URL`, `MONGO_URI`, `JWT_SECRET`, `CORS_ORIGIN`).
 4. **Terminal C — Web:** `cd client`, `npm run dev`, `NEXT_PUBLIC_API_URL` trỏ tới API.
 
-Trang kiosk (đường dẫn trong app, ví dụ `/kiosk`): nhập mã kiosk → camera → WebSocket `/api/kiosk/ws` (sau auth) gửi segment WebM → Node gọi `ATTENDANCE_SERVICE_URL` → so khớp với học viên trong DB.
+Trang kiosk (đường dẫn trong app, ví dụ `/kiosk`): nhập mã kiosk → camera → WebSocket `/api/kiosk/ws` (sau auth) gửi segment WebM → Node gọi Python `/recognize` → Node lấy info buổi học từ Mongo → UI cho học viên **Xác nhận** hoặc **Không phải tôi**.
+
+### Migration dữ liệu khuôn mặt (bắt buộc)
+
+Hệ thống mới dùng `HocVien.faceEmbedding` (512-D). Dữ liệu `faceDescriptor` cũ (128-D) **không dùng lại**.
+
+Chạy script một lần:
+
+```bash
+node server/scripts/migrateFaceEmbedding.js
+```
+
+Sau đó cần **đăng ký lại khuôn mặt** cho học viên ở trang admin.
 
 ---
 

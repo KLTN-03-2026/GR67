@@ -277,7 +277,7 @@ function SampleTestQuestionListItem({ q, onEdit, onDelete }) {
   };
 
   return (
-    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-900/30 space-y-3">
+    <div className="rounded-md px-3 py-2.5 bg-gray-50/70 dark:bg-gray-900/20 space-y-2.5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
           <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-100 shrink-0">{loai}</span>
@@ -299,16 +299,16 @@ function SampleTestQuestionListItem({ q, onEdit, onDelete }) {
       </div>
 
       <div className="space-y-1">
-        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Nội dung / ảnh</div>
-        <div className="rounded-md border border-gray-200 dark:border-gray-600 bg-gray-50/80 dark:bg-gray-950/40 p-2 max-h-56 overflow-auto text-sm text-gray-900 dark:text-gray-100">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Nội dung / ảnh</div>
+        <div className="rounded-md bg-white/85 dark:bg-gray-900/45 px-2.5 py-2 max-h-56 overflow-auto text-sm text-gray-900 dark:text-gray-100">
           {renderHtmlOrText(stem)}
         </div>
       </div>
 
       {loai === "mcq" || loai === "multiSelect" ? (
         <div className="space-y-1">
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Lựa chọn</div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Lựa chọn</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
             {["A", "B", "C", "D"].map((label, idx) => {
               const correctMcq = loai === "mcq" && Number(q.dapAnDungIndex) === idx;
               const correctMulti = loai === "multiSelect" && multiIndices.includes(idx);
@@ -316,10 +316,10 @@ function SampleTestQuestionListItem({ q, onEdit, onDelete }) {
               return (
                 <div
                   key={label}
-                  className={`rounded-md border p-2 text-xs max-h-44 overflow-auto ${
+                  className={`rounded-md px-2 py-1.5 text-xs max-h-44 overflow-auto ${
                     mark
-                      ? "border-green-500 ring-1 ring-green-500/40 bg-green-50/70 dark:bg-green-950/30"
-                      : "border-gray-200 dark:border-gray-600 bg-white/70 dark:bg-gray-900/45"
+                      ? "bg-green-50/80 dark:bg-green-950/35 ring-1 ring-green-500/35"
+                      : "bg-white/85 dark:bg-gray-900/45"
                   }`}
                 >
                   <div className="font-semibold text-gray-700 dark:text-gray-200 mb-1">
@@ -335,7 +335,7 @@ function SampleTestQuestionListItem({ q, onEdit, onDelete }) {
       ) : null}
 
       {loai === "shortAnswer" && String(q.dapAnDungText || "").trim() ? (
-        <div className="text-sm rounded-md border border-gray-200 dark:border-gray-600 p-2 bg-white/70 dark:bg-gray-900/45">
+        <div className="text-sm rounded-md px-2.5 py-2 bg-white/85 dark:bg-gray-900/45">
           <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Đáp án mẫu (đầy đủ)</div>
           {renderHtmlOrText(q.dapAnDungText)}
         </div>
@@ -343,8 +343,8 @@ function SampleTestQuestionListItem({ q, onEdit, onDelete }) {
 
       {String(q.giaiThich || "").trim() ? (
         <div className="space-y-1">
-          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Giải thích</div>
-          <div className="rounded-md border border-gray-200 dark:border-gray-600 p-2 max-h-36 overflow-auto text-xs">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Giải thích</div>
+          <div className="rounded-md bg-white/85 dark:bg-gray-900/45 px-2.5 py-2 max-h-36 overflow-auto text-xs">
             {renderHtmlOrText(q.giaiThich)}
           </div>
         </div>
@@ -752,7 +752,12 @@ function parseQuestionsFromDocxHtml(html) {
 
   for (const line of lines) {
     const plainOneLine = line.plainOneLine;
-    if (!plainOneLine) continue;
+    if (!plainOneLine) {
+      if (!line.hasImg || !current) continue;
+      if (collectingStem) current.stemParts.push(line.html);
+      else current.optParts.push(line.html);
+      continue;
+    }
     const groupLine = plainOneLine.match(/^\/\/\s*(.*)$/);
     if (groupLine) {
       flush();
@@ -1530,6 +1535,14 @@ function SampleTestEditor({
     { value: "khó", label: "khó" },
   ];
 
+  const actionBtnBase =
+    "inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors";
+  const actionBtnCompact = "px-2.5 py-1.5 text-xs";
+  const actionBtnDisabled = "bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-700 dark:text-gray-400";
+  const actionBtnPrimary = "bg-blue-600 text-white hover:bg-blue-700";
+  const actionBtnSecondary = "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700";
+  const actionBtnDanger = "bg-red-600 text-white hover:bg-red-700";
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
         <div className="admin-card flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
@@ -1660,24 +1673,24 @@ function SampleTestEditor({
                 {(localTest.parts || []).length === 0 ? (
                   <div className="text-sm text-gray-500 dark:text-gray-400">Chưa có part nào. Thêm part để bắt đầu nhập câu hỏi.</div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {(localTest.parts || []).map((part) => {
                       const expanded = String(expandedPartId) === String(part._id);
                       const ungroupedQsOpen = isQuestionListOpen(part._id, UNGROUPED_QUESTION_SECTION);
                       return (
-                        <div key={part._id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                          <div className="px-4 py-3 bg-gray-50 dark:bg-gray-900/20 flex items-center justify-between gap-3">
+                        <div key={part._id} className="rounded-md border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900/10 overflow-hidden">
+                          <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800/80 flex flex-wrap items-center justify-between gap-3">
                             <div className="min-w-0">
                               <div className="font-semibold text-gray-900 dark:text-white truncate">
                                 {part.thuTu}. {part.tenPhan}
                               </div>
                               <div className="text-xs text-gray-500 dark:text-gray-400">{part.questions?.length ?? 0} câu</div>
                             </div>
-                            <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
                               <button
                                 type="button"
                                 onClick={() => setExpandedPartId(expanded ? null : part._id)}
-                                className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="p-2 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                                 title={expanded ? "Thu gọn" : "Mở rộng"}
                               >
                                 {expanded ? <FiChevronUp /> : <FiChevronDown />}
@@ -1686,7 +1699,7 @@ function SampleTestEditor({
                                 type="button"
                                 onClick={() => openImportDocx(part, "")}
                                 disabled={!testId}
-                                className={`inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-slate-600 text-white hover:bg-slate-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
+                                className={`${actionBtnBase} ${testId ? actionBtnPrimary : actionBtnDisabled}`}
                               >
                                 <FiUpload className="h-4 w-4" />
                                 Import Word
@@ -1695,34 +1708,44 @@ function SampleTestEditor({
                                 type="button"
                                 onClick={() => openCreateQuestion(part)}
                                 disabled={!testId}
-                                className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
+                                className={`${actionBtnBase} ${testId ? actionBtnPrimary : actionBtnDisabled}`}
                               >
                                 Thêm câu
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => openCreateGroup(part)}
-                                disabled={!testId}
-                                className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-indigo-600 text-white hover:bg-indigo-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
-                              >
-                                Thêm nhóm
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => openEditPart(part)}
-                                disabled={!testId}
-                                className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-yellow-400/90 text-white hover:bg-yellow-400" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
-                              >
-                                Sửa
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => confirmDeletePart(part._id)}
-                                disabled={!testId}
-                                className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-red-500 text-white hover:bg-red-600" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
-                              >
-                                Xóa
-                              </button>
+                              <details className="group relative">
+                                <summary
+                                  className={`${actionBtnBase} ${actionBtnCompact} list-none cursor-pointer ${testId ? actionBtnSecondary : actionBtnDisabled} [&::-webkit-details-marker]:hidden`}
+                                >
+                                  Tùy chọn
+                                  <FiChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+                                </summary>
+                                <div className="absolute z-10 mt-1 right-0 min-w-36 rounded-md border border-gray-200 bg-white p-1.5 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+                                  <button
+                                    type="button"
+                                    onClick={() => openCreateGroup(part)}
+                                    disabled={!testId}
+                                    className={`w-full ${actionBtnBase} ${actionBtnCompact} justify-start ${testId ? actionBtnSecondary : actionBtnDisabled}`}
+                                  >
+                                    Thêm nhóm
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => openEditPart(part)}
+                                    disabled={!testId}
+                                    className={`mt-1 w-full ${actionBtnBase} ${actionBtnCompact} justify-start ${testId ? actionBtnSecondary : actionBtnDisabled}`}
+                                  >
+                                    Sửa part
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => confirmDeletePart(part._id)}
+                                    disabled={!testId}
+                                    className={`mt-1 w-full ${actionBtnBase} ${actionBtnCompact} justify-start ${testId ? actionBtnDanger : actionBtnDisabled}`}
+                                  >
+                                    Xóa part
+                                  </button>
+                                </div>
+                              </details>
                             </div>
                           </div>
 
@@ -1731,17 +1754,17 @@ function SampleTestEditor({
                               {(part.groups || []).length === 0 && (part.ungroupedQuestions || []).length === 0 ? (
                                 <div className="text-sm text-gray-500 dark:text-gray-400">Chưa có câu hỏi.</div>
                               ) : (
-                                <div className="space-y-3">
+                                <div className="space-y-2.5">
                                   {(part.groups || []).map((group) => {
                                     const groupQsOpen = isQuestionListOpen(part._id, group._id);
                                     return (
-                                      <div key={group._id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900/10">
-                                        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-900/20 flex items-center justify-between gap-3">
+                                      <div key={group._id} className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900/10">
+                                        <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800/80 flex items-center justify-between gap-3">
                                           <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                                             <button
                                               type="button"
                                               onClick={() => toggleQuestionListSection(part._id, group._id)}
-                                              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 shrink-0"
+                                              className="p-2 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 shrink-0"
                                               title={groupQsOpen ? "Thu gọn danh sách câu" : "Mở danh sách câu"}
                                             >
                                               {groupQsOpen ? <FiChevronUp /> : <FiChevronDown />}
@@ -1750,45 +1773,53 @@ function SampleTestEditor({
                                               <div className="font-semibold text-gray-900 dark:text-white truncate">
                                                 {group.tenNhom}
                                               </div>
-                                              <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                file: {group.files?.length ?? 0} | câu: {group.questions?.length ?? 0}
-                                              </div>
+                                              <div className="text-xs text-gray-500 dark:text-gray-400">{group.questions?.length ?? 0} câu</div>
                                             </div>
                                           </div>
                                           <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
                                             <button
                                               type="button"
-                                              onClick={() => openImportDocx(part, group._id)}
-                                              disabled={!testId}
-                                              className={`inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-slate-600 text-white hover:bg-slate-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
-                                            >
-                                              <FiUpload className="h-4 w-4" />
-                                              Import Word
-                                            </button>
-                                            <button
-                                              type="button"
                                               onClick={() => openCreateQuestion(part, group._id)}
                                               disabled={!testId}
-                                              className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
+                                              className={`${actionBtnBase} ${testId ? actionBtnPrimary : actionBtnDisabled}`}
                                             >
                                               Thêm câu
                                             </button>
-                                            <button
-                                              type="button"
-                                              onClick={() => openEditGroup(group)}
-                                              disabled={!testId}
-                                              className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-yellow-400/90 hover:bg-yellow-400 text-white" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
-                                            >
-                                              Sửa nhóm
-                                            </button>
-                                            <button
-                                              type="button"
-                                              onClick={() => confirmDeleteGroup(group._id)}
-                                              disabled={!testId}
-                                              className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-red-500 hover:bg-red-600 text-white" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
-                                            >
-                                              Xóa
-                                            </button>
+                                            <details className="group relative">
+                                              <summary
+                                                className={`${actionBtnBase} ${actionBtnCompact} list-none cursor-pointer ${testId ? actionBtnSecondary : actionBtnDisabled} [&::-webkit-details-marker]:hidden`}
+                                              >
+                                                Tùy chọn
+                                                <FiChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+                                              </summary>
+                                              <div className="absolute z-10 mt-1 right-0 min-w-40 rounded-md border border-gray-200 bg-white p-1.5 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+                                                <button
+                                                  type="button"
+                                                  onClick={() => openImportDocx(part, group._id)}
+                                                  disabled={!testId}
+                                                  className={`w-full ${actionBtnBase} ${actionBtnCompact} justify-start ${testId ? actionBtnSecondary : actionBtnDisabled}`}
+                                                >
+                                                  <FiUpload className="h-3.5 w-3.5" />
+                                                  Import Word
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => openEditGroup(group)}
+                                                  disabled={!testId}
+                                                  className={`mt-1 w-full ${actionBtnBase} ${actionBtnCompact} justify-start ${testId ? actionBtnSecondary : actionBtnDisabled}`}
+                                                >
+                                                  Sửa nhóm
+                                                </button>
+                                                <button
+                                                  type="button"
+                                                  onClick={() => confirmDeleteGroup(group._id)}
+                                                  disabled={!testId}
+                                                  className={`mt-1 w-full ${actionBtnBase} ${actionBtnCompact} justify-start ${testId ? actionBtnDanger : actionBtnDisabled}`}
+                                                >
+                                                  Xóa nhóm
+                                                </button>
+                                              </div>
+                                            </details>
                                           </div>
                                         </div>
 
@@ -1812,13 +1843,13 @@ function SampleTestEditor({
                                     );
                                   })}
 
-                                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-900/10">
-                                    <div className="px-3 py-2 bg-gray-50 dark:bg-gray-900/20 flex items-center justify-between gap-3">
+                                  <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900/10">
+                                    <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800/80 flex items-center justify-between gap-3">
                                       <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                                         <button
                                           type="button"
                                           onClick={() => toggleQuestionListSection(part._id, UNGROUPED_QUESTION_SECTION)}
-                                          className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 shrink-0"
+                                          className="p-2 rounded-md border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 shrink-0"
                                           title={ungroupedQsOpen ? "Thu gọn danh sách câu" : "Mở danh sách câu"}
                                         >
                                           {ungroupedQsOpen ? <FiChevronUp /> : <FiChevronDown />}
@@ -1835,7 +1866,7 @@ function SampleTestEditor({
                                           type="button"
                                           onClick={() => openImportDocx(part, "")}
                                           disabled={!testId}
-                                          className={`inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-slate-600 text-white hover:bg-slate-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
+                                          className={`${actionBtnBase} ${testId ? actionBtnPrimary : actionBtnDisabled}`}
                                         >
                                           <FiUpload className="h-4 w-4" />
                                           Import Word
@@ -1844,7 +1875,7 @@ function SampleTestEditor({
                                           type="button"
                                           onClick={() => openCreateQuestion(part, "")}
                                           disabled={!testId}
-                                          className={`px-3 py-2 rounded-md text-sm font-semibold ${testId ? "bg-green-600 text-white hover:bg-green-700" : "bg-gray-200 text-gray-500 cursor-not-allowed"}`}
+                                          className={`${actionBtnBase} ${testId ? actionBtnPrimary : actionBtnDisabled}`}
                                         >
                                           Thêm câu
                                         </button>

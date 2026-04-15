@@ -5,8 +5,7 @@ function getBaseUrl() {
 }
 
 /**
- * Multipart tới FastAPI: FormData + Blob built-in (Node 18+). fetch + package form-data
- * hay làm Undici gửi body sai → "There was an error parsing the body".
+ * Multipart tới FastAPI — Node 18+ FormData + Blob.
  */
 function buildEncodeFormData(buffer, filename, contentType) {
   const form = new FormData();
@@ -15,95 +14,97 @@ function buildEncodeFormData(buffer, filename, contentType) {
   return form;
 }
 
+async function parseJsonResponse(r) {
+  const text = await r.text();
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(text || `HTTP ${r.status}`);
+  }
+  if (!r.ok) {
+    const msg = data.detail || data.message || text || `HTTP ${r.status}`;
+    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+  }
+  return data;
+}
+
 /**
- * Gọi Python /encode — trả về mảng 128 số.
+ * Đăng ký khuôn mặt — trả embedding 512 chiều.
  */
-async function encodeImageBuffer(buffer) {
+async function enrollImageBuffer(buffer) {
   const base = getBaseUrl();
   const form = buildEncodeFormData(buffer, 'face.jpg', 'image/jpeg');
-  const r = await fetch(`${base}/encode`, {
+  const r = await fetch(`${base}/enroll`, {
     method: 'POST',
     body: form,
   });
-  const text = await r.text();
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error(text || `HTTP ${r.status}`);
+  const data = await parseJsonResponse(r);
+  if (!data.embedding || !Array.isArray(data.embedding)) {
+    throw new Error('Phản hồi enroll không hợp lệ');
   }
-  if (!r.ok) {
-    const msg = data.detail || data.message || text || `HTTP ${r.status}`;
-    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-  }
-  if (!data.encoding || !Array.isArray(data.encoding)) {
-    throw new Error('Phản hồi encode không hợp lệ');
-  }
-  return data.encoding;
+  return data.embedding;
 }
 
 /**
- * Gọi Python /encode-webm — trả về mảng 128 số (embedding gộp từ nhiều frame).
+ * Nhận diện từ clip WebM (kiosk WS).
  */
-async function encodeWebmBuffer(buffer) {
+async function recognizeWebmBuffer(buffer) {
   const base = getBaseUrl();
   const form = buildEncodeFormData(buffer, 'clip.webm', 'video/webm');
-  const r = await fetch(`${base}/encode-webm`, {
+  const r = await fetch(`${base}/recognize`, {
     method: 'POST',
     body: form,
   });
-  const text = await r.text();
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error(text || `HTTP ${r.status}`);
-  }
-  if (!r.ok) {
-    const msg = data.detail || data.message || text || `HTTP ${r.status}`;
-    throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
-  }
-  if (!data.encoding || !Array.isArray(data.encoding)) {
-    throw new Error('Phản hồi encode-webm không hợp lệ');
-  }
-  return data.encoding;
+  const data = await parseJsonResponse(r);
+  return data;
 }
-
-function l2Distance(a, b) {
-  if (!a || !b || a.length !== 128 || b.length !== 128) return Infinity;
-  let s = 0;
-  for (let i = 0; i < 128; i += 1) {
-    const d = a[i] - b[i];
-    s += d * d;
-  }
-  return Math.sqrt(s);
-}
-
-const DEFAULT_THRESHOLD = 0.55;
 
 /**
- * So khớp probe với danh sách { id, encoding } — trả về { id, distance } hoặc null.
+ * Nhận diện từ một ảnh (HTTP kiosk).
  */
-function matchEncodingLocally(probe, gallery, threshold = DEFAULT_THRESHOLD) {
-  let best = null;
-  let bestD = Infinity;
-  for (const item of gallery) {
-    if (!item.encoding || item.encoding.length !== 128) continue;
-    const d = l2Distance(probe, item.encoding);
-    if (d < bestD) {
-      bestD = d;
-      best = item.id;
-    }
-  }
-  if (best === null || bestD > threshold) return null;
-  return { id: best, distance: bestD };
+async function recognizeImageBuffer(buffer) {
+  const base = getBaseUrl();
+  const form = buildEncodeFormData(buffer, 'face.jpg', 'image/jpeg');
+  const r = await fetch(`${base}/recognize-image`, {
+    method: 'POST',
+    body: form,
+  });
+  const data = await parseJsonResponse(r);
+  return data;
+}
+
+/**
+ * Node đẩy toàn bộ embedding lên Python (FAISS reload).
+ */
+async function pushReloadToPython(items) {
+  const base = getBaseUrl();
+  const r = await fetch(`${base}/reload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items }),
+  });
+  return parseJsonResponse(r);
+}
+
+/**
+ * Thêm / cập nhật một học viên trên index Python.
+ */
+async function pushAddUserToPython(hocvienId, embedding) {
+  const base = getBaseUrl();
+  const r = await fetch(`${base}/add-user`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ hocvienId, embedding }),
+  });
+  return parseJsonResponse(r);
 }
 
 module.exports = {
-  encodeImageBuffer,
-  encodeWebmBuffer,
   getBaseUrl,
-  l2Distance,
-  matchEncodingLocally,
-  DEFAULT_THRESHOLD,
+  enrollImageBuffer,
+  recognizeWebmBuffer,
+  recognizeImageBuffer,
+  pushReloadToPython,
+  pushAddUserToPython,
 };

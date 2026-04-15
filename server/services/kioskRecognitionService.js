@@ -5,10 +5,6 @@ const DangKyKhoaHoc = require('../models/DangKyKhoaHoc');
 const BuoiHoc = require('../models/BuoiHoc');
 const moment = require('moment');
 const {
-  matchEncodingLocally,
-  DEFAULT_THRESHOLD,
-} = require('./attendancePythonClient');
-const {
   isWithinCheckInWindow,
   windowStatus,
   pickBestEligibleSession,
@@ -41,22 +37,23 @@ async function findSessionsForHocVienToday(hocvienId, now) {
     dkByCourse[dk.KhoaHocID.toString()] = dk;
   });
 
-  const rows = buois.map((buoi) => {
-    const cid =
-      buoi.KhoaHocID && buoi.KhoaHocID._id
-        ? buoi.KhoaHocID._id.toString()
-        : buoi.KhoaHocID.toString();
-    const dk = dkByCourse[cid];
-    if (!dk) return null;
-    const ws = windowStatus(now, buoi.giobatdau);
-    const eligible = isWithinCheckInWindow(now, buoi.giobatdau);
-    return {
-      buoi,
-      dangkykhoahoc: dk,
-      windowStatus: ws,
-      eligible,
-    };
-  })
+  const rows = buois
+    .map((buoi) => {
+      const cid =
+        buoi.KhoaHocID && buoi.KhoaHocID._id
+          ? buoi.KhoaHocID._id.toString()
+          : buoi.KhoaHocID.toString();
+      const dk = dkByCourse[cid];
+      if (!dk) return null;
+      const ws = windowStatus(now, buoi.giobatdau);
+      const eligible = isWithinCheckInWindow(now, buoi.giobatdau);
+      return {
+        buoi,
+        dangkykhoahoc: dk,
+        windowStatus: ws,
+        eligible,
+      };
+    })
     .filter(Boolean);
 
   const eligibleRows = rows.filter((r) => r.eligible);
@@ -64,38 +61,20 @@ async function findSessionsForHocVienToday(hocvienId, now) {
 }
 
 /**
- * Từ vector probe (128) → cùng payload JSON như kioskRecognize HTTP.
+ * Từ kết quả Python (hoặc hocvienId đã biết) → payload JSON như kioskRecognize HTTP.
+ * @param {string} hocvienId
+ * @param {{ distance?: number }} [meta]
  */
-async function recognizeFromProbe(probe) {
-  const hocViens = await HocVien.find({
-    faceDescriptor: { $exists: true, $not: { $size: 0 } },
-  })
-    .select('userId faceDescriptor')
-    .lean();
-
-  const gallery = hocViens
-    .filter((h) => Array.isArray(h.faceDescriptor) && h.faceDescriptor.length === 128)
-    .map((h) => ({ id: h._id.toString(), encoding: h.faceDescriptor }));
-
-  if (!gallery.length) {
+async function buildRecognizePayloadFromHocVienId(hocvienId, meta = {}) {
+  const hv = await HocVien.findById(hocvienId).select('userId').lean();
+  if (!hv) {
     return {
       success: true,
       recognized: false,
-      message: 'Chưa có học viên nào đăng ký khuôn mặt',
+      message: 'Không tìm thấy học viên',
     };
   }
 
-  const match = matchEncodingLocally(probe, gallery, DEFAULT_THRESHOLD);
-  if (!match) {
-    return {
-      success: true,
-      recognized: false,
-      message: 'Không khớp khuôn mặt đã lưu',
-    };
-  }
-
-  const hocvienId = match.id;
-  const hv = hocViens.find((h) => h._id.toString() === hocvienId);
   const user = await NguoiDung.findById(hv.userId).select('hovaten email').lean();
 
   const { rows, eligibleRows } = await findSessionsForHocVienToday(
@@ -137,7 +116,7 @@ async function recognizeFromProbe(probe) {
       hovaten: user?.hovaten || '',
       email: user?.email || '',
       maHocVienDisplay: displayMaHocVien(hv._id),
-      distance: match.distance,
+      distance: meta.distance != null ? meta.distance : 0,
     },
     session: sessionPayload,
     windowStatus: windowState,
@@ -145,7 +124,55 @@ async function recognizeFromProbe(probe) {
   };
 }
 
+/**
+ * Map phản hồi Python → payload kiosk.
+ */
+async function mapPythonRecognizeToKioskPayload(py) {
+  if (!py || py.success === false) {
+    return {
+      success: false,
+      recognized: false,
+      message: py?.message || 'Lỗi dịch vụ nhận diện',
+    };
+  }
+
+  if (!py.liveness_ok) {
+    const msg =
+      py.reason === 'insufficient_face_frames'
+        ? 'Đứng yên trước camera — cần thấy rõ khuôn mặt'
+        : py.reason === 'liveness_low_texture'
+          ? 'Không xác nhận được người thật — thử chỗ sáng hơn'
+          : 'Không xác nhận được người thật';
+    return {
+      success: true,
+      recognized: false,
+      message: msg,
+    };
+  }
+
+  if (py.reason === 'cooldown') {
+    return {
+      success: true,
+      recognized: false,
+      message: 'Đang xử lý — đợi vài giây',
+    };
+  }
+
+  if (!py.recognized || !py.hocvienId) {
+    return {
+      success: true,
+      recognized: false,
+      message: 'Không khớp khuôn mặt đã đăng ký',
+    };
+  }
+
+  return buildRecognizePayloadFromHocVienId(py.hocvienId, {
+    distance: py.distance,
+  });
+}
+
 module.exports = {
-  recognizeFromProbe,
+  buildRecognizePayloadFromHocVienId,
+  mapPythonRecognizeToKioskPayload,
   findSessionsForHocVienToday,
 };

@@ -1,6 +1,7 @@
 const HocVien = require('../../models/HocVien');
 const NguoiDung = require('../../models/NguoiDung');
-const { encodeImageBuffer } = require('../../services/attendancePythonClient');
+const { enrollImageBuffer } = require('../../services/attendancePythonClient');
+const { syncFaceIndexFromDatabase } = require('../../services/faceIndexSyncService');
 const { sanitizeHocVienPublic } = require('../../utils/sanitizeHocVien');
 
 exports.registerStudentFace = async (req, res) => {
@@ -14,9 +15,9 @@ exports.registerStudentFace = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Không tìm thấy học viên' });
     }
 
-    let encoding;
+    let embedding;
     try {
-      encoding = await encodeImageBuffer(req.file.buffer);
+      embedding = await enrollImageBuffer(req.file.buffer);
     } catch (e) {
       return res.status(400).json({
         success: false,
@@ -26,9 +27,11 @@ exports.registerStudentFace = async (req, res) => {
 
     const hocVienInfo = await HocVien.findOneAndUpdate(
       { userId: user._id },
-      { faceDescriptor: encoding },
+      { faceEmbedding: embedding },
       { new: true, upsert: true }
     ).lean();
+
+    await syncFaceIndexFromDatabase();
 
     const userObj = user.toObject();
     delete userObj.password;

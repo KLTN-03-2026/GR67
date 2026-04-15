@@ -4,8 +4,9 @@ const ThamGiaBuoiHoc = require('../../models/ThamGiaBuoiHoc');
 const HocVien = require('../../models/HocVien');
 const NguoiDung = require('../../models/NguoiDung');
 const moment = require('moment');
-const { encodeImageBuffer } = require('../../services/attendancePythonClient');
-const { recognizeFromProbe } = require('../../services/kioskRecognitionService');
+const { recognizeImageBuffer } = require('../../services/attendancePythonClient');
+const { mapPythonRecognizeToKioskPayload } = require('../../services/kioskRecognitionService');
+const KioskMisidentificationLog = require('../../models/KioskMisidentificationLog');
 const { isWithinCheckInWindow } = require('../../utils/attendanceWindow');
 
 function getIo() {
@@ -22,9 +23,9 @@ exports.kioskRecognize = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Thiếu ảnh (field: image)' });
     }
 
-    let probe;
+    let py;
     try {
-      probe = await encodeImageBuffer(req.file.buffer);
+      py = await recognizeImageBuffer(req.file.buffer);
     } catch (e) {
       return res.status(400).json({
         success: false,
@@ -32,10 +33,39 @@ exports.kioskRecognize = async (req, res) => {
       });
     }
 
-    const result = await recognizeFromProbe(probe);
+    const result = await mapPythonRecognizeToKioskPayload(py);
     return res.status(200).json(result);
   } catch (error) {
     console.error('kioskRecognize:', error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Lỗi server',
+    });
+  }
+};
+
+/**
+ * Học viên báo nhận diện sai (nút "Không phải tôi").
+ */
+exports.kioskMisidentification = async (req, res) => {
+  try {
+    const { hocvienId } = req.body || {};
+    if (!hocvienId) {
+      return res.status(400).json({ success: false, message: 'Thiếu hocvienId' });
+    }
+
+    const legacy = req.kioskKeyLegacy;
+    const keyDoc = req.kioskKeyDoc;
+
+    await KioskMisidentificationLog.create({
+      hocvienId,
+      kioskKeyId: keyDoc?._id || null,
+      legacyKiosk: !!legacy,
+    });
+
+    return res.status(200).json({ success: true, message: 'Đã ghi nhận' });
+  } catch (error) {
+    console.error('kioskMisidentification:', error);
     return res.status(500).json({
       success: false,
       message: error.message || 'Lỗi server',

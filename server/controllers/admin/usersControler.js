@@ -478,7 +478,6 @@ const createStudent = async (req, res) => {
     try {
         const {
             email, password, hovaten, soDienThoai, diachi, gioitinh, ngaysinh,
-            faceDescriptor
         } = req.body;
 
         if (!email || !password || !hovaten) {
@@ -509,7 +508,7 @@ const createStudent = async (req, res) => {
         // Tạo HocVien profile
         const newHocVien = new HocVien({
             userId: newUser._id,
-            faceDescriptor: faceDescriptor || []
+            faceEmbedding: []
         });
         await newHocVien.save();
 
@@ -532,7 +531,7 @@ const createStudent = async (req, res) => {
 // PUT /admin/users/students/:id  — Cập nhật thông tin học viên
 const updateStudent = async (req, res) => {
     try {
-        const { hovaten, soDienThoai, diachi, gioitinh, ngaysinh, faceDescriptor, password } = req.body;
+        const { hovaten, soDienThoai, diachi, gioitinh, ngaysinh, password } = req.body;
         const user = await NguoiDung.findOne({ _id: req.params.id, role: 'student' });
 
         if (!user) {
@@ -556,7 +555,7 @@ const updateStudent = async (req, res) => {
 
         const hocVienInfo = await HocVien.findOneAndUpdate(
             { userId: req.params.id },
-            { faceDescriptor },
+            {},
             { new: true, upsert: true }
         );
 
