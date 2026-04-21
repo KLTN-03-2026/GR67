@@ -103,7 +103,14 @@ export default function Announcements() {
                 onClick={() => {
                   if (!isRead) markAsRead(item._id);
                   if (item.link) {
-                    window.location.href = item.link;
+                    let finalLink = item.link;
+                    if (finalLink.includes("/student/courses/detail-ass")) {
+                      finalLink = finalLink.replace("/student/courses/detail-ass", "/student/courses/assignments-detail");
+                      if (item.khoaHocId && item.khoaHocId._id && !finalLink.includes("courseId=")) {
+                        finalLink += `&courseId=${item.khoaHocId._id}`;
+                      }
+                    }
+                    window.location.href = finalLink;
                   }
                 }}
               >
@@ -157,8 +164,14 @@ export default function Announcements() {
 
       {/* Modal chi tiết thông báo */}
       {selectedAnnouncement && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
-          <div className="bg-white rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col pt-1 pointer-events-auto">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => setSelectedAnnouncement(null)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl ring-opacity-5 border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col pt-1"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
               <h3 className="text-xl font-bold text-gray-800 pr-8">
                 {selectedAnnouncement.tieuDe || 'Chi tiết thông báo'}
@@ -170,7 +183,7 @@ export default function Announcements() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
               </button>
             </div>
-            
+
             <div className="p-6 overflow-y-auto">
               <div className="flex items-center gap-2 mb-4">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeBadgeColor(selectedAnnouncement.targetType)}`}>
@@ -180,20 +193,20 @@ export default function Announcements() {
                   {new Date(selectedAnnouncement.createdAt).toLocaleString('vi-VN')}
                 </span>
               </div>
-              
+
               <div className="text-gray-700 whitespace-pre-wrap leading-relaxed text-base">
                 {selectedAnnouncement.noidung}
               </div>
-              
+
               {selectedAnnouncement.fileIds && selectedAnnouncement.fileIds.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-100">
                   <h4 className="text-sm font-semibold text-gray-700 mb-2">Tệp đính kèm:</h4>
                   <ul className="space-y-2">
                     {selectedAnnouncement.fileIds.map((file, index) => (
                       <li key={index}>
-                        <a 
+                        <a
                           href={file.url?.startsWith('http') ? file.url : `${apiUrl}${file.url}`}
-                          target="_blank" 
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors"
                         >
@@ -205,7 +218,7 @@ export default function Announcements() {
                   </ul>
                 </div>
               )}
-              
+
               <div className="mt-8 pt-4 border-t border-gray-100 flex justify-between text-sm text-gray-500">
                 {selectedAnnouncement.createdBy && (
                   <div><span className="font-semibold text-gray-600">Người gửi:</span> {selectedAnnouncement.createdBy?.hovaten || selectedAnnouncement.createdBy?.name || 'Admin'}</div>
@@ -215,16 +228,23 @@ export default function Announcements() {
                 )}
               </div>
             </div>
-            
+
             <div className="p-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
               {selectedAnnouncement.link && (
                 <button
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
                   onClick={() => {
-                    window.location.href = selectedAnnouncement.link;
+                    let finalLink = selectedAnnouncement.link;
+                    if (finalLink.includes("/student/courses/detail-ass")) {
+                      finalLink = finalLink.replace("/student/courses/detail-ass", "/student/courses/assignments-detail");
+                      if (selectedAnnouncement.khoaHocId && selectedAnnouncement.khoaHocId._id && !finalLink.includes("courseId=")) {
+                        finalLink += `&courseId=${selectedAnnouncement.khoaHocId._id}`;
+                      }
+                    }
+                    window.location.href = finalLink;
                   }}
                 >
-                  Đi tới liên kết
+                  Đi tới
                 </button>
               )}
               <button

@@ -31,4 +31,9 @@ router.get('/schedule', protect, scheduleController.getStudentSchedule);
 const studentDashboardController = require('../../controllers/student/studentDashboardController');
 router.get('/overview', protect, studentDashboardController.getDashboardOverview);
 
+// Routes Luyện tập
+const practiceController = require('../../controllers/student/practiceController');
+router.get('/practice', protect, practiceController.getPracticeList);
+router.get('/practice/:id', protect, practiceController.getPracticeDetail);
+
 module.exports = router;

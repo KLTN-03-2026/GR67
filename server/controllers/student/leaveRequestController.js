@@ -167,6 +167,29 @@ exports.createLeaveRequest = async (req, res) => {
             await record.save();
         }
 
+        // Notify only the teacher
+        try {
+            const course = await KhoaHoc.findById(enroll.KhoaHocID).populate('giangvien');
+            if (course && course.giangvien) {
+                const teacherUserId = course.giangvien.userId;
+                if (teacherUserId) {
+                    const ThongBao = require('../../models/ThongBao');
+                    const studentUser = await NguoiDung.findById(student.userId);
+                    await ThongBao.create({
+                        tieuDe: 'Đơn xin nghỉ học mới',
+                        noidung: `Học viên ${studentUser?.hovaten || 'Một học viên'} vừa gửi đơn xin phép nghỉ học cho khóa học "${course.tenkhoahoc}".`,
+                        targetType: 'personal',
+                        khoaHocId: course._id,
+                        userID: [teacherUserId],
+                        createdBy: req.user._id,
+                        link: '/teacher/courses' 
+                    });
+                }
+            }
+        } catch (notifyErr) {
+            console.error("Lỗi gửi thông báo cho giảng viên:", notifyErr);
+        }
+
         res.status(201).json({ success: true, message: "Đã gửi yêu cầu nghỉ phép" });
     } catch (err) {
         console.error("Lỗi createLeaveRequest:", err);

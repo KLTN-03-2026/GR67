@@ -225,16 +225,16 @@ exports.getStudentsByCourse = async (req, res) => {
 
     const formattedData = await Promise.all(registrations.map(async (reg) => {
       const nguoiDung = reg.hocvienId?.userId || {};
-      
+
       // Calculate real absent days from ThamGiaBuoiHoc collection for an accurate ratio
       const actualAbsentDays = await ThamGiaBuoiHoc.countDocuments({
-         dangkykhoahocID: reg._id,
-         trangthai: { $in: ['absent', 'excused'] }
+        dangkykhoahocID: reg._id,
+        trangthai: { $in: ['absent', 'excused'] }
       });
 
       const actualAttendedDays = await ThamGiaBuoiHoc.countDocuments({
-         dangkykhoahocID: reg._id,
-         trangthai: { $in: ['present', 'lated'] }
+        dangkykhoahocID: reg._id,
+        trangthai: { $in: ['present', 'lated'] }
       });
 
       return {

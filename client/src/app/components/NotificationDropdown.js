@@ -73,7 +73,7 @@ export default function NotificationDropdown() {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
-        setNotifications(prev => prev.map(n => 
+        setNotifications(prev => prev.map(n =>
           n._id === id ? { ...n, readByUserIds: [...n.readByUserIds, user?.id || user?._id] } : n
         ));
         setUnreadCount(prev => Math.max(0, prev - 1));
@@ -102,16 +102,35 @@ export default function NotificationDropdown() {
     }
   };
 
+  const handleNotifClick = async (notif, isRead, e) => {
+    if (e) e.stopPropagation();
+    if (notif.link) {
+      if (!isRead) await handleMarkAsRead(notif._id, { stopPropagation: () => { } });
+      setIsOpen(false);
+
+      let finalLink = notif.link;
+      // Chuẩn hóa link đặc thù cho học viên (giống logic ở trang Announcements)
+      if (user?.role === 'student' && finalLink.includes("/student/courses/detail-ass")) {
+        finalLink = finalLink.replace("/student/courses/detail-ass", "/student/courses/assignments-detail");
+        const courseId = typeof notif.khoaHocId === 'object' ? notif.khoaHocId?._id : notif.khoaHocId;
+        if (courseId && !finalLink.includes("courseId=")) {
+          finalLink += `&courseId=${courseId}`;
+        }
+      }
+      window.location.href = finalLink;
+    }
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
-      <button 
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
-        
+
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
             {unreadCount > 99 ? '99+' : unreadCount}
@@ -124,7 +143,7 @@ export default function NotificationDropdown() {
           <div className="p-3 border-b border-gray-100 flex justify-between items-center bg-gray-50">
             <h3 className="font-semibold text-gray-800">Thông báo</h3>
             {unreadCount > 0 && (
-              <button 
+              <button
                 onClick={handleMarkAllAsRead}
                 className="text-xs text-blue-600 hover:text-blue-800 font-medium"
               >
@@ -132,7 +151,7 @@ export default function NotificationDropdown() {
               </button>
             )}
           </div>
-          
+
           <div className="max-h-96 overflow-y-auto custom-scrollbar">
             {notifications.length === 0 ? (
               <div className="p-6 text-center text-gray-500 text-sm">
@@ -143,16 +162,10 @@ export default function NotificationDropdown() {
                 {notifications.slice(0, 10).map((notif) => {
                   const isRead = notif.readByUserIds.includes(user?.id || user?._id);
                   return (
-                    <li 
-                      key={notif._id} 
+                    <li
+                      key={notif._id}
                       className={`p-4 transition-colors flex gap-3 ${!isRead ? 'bg-blue-50/50' : 'hover:bg-gray-50'} ${notif.link ? 'cursor-pointer hover:bg-blue-50/80' : ''}`}
-                      onClick={async (e) => {
-                        if (notif.link) {
-                          if (!isRead) await handleMarkAsRead(notif._id, { stopPropagation: ()=>{} });
-                          setIsOpen(false);
-                          window.location.href = notif.link; // Dùng window.location.href để refresh state
-                        }
-                      }}
+                      onClick={(e) => handleNotifClick(notif, isRead, e)}
                     >
                       <div className="flex flex-col flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
@@ -166,23 +179,20 @@ export default function NotificationDropdown() {
                         <p className={`text-xs line-clamp-2 ${!isRead ? 'text-gray-700' : 'text-gray-500'}`}>
                           {notif.noidung}
                         </p>
-                        
+
                         <div className="flex items-center gap-3 mt-2 z-10">
                           {notif.link && (
                             <button
-                              onClick={async (e) => {
-                                e.stopPropagation();
-                                if (!isRead) await handleMarkAsRead(notif._id, { stopPropagation: ()=>{} });
-                                setIsOpen(false);
-                                window.location.href = notif.link;
-                              }}
+                              onClick={(e) => handleNotifClick(notif, isRead, e)}
                               className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded shadow-sm hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
                             >
-                              {(notif.targetType === 'assignment_submit' || notif.link.includes('grade-ass')) ? 'Chấm bài nộp' : 'Xem chi tiết'}
+                              {(notif.targetType === 'assignment_submit' || notif.link.includes('grade-ass'))
+                                ? (user?.role === 'student' ? 'Xem kết quả' : 'Chấm bài nộp')
+                                : 'Xem chi tiết'}
                             </button>
                           )}
                           {!isRead && (
-                            <button 
+                            <button
                               onClick={(e) => handleMarkAsRead(notif._id, e)}
                               className="text-xs font-medium text-gray-500 hover:text-blue-600 transition-colors"
                             >
@@ -191,7 +201,7 @@ export default function NotificationDropdown() {
                           )}
                         </div>
                       </div>
-                      
+
                       {!isRead && (
                         <div className="mt-1 flex-shrink-0 h-2 w-2 rounded-full bg-blue-600" />
                       )}
@@ -201,9 +211,9 @@ export default function NotificationDropdown() {
               </ul>
             )}
           </div>
-          
+
           <div className="p-2 border-t border-gray-100 bg-gray-50 text-center">
-            <Link 
+            <Link
               href={`/${user?.role === 'student' ? 'student' : 'teacher'}/announcements`}
               className="text-sm font-medium text-blue-600 hover:text-blue-800 block p-1"
               onClick={() => setIsOpen(false)}
