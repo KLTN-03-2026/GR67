@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FiPlus, FiEdit2, FiToggleLeft } from "react-icons/fi";
+import { FiPlus, FiEdit2, FiLock, FiUnlock, FiTrash2 } from "react-icons/fi";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import ConfirmModal from "../../components/ConfirmModal";
@@ -51,7 +51,7 @@ export default function FacilitiesPage() {
   const [creatingFacility, setCreatingFacility] = useState(false);
 
   const [statusConfirmOpen, setStatusConfirmOpen] = useState(false);
-  const [statusTarget, setStatusTarget] = useState(null); // { type: 'facility' | 'room', facilityId?, roomId?, currentStatus }
+  const [confirmData, setConfirmData] = useState(null); // { type: 'status' | 'delete', id, title, message, confirmText, currentStatus? }
 
   useEffect(() => {
     if (!token) return;
@@ -100,46 +100,73 @@ export default function FacilitiesPage() {
   }, [facilities]);
 
   const openToggleFacilityStatus = (facility) => {
-    setStatusTarget({
-      type: "facility",
-      facilityId: facility._id,
+    const isLocking = facility.trangThaiHoatDong;
+    setConfirmData({
+      type: "status",
+      id: facility._id,
       currentStatus: facility.trangThaiHoatDong,
+      title: isLocking ? "Khóa cơ sở" : "Mở khóa cơ sở",
+      message: isLocking 
+        ? "Bạn có chắc chắn muốn ngừng hoạt động cơ sở này không?" 
+        : "Bạn có chắc chắn muốn mở lại cơ sở này không?",
+      confirmText: isLocking ? "Khóa" : "Mở khóa"
     });
     setStatusConfirmOpen(true);
   };
 
-  const handleConfirmStatusChange = async () => {
-    if (!statusTarget) return;
+  const openDeleteFacility = (facility) => {
+    setConfirmData({
+      type: "delete",
+      id: facility._id,
+      title: "Xóa vĩnh viễn cơ sở",
+      message: `Bạn có chắc muốn xóa vĩnh viễn cơ sở "${facility.Tencoso}" và tất cả phòng học thuộc về nó không? Hành động này không thể hoàn tác.`,
+      confirmText: "Xóa vĩnh viễn"
+    });
+    setStatusConfirmOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmData) return;
 
     try {
-      const newStatus = !statusTarget.currentStatus;
-      const res = await fetch(`${API_URL}/${statusTarget.facilityId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ trangThaiHoatDong: newStatus }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Không thể cập nhật trạng thái cơ sở");
+      const { type, id } = confirmData;
+      if (type === 'status') {
+        const newStatus = !confirmData.currentStatus;
+        const res = await fetch(`${API_URL}/${id}/status`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ trangThaiHoatDong: newStatus }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Không thể cập nhật trạng thái cơ sở");
 
-      setFacilities((prev) =>
-        prev.map((f) =>
-          f._id === statusTarget.facilityId ? { ...f, trangThaiHoatDong: newStatus } : f
-        )
-      );
-      if (newStatus) {
-        success("Đã mở lại trạng thái hoạt động của cơ sở.");
+        setFacilities((prev) =>
+          prev.map((f) =>
+            f._id === id ? { ...f, trangThaiHoatDong: newStatus } : f
+          )
+        );
+        if (newStatus) success("Đã mở lại trạng thái hoạt động của cơ sở.");
+        else warning("Đã tạm khóa cơ sở.");
       } else {
-        warning("Đã tạm khóa cơ sở.");
+        // DELETE
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Không thể xóa cơ sở");
+        setFacilities((prev) => prev.filter((f) => f._id !== id));
+        success("Đã xóa vĩnh viễn cơ sở.");
       }
     } catch (err) {
       console.error(err);
       notifyError(err.message);
     } finally {
       setStatusConfirmOpen(false);
-      setStatusTarget(null);
+      setConfirmData(null);
     }
   };
 
@@ -322,17 +349,27 @@ export default function FacilitiesPage() {
                             <FiEdit2 className="h-5 w-5" />
                           </button>
                         </Link>
-                        <button
-                          onClick={() => openToggleFacilityStatus(facility)}
-                          className={`inline-flex items-center justify-center p-2 rounded-md ${
-                            darkMode
-                              ? "text-gray-400 hover:text-gray-200"
-                              : "text-gray-500 hover:text-gray-800"
-                          }`}
-                          title="Đổi trạng thái hoạt động"
-                        >
-                          <FiToggleLeft className="h-5 w-5" />
-                        </button>
+                        {(facility.inUse || facility.trangThaiHoatDong === false) ? (
+                          <button
+                            onClick={() => openToggleFacilityStatus(facility)}
+                            className={`inline-flex items-center justify-center p-2 rounded-md ${
+                              facility.trangThaiHoatDong
+                                ? "text-blue-500 hover:text-blue-700"
+                                : "text-emerald-500 hover:text-emerald-700"
+                            }`}
+                            title={facility.trangThaiHoatDong ? "Khóa cơ sở" : "Kích hoạt lại cơ sở"}
+                          >
+                            {facility.trangThaiHoatDong ? <FiLock className="h-5 w-5" /> : <FiUnlock className="h-5 w-5" />}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => openDeleteFacility(facility)}
+                            className="inline-flex items-center justify-center p-2 rounded-md text-red-500 hover:text-red-700"
+                            title="Xóa vĩnh viễn"
+                          >
+                            <FiTrash2 className="h-5 w-5" />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -344,22 +381,15 @@ export default function FacilitiesPage() {
 
       <ConfirmModal
         isOpen={statusConfirmOpen}
-        title={
-          statusTarget?.type === "facility"
-            ? "Xác nhận đổi trạng thái cơ sở"
-            : "Xác nhận đổi trạng thái phòng học"
-        }
-        message={
-          statusTarget?.type === "facility"
-            ? "Bạn có chắc chắn muốn đổi trạng thái hoạt động của cơ sở này không?"
-            : "Bạn có chắc chắn muốn đổi trạng thái hoạt động của phòng học này không?"
-        }
-        onConfirm={handleConfirmStatusChange}
+        title={confirmData?.title || "Xác nhận"}
+        message={confirmData?.message || ""}
+        onConfirm={handleConfirmAction}
         onCancel={() => {
           setStatusConfirmOpen(false);
-          setStatusTarget(null);
+          setConfirmData(null);
         }}
-        confirmText="Xác nhận"
+        confirmText={confirmData?.confirmText || "Xác nhận"}
+        type={confirmData?.type === 'delete' ? 'danger' : 'warning'}
       />
     </div>
   );

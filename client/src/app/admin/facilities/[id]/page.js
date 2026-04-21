@@ -9,7 +9,7 @@ import ConfirmModal from "../../../components/ConfirmModal";
 import { useTheme } from "../../../contexts/ThemeContext";
 import InputField from "../../../components/InputField";
 import AdminCard from "../../components/AdminCard";
-import { FiArrowLeft, FiPlus, FiEdit2, FiToggleLeft } from "react-icons/fi";
+import { FiArrowLeft, FiPlus, FiEdit2, FiLock, FiUnlock, FiTrash2 } from "react-icons/fi";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 const API_URL = `${API_BASE}/api/admin/facilities`;
@@ -39,7 +39,7 @@ export default function FacilityDetailPage() {
 
   const [editingRoom, setEditingRoom] = useState(null);
   const [statusConfirmOpen, setStatusConfirmOpen] = useState(false);
-  const [roomStatusTarget, setRoomStatusTarget] = useState(null); // roomId, currentStatus
+  const [confirmData, setConfirmData] = useState(null); // { type, roomId, currentStatus, title, message, confirmText }
 
   useEffect(() => {
     if (!token || !id) return;
@@ -167,44 +167,83 @@ export default function FacilityDetailPage() {
   };
 
   const openToggleRoomStatus = (room) => {
-    setRoomStatusTarget({ roomId: room._id, currentStatus: room.trangThaiHoatDong });
+    const isLocking = room.trangThaiHoatDong;
+    setConfirmData({
+      type: "status",
+      roomId: room._id,
+      currentStatus: room.trangThaiHoatDong,
+      title: isLocking ? "Khóa phòng học" : "Mở khóa phòng học",
+      message: isLocking 
+        ? "Bạn có chắc chắn muốn khóa phòng học này không? Phòng học sẽ không thể chọn trong lịch dạy." 
+        : "Bạn có chắc chắn muốn mở khóa phòng học này không?",
+      confirmText: isLocking ? "Khóa" : "Mở khóa"
+    });
     setStatusConfirmOpen(true);
   };
 
-  const handleConfirmRoomStatus = async () => {
-    if (!roomStatusTarget) return;
+  const openDeleteRoom = (room) => {
+    setConfirmData({
+      type: "delete",
+      roomId: room._id,
+      title: "Xóa vĩnh viễn phòng học",
+      message: `Bạn có chắc muốn xóa vĩnh viễn phòng học "${room.TenPhong}" không? Hành động này không thể hoàn tác.`,
+      confirmText: "Xóa vĩnh viễn"
+    });
+    setStatusConfirmOpen(true);
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmData) return;
     try {
-      const newStatus = !roomStatusTarget.currentStatus;
-      const res = await fetch(`${API_URL}/rooms/${roomStatusTarget.roomId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ trangThaiHoatDong: newStatus }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Không thể đổi trạng thái phòng học");
-      setFacility((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          phongHocList: (prev.phongHocList || []).map((r) =>
-            r._id === roomStatusTarget.roomId ? { ...r, trangThaiHoatDong: newStatus } : r
-          ),
-        };
-      });
-      if (newStatus) {
-        success("Đã mở lại phòng học.");
+      const { type, roomId } = confirmData;
+      if (type === 'status') {
+        const newStatus = !confirmData.currentStatus;
+        const res = await fetch(`${API_URL}/rooms/${roomId}/status`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ trangThaiHoatDong: newStatus }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Không thể đổi trạng thái phòng học");
+        setFacility((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            phongHocList: (prev.phongHocList || []).map((r) =>
+              r._id === roomId ? { ...r, trangThaiHoatDong: newStatus } : r
+            ),
+          };
+        });
+        if (newStatus) success("Đã mở lại phòng học.");
+        else warning("Đã tạm khóa phòng học.");
       } else {
-        warning("Đã tạm khóa phòng học.");
+        // DELETE
+        const res = await fetch(`${API_URL}/rooms/${roomId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Không thể xóa phòng học");
+        setFacility((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            phongHocList: (prev.phongHocList || []).map((r) =>
+              r._id === roomId ? { ...r, _deleted: true } : r
+            ).filter(r => !r._deleted),
+          };
+        });
+        success("Đã xóa vĩnh viễn phòng học.");
       }
     } catch (e) {
       console.error(e);
       notifyError(e.message);
     } finally {
       setStatusConfirmOpen(false);
-      setRoomStatusTarget(null);
+      setConfirmData(null);
     }
   };
 
@@ -432,17 +471,25 @@ export default function FacilityDetailPage() {
                           >
                             <FiEdit2 className="h-3.5 w-3.5" />
                           </button>
-                          <button
-                            onClick={() => openToggleRoomStatus(room)}
-                            className={`inline-flex items-center justify-center px-2 py-1 rounded-md text-[11px] ${
-                              darkMode
-                                ? "bg-gray-700 text-gray-100 hover:bg-gray-600"
-                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
-                            title="Đổi trạng thái hoạt động"
-                          >
-                            <FiToggleLeft className="h-3.5 w-3.5" />
-                          </button>
+                          {(room.inUse || room.trangThaiHoatDong === false) ? (
+                            <button
+                              onClick={() => openToggleRoomStatus(room)}
+                              className={`inline-flex items-center justify-center p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                                room.trangThaiHoatDong ? "text-blue-500" : "text-emerald-500"
+                              }`}
+                              title={room.trangThaiHoatDong ? "Khóa phòng" : "Mở khóa phòng"}
+                            >
+                              {room.trangThaiHoatDong ? <FiLock className="h-3.5 w-3.5" /> : <FiUnlock className="h-3.5 w-3.5" />}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => openDeleteRoom(room)}
+                              className="inline-flex items-center justify-center p-1.5 rounded-md text-red-500 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+                              title="Xóa vĩnh viễn"
+                            >
+                              <FiTrash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))
@@ -465,14 +512,15 @@ export default function FacilityDetailPage() {
 
       <ConfirmModal
         isOpen={statusConfirmOpen}
-        title="Xác nhận đổi trạng thái phòng học"
-        message="Bạn có chắc chắn muốn đổi trạng thái hoạt động của phòng học này không?"
+        title={confirmData?.title || "Xác nhận"}
+        message={confirmData?.message || ""}
+        onConfirm={handleConfirmAction}
         onCancel={() => {
           setStatusConfirmOpen(false);
-          setRoomStatusTarget(null);
+          setConfirmData(null);
         }}
-        onConfirm={handleConfirmRoomStatus}
-        confirmText="Xác nhận"
+        confirmText={confirmData?.confirmText || "Xác nhận"}
+        type={confirmData?.type === 'delete' ? 'danger' : 'warning'}
       />
     </div>
   );

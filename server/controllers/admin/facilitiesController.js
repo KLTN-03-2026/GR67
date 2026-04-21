@@ -1,24 +1,32 @@
 const Coso = require('../../models/Coso');
 const Phonghoc = require('../../models/Phonghoc');
+const { isResourceInUse } = require('../../utils/checkDependency');
 
 // GET: Lấy danh sách tất cả cơ sở kèm theo phòng học
 const getAllFacilities = async (req, res) => {
     try {
         const query = {};
-        // Nêu cần lọc cơ sở đang hoạt động, thêm ?active=true vào URL
         if (req.query.active === 'true') {
             query.trangThaiHoatDong = true;
         }
 
         const facilities = await Coso.find(query).lean();
 
-        // Lấy phòng học cho từng cơ sở
         for (let i = 0; i < facilities.length; i++) {
+            // Kiểm tra trạng thái "đang sử dụng" của cơ sở
+            facilities[i].inUse = await isResourceInUse('coso', facilities[i]._id);
+
             const roomQuery = { CoSoId: facilities[i]._id };
             if (req.query.active === 'true') {
                 roomQuery.trangThaiHoatDong = true;
             }
-            facilities[i].phongHocList = await Phonghoc.find(roomQuery).lean();
+            
+            const rooms = await Phonghoc.find(roomQuery).lean();
+            // Kiểm tra trạng thái "đang sử dụng" của từng phòng học
+            for (let j = 0; j < rooms.length; j++) {
+                rooms[j].inUse = await isResourceInUse('phonghoc', rooms[j]._id);
+            }
+            facilities[i].phongHocList = rooms;
         }
 
         res.status(200).json(facilities);
@@ -70,7 +78,7 @@ const updateFacility = async (req, res) => {
     }
 };
 
-// PATCH (Soft Delete): Tắt/Bật hoạt động của cơ sở thay vì xoá thật
+// PATCH (Soft Delete): Tắt/Bật hoạt động của cơ sở
 const toggleFacilityStatus = async (req, res) => {
     try {
         const facilityId = req.params.id;
@@ -100,6 +108,35 @@ const toggleFacilityStatus = async (req, res) => {
     }
 };
 
+// DELETE: Xóa thật cơ sở nếu chưa có ràng buộc
+const deleteFacility = async (req, res) => {
+    try {
+        const facilityId = req.params.id;
+        
+        // Kiểm tra ràng buộc
+        const inUse = await isResourceInUse('coso', facilityId);
+        if (inUse) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Cơ sở này đã có khóa học đăng ký, không thể xóa. Vui lòng chuyển sang trạng thái "Khóa" để ngừng hoạt động.' 
+            });
+        }
+
+        const facility = await Coso.findByIdAndDelete(facilityId);
+        if (!facility) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy cơ sở' });
+        }
+
+        // Xóa luôn các phòng thuộc cơ sở này
+        await Phonghoc.deleteMany({ CoSoId: facilityId });
+
+        res.status(200).json({ success: true, message: 'Đã xóa cơ sở và các phòng liên quan' });
+    } catch (error) {
+        console.error('Lỗi xóa cơ sở:', error);
+        res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+    }
+};
+
 // ================= PHÒNG HỌC (ROOMS) =================
 
 // POST: Thêm phòng học trong 1 cơ sở
@@ -112,7 +149,6 @@ const addRoomToFacility = async (req, res) => {
             return res.status(400).json({ message: 'Tên phòng và sức chứa là bắt buộc' });
         }
 
-        // Kiểm tra xem cơ sở có tồn tại hay không
         const facilityExists = await Coso.findById(facilityId);
         if (!facilityExists) {
             return res.status(404).json({ message: 'Không tìm thấy cơ sở gốc để chèn phòng' });
@@ -181,8 +217,34 @@ const toggleRoomStatus = async (req, res) => {
             room 
         });
     } catch (error) {
-        console.error('Lỗi xóa phòng học:', error);
+        console.error('Lỗi khóa phòng học:', error);
         res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+};
+
+// DELETE: Xóa thật phòng học
+const deleteRoom = async (req, res) => {
+    try {
+        const roomId = req.params.roomId;
+
+        // Kiểm tra ràng buộc
+        const inUse = await isResourceInUse('phonghoc', roomId);
+        if (inUse) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Phòng học này đã có lịch dạy/buổi học, không thể xóa. Vui lòng chuyển sang trạng thái "Khóa" để ngừng sử dụng.' 
+            });
+        }
+
+        const room = await Phonghoc.findByIdAndDelete(roomId);
+        if (!room) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy phòng học' });
+        }
+
+        res.status(200).json({ success: true, message: 'Đã xóa phòng học thành công' });
+    } catch (error) {
+        console.error('Lỗi xóa phòng học:', error);
+        res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
     }
 };
 
@@ -191,7 +253,9 @@ module.exports = {
     createFacility,
     updateFacility,
     toggleFacilityStatus,
+    deleteFacility,
     addRoomToFacility,
     updateRoom,
-    toggleRoomStatus
+    toggleRoomStatus,
+    deleteRoom
 };

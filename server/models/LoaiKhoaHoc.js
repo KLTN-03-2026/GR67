@@ -14,6 +14,10 @@ const loaiKhoaHocSchema = new mongoose.Schema({
     type: String, // toeic, ielts
     trim: true,
     note: "toeic, ielts"
+  },
+  trangThaiHoatDong: {
+    type: Boolean,
+    default: true
   }
 }, {
   timestamps: true

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNotification } from "../../contexts/NotificationContext";
 import ConfirmModal from "../../components/ConfirmModal";
+import Modal from "../../components/Modal";
 import InputField from "../../components/InputField";
 import { FiPlus, FiSearch, FiTrash2, FiEdit2 } from "react-icons/fi";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
@@ -25,33 +26,6 @@ function effectiveItemLoai(localEx, itemForm) {
   return localEx.loaiBai === MIXED_NO_FLASHCARD ? itemForm.loaiItem : localEx.loaiBai;
 }
 
-function Modal({ isOpen, title, onClose, children, footer }) {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-4">
-      <div className="w-full max-w-3xl max-h-[min(92vh,56rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-        <div className="px-6 py-5 border-b dark:border-gray-700 flex items-start justify-between gap-4 flex-shrink-0">
-          <div className="min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-3 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
-          >
-            Đóng
-          </button>
-        </div>
-        <div className="px-6 py-5 overflow-y-auto flex-1">{children}</div>
-        {footer ? (
-          <div className="px-6 py-4 flex justify-end gap-3 border-t bg-gray-50 dark:bg-gray-800 dark:border-gray-700 flex-shrink-0">
-            {footer}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
 
 function parseNumberArrayFromCSV(s) {
   const raw = String(s || "")

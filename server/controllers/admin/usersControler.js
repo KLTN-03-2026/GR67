@@ -6,6 +6,7 @@ const BuoiHoc = require('../../models/BuoiHoc');
 const bcrypt = require('bcryptjs');
 const { sendOTP } = require('../authController');
 const { sanitizeHocVienPublic } = require('../../utils/sanitizeHocVien');
+const { isResourceInUse } = require('../../utils/checkDependency');
 
 // ==========================================
 //  HELPER: xây dựng đối tượng filter chung
@@ -238,9 +239,17 @@ const getAllTeachers = async (req, res) => {
         const giangVienMap = {};
         giangVienList.forEach(gv => { giangVienMap[gv.userId.toString()] = gv; });
 
-        const result = users.map(u => ({
-            ...u,
-            giangVienInfo: giangVienMap[u._id.toString()] || null
+        const result = await Promise.all(users.map(async u => {
+            const giangVienInfo = giangVienMap[u._id.toString()] || null;
+            let inUse = false;
+            if (giangVienInfo) {
+                inUse = await isResourceInUse('giangvien', giangVienInfo._id);
+            }
+            return {
+                ...u,
+                giangVienInfo,
+                inUse
+            };
         }));
 
         res.status(200).json({ success: true, count: result.length, data: result });
@@ -446,6 +455,34 @@ const toggleTeacherStatus = async (req, res) => {
     }
 };
 
+// DELETE /admin/users/teachers/:id — Xóa vĩnh viễn giảng viên
+const deleteTeacher = async (req, res) => {
+    try {
+        const teacherUserId = req.params.id;
+
+        const giangVienProfile = await GiangVien.findOne({ userId: teacherUserId }).lean();
+        if (!giangVienProfile) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy thông tin giảng viên' });
+        }
+
+        const inUse = await isResourceInUse('giangvien', giangVienProfile._id);
+        if (inUse) {
+            return res.status(400).json({
+                success: false,
+                message: 'Giảng viên này đã được phân công dạy khóa học hoặc có lịch dạy, không thể xóa. Vui lòng sử dụng tính năng "Khóa" tài khoản thay vì xóa.'
+            });
+        }
+
+        await GiangVien.deleteOne({ userId: teacherUserId });
+        await NguoiDung.deleteOne({ _id: teacherUserId });
+
+        res.status(200).json({ success: true, message: 'Đã xóa vĩnh viễn tài khoản giảng viên' });
+    } catch (error) {
+        console.error('Lỗi xóa giảng viên:', error);
+        res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+    }
+};
+
 // PATCH /admin/users/teachers/:id/password  — Đặt lại mật khẩu giảng viên
 const resetTeacherPassword = async (req, res) => {
     try {
@@ -487,9 +524,17 @@ const getAllStudents = async (req, res) => {
         const hocVienMap = {};
         hocVienList.forEach(hv => { hocVienMap[hv.userId.toString()] = hv; });
 
-        const result = users.map(u => ({
-            ...u,
-            hocVienInfo: sanitizeHocVienPublic(hocVienMap[u._id.toString()]) || null
+        const result = await Promise.all(users.map(async u => {
+            const hocVienInfo = hocVienMap[u._id.toString()] || null;
+            let inUse = false;
+            if (hocVienInfo) {
+                inUse = await isResourceInUse('hocvien', hocVienInfo._id);
+            }
+            return {
+                ...u,
+                hocVienInfo: sanitizeHocVienPublic(hocVienInfo),
+                inUse
+            };
         }));
 
         res.status(200).json({ success: true, count: result.length, data: result });
@@ -615,6 +660,34 @@ const updateStudent = async (req, res) => {
         });
     } catch (error) {
         console.error('Lỗi cập nhật học viên:', error);
+        res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+    }
+};
+
+// DELETE /admin/users/students/:id — Xóa vĩnh viễn học viên
+const deleteStudent = async (req, res) => {
+    try {
+        const studentUserId = req.params.id;
+
+        const hocVienProfile = await HocVien.findOne({ userId: studentUserId }).lean();
+        if (!hocVienProfile) {
+            return res.status(404).json({ success: false, message: 'Không tìm thấy thông tin học viên' });
+        }
+
+        const inUse = await isResourceInUse('hocvien', hocVienProfile._id);
+        if (inUse) {
+            return res.status(400).json({
+                success: false,
+                message: 'Học viên này đã tham gia khóa học, không thể xóa. Vui lòng sử dụng tính năng "Khóa" tài khoản thay vì xóa.'
+            });
+        }
+
+        await HocVien.deleteOne({ userId: studentUserId });
+        await NguoiDung.deleteOne({ _id: studentUserId });
+
+        res.status(200).json({ success: true, message: 'Đã xóa vĩnh viễn tài khoản học viên' });
+    } catch (error) {
+        console.error('Lỗi xóa học viên:', error);
         res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
     }
 };
@@ -774,9 +847,9 @@ module.exports = {
     // Admin CRUD
     getAllAdmins, getAdminById, createAdmin, updateAdmin, toggleAdminStatus, resetAdminPassword,
     // Teacher CRUD (by admin)
-    getAllTeachers, getTeacherById, createTeacher, updateTeacher, toggleTeacherStatus, resetTeacherPassword,
+    getAllTeachers, getTeacherById, createTeacher, updateTeacher, toggleTeacherStatus, deleteTeacher, resetTeacherPassword,
     // Student CRUD (by admin)
-    getAllStudents, getStudentById, createStudent, updateStudent, toggleStudentStatus, resetStudentPassword,
+    getAllStudents, getStudentById, createStudent, updateStudent, toggleStudentStatus, deleteStudent, resetStudentPassword,
     // Self-profile
     getTeacherProfile, updateTeacherProfile,
     getStudentProfile, updateStudentProfile,

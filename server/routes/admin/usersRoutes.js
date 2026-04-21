@@ -13,7 +13,7 @@ const {
     // Admin CRUD
     getAllAdmins, getAdminById, createAdmin, updateAdmin, toggleAdminStatus, resetAdminPassword,
     // Teacher CRUD (by admin)
-    getAllTeachers, getTeacherById, createTeacher, updateTeacher, toggleTeacherStatus, resetTeacherPassword,
+    getAllTeachers, getTeacherById, createTeacher, updateTeacher, toggleTeacherStatus, resetTeacherPassword, deleteTeacher,
     // Student CRUD (by admin)
     getAllStudents, getStudentById, createStudent, updateStudent, toggleStudentStatus, resetStudentPassword,
 } = require('../../controllers/admin/usersControler');
@@ -43,6 +43,7 @@ teacherAdminRouter.post('/', createTeacher);                        // Tạo tà
 teacherAdminRouter.put('/:id', updateTeacher);                      // Cập nhật thông tin giảng viên
 teacherAdminRouter.patch('/:id/status', toggleTeacherStatus);       // Khoá / Mở khoá giảng viên
 teacherAdminRouter.patch('/:id/password', resetTeacherPassword);    // Đặt lại mật khẩu giảng viên
+teacherAdminRouter.delete('/:id', deleteTeacher);                   // Xóa vĩnh viễn giảng viên
 
 // ============================================================
 //  NHÓM 3: ADMIN quản lý tài khoản HỌC VIÊN

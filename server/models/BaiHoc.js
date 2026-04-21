@@ -27,7 +27,11 @@ const baiHocSchema = new mongoose.Schema({
   files: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'File'
-  }]
+  }],
+  trangThaiHoatDong: {
+    type: Boolean,
+    default: true
+  }
 }, {
   timestamps: true
 });

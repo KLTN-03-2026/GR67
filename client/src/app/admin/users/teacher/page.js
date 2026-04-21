@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
+import Modal from "../../../components/Modal";
 import PasswordStrength from "../../../components/PasswordStrength";
 import InputField from "../../../components/InputField";
 import AdminPageTitle from "../../components/AdminPageTitle";
@@ -12,6 +13,8 @@ import { toDateInputValue } from "../../../../lib/dateFormat";
 const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
 const PencilIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>;
 const TrashIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79M10.5 11.25v6m3-6v6M9 5.25h6" /></svg>;
+const LockIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>;
+const UnlockIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>;
 
 const emptyForm = {
   hovaten: "",
@@ -47,7 +50,7 @@ export default function TeacherAccountsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [deletingUserId, setDeletingUserId] = useState(null);
+  const [confirmModalData, setConfirmModalData] = useState({ type: 'delete', id: null, title: '', message: '', confirmText: '' });
 
   const [isCompactLayout, setIsCompactLayout] = useState(false);
   const [mobileFormOpen, setMobileFormOpen] = useState(false);
@@ -204,10 +207,13 @@ export default function TeacherAccountsPage() {
     }
   };
 
-  const openCreateModal = () => {
-    setSelectedId(null);
-    setFormData(emptyForm);
-    setMobileFormOpen(true);
+  const handleAddClick = () => {
+    if (selectedId) {
+      setSelectedId(null);
+      setFormData(emptyForm);
+    } else {
+      if (isCompactLayout) setMobileFormOpen(true);
+    }
   };
 
   const openEditModal = (id) => {
@@ -215,23 +221,66 @@ export default function TeacherAccountsPage() {
     if (isCompactLayout) setMobileFormOpen(true);
   };
 
-  const handleToggleStatus = async () => {
-    if (!deletingUserId) return;
+  const handleConfirmAction = async () => {
+    if (!confirmModalData.id) return;
+    const { type, id } = confirmModalData;
+    
     try {
-      const response = await fetch(`${API_URL}/${deletingUserId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ trangThaiHoatDong: false }),
-      });
-      const result = await response.json();
-      if (!response.ok || !result.success) throw new Error(result.message || "Failed");
-      setUsers((prev) => prev.map((u) => (u._id === deletingUserId ? { ...u, trangThaiHoatDong: false } : u)));
+      if (type === 'delete') {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Failed");
+        setUsers((prev) => prev.filter((u) => u._id !== id));
+        if (selectedId === id) setSelectedId(null);
+        success("Đã xóa vĩnh viễn tài khoản giảng viên.");
+      } else {
+        // Toggle status (lock/unlock)
+        const targetUser = users.find(u => u._id === id);
+        const newStatus = !targetUser.trangThaiHoatDong;
+        const response = await fetch(`${API_URL}/${id}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ trangThaiHoatDong: newStatus }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Failed");
+        setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, trangThaiHoatDong: newStatus } : u)));
+        if (newStatus) success("Đã mở khóa tài khoản giảng viên.");
+        else warning("Đã khóa tài khoản giảng viên.");
+      }
       setIsConfirmModalOpen(false);
-      warning("Đã khóa tài khoản giảng viên.");
     } catch (err) {
       setFormError(err.message);
       notifyError(`Lỗi: ${err.message}`);
     }
+  };
+
+  const openDeleteConfirm = (user) => {
+    setConfirmModalData({
+      type: 'delete',
+      id: user._id,
+      title: 'Xóa giảng viên',
+      message: `Bạn có chắc muốn xóa vĩnh viễn giảng viên ${user.hovaten}? Hành động này không thể hoàn tác.`,
+      confirmText: 'Xóa vĩnh viễn'
+    });
+    setIsConfirmModalOpen(true);
+  };
+
+  const openStatusConfirm = (user) => {
+    const isLocking = user.trangThaiHoatDong;
+    setConfirmModalData({
+      type: 'status',
+      id: user._id,
+      title: isLocking ? 'Khóa tài khoản' : 'Mở khóa tài khoản',
+      message: isLocking 
+        ? `Bạn có chắc muốn khóa tài khoản giảng viên ${user.hovaten}? Giảng viên này sẽ không thể đăng nhập.` 
+        : `Bạn có chắc muốn mở khóa tài khoản giảng viên ${user.hovaten}?`,
+      confirmText: isLocking ? 'Khóa' : 'Mở khóa'
+    });
+    setIsConfirmModalOpen(true);
   };
 
   return (
@@ -244,8 +293,8 @@ export default function TeacherAccountsPage() {
         <section className="admin-card overflow-hidden xl:col-span-8">
           <div className="admin-card-head flex items-center justify-between">
             <h2 className="font-semibold text-lg text-[color:var(--admin-sidebar-fg)]">Danh sách Giảng viên</h2>
-            <button type="button" onClick={openCreateModal} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1 xl:hidden">
-              <PlusIcon /> Thêm giảng viên
+            <button type="button" onClick={handleAddClick} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1">
+              {selectedId ? <><TrashIcon /> Xóa trống</> : <><PlusIcon /> Thêm giảng viên</>}
             </button>
           </div>
           <div className="p-4 flex gap-3">
@@ -288,7 +337,17 @@ export default function TeacherAccountsPage() {
                     >
                       <PencilIcon />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeletingUserId(u._id); setIsConfirmModalOpen(true); }} className="text-gray-400"><TrashIcon /></button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (u.inUse) openStatusConfirm(u);
+                        else openDeleteConfirm(u);
+                      }}
+                      className={u.inUse ? (u.trangThaiHoatDong ? "text-blue-500" : "text-emerald-500") : "text-red-500"}
+                      title={u.inUse ? (u.trangThaiHoatDong ? "Khóa tài khoản" : "Mở khóa tài khoản") : "Xóa vĩnh viễn"}
+                    >
+                      {u.inUse ? (u.trangThaiHoatDong ? <LockIcon /> : <UnlockIcon />) : <TrashIcon />}
+                    </button>
                   </div></td>
                 </tr>
               ))}
@@ -347,80 +406,74 @@ export default function TeacherAccountsPage() {
         </section>
       </div>
 
-      {mobileFormOpen ? (
-        <div className="fixed inset-0 z-[70] bg-black/40 flex items-center justify-center px-4">
-          <div className="w-full max-w-xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-base font-bold text-gray-900 dark:text-gray-100">
-                  {isCreateMode ? "Thêm giảng viên" : "Chi tiết giảng viên"}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Điền thông tin rồi bấm lưu</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setMobileFormOpen(false)}
-                className="px-3 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-200"
-              >
-                Đóng
-              </button>
-            </div>
-            <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">
-              <form onSubmit={handleSave} className="space-y-3">
-                <InputField label="Họ và tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
-                <InputField
-                  label="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleFieldChange}
-                  disabled={!isCreateMode}
-                />
-                <InputField label="Số điện thoại" name="soDienThoai" value={formData.soDienThoai} onChange={handleFieldChange} />
-                <InputField label="Ngày sinh" name="ngaysinh" type="date" value={formData.ngaysinh} onChange={handleFieldChange} />
-                <InputField
-                  label="Địa chỉ thường trú"
-                  name="diachi"
-                  value={formData.diachi}
-                  onChange={handleFieldChange}
-                />
-                <InputField
-                  label="Trình độ cao nhất"
-                  name="TrinhDoHocVan"
-                  value={formData.TrinhDoHocVan}
-                  onChange={handleFieldChange}
-                />
-                <InputField
-                  label="Kinh nghiệm (năm)"
-                  name="kinhnghiem"
-                  type="number"
-                  value={formData.kinhnghiem}
-                  onChange={handleFieldChange}
-                />
-                <InputField label="Chuyên môn chính" name="chuyenmon" value={formData.chuyenmon} onChange={handleFieldChange} />
-                <InputField
-                  label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"}
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleFieldChange}
-                />
-                <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
-                {formError && <p className="text-sm text-red-500">{formError}</p>}
-                <button type="submit" className="admin-btn-accent w-full justify-center py-2">
-                  {isCreateMode ? "Tạo mới" : "Cập nhật thông tin"}
-                </button>
-              </form>
-            </div>
+      <Modal
+        isOpen={mobileFormOpen}
+        title={isCreateMode ? "Thêm giảng viên" : "Chi tiết giảng viên"}
+        onClose={() => setMobileFormOpen(false)}
+        maxWidth="max-w-xl"
+      >
+        <form onSubmit={handleSave} className="space-y-3">
+          <InputField label="Họ và tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
+          <InputField
+            label="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleFieldChange}
+            disabled={!isCreateMode}
+          />
+          <InputField label="Số điện thoại" name="soDienThoai" value={formData.soDienThoai} onChange={handleFieldChange} />
+          <InputField label="Ngày sinh" name="ngaysinh" type="date" value={formData.ngaysinh} onChange={handleFieldChange} />
+          <InputField
+            label="Địa chỉ thường trú"
+            name="diachi"
+            value={formData.diachi}
+            onChange={handleFieldChange}
+          />
+          <InputField
+            label="Trình độ cao nhất"
+            name="TrinhDoHocVan"
+            value={formData.TrinhDoHocVan}
+            onChange={handleFieldChange}
+          />
+          <InputField
+            label="Kinh nghiệm (năm)"
+            name="kinhnghiem"
+            type="number"
+            value={formData.kinhnghiem}
+            onChange={handleFieldChange}
+          />
+          <InputField label="Chuyên môn chính" name="chuyenmon" value={formData.chuyenmon} onChange={handleFieldChange} />
+          <InputField
+            label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"}
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleFieldChange}
+          />
+          <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
+          {formError && <p className="text-sm text-red-500">{formError}</p>}
+          <div className="pt-4 flex flex-col gap-2">
+            <button type="submit" className="admin-btn-accent w-full justify-center py-2">
+              {isCreateMode ? "Tạo mới" : "Cập nhật thông tin"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileFormOpen(false)}
+              className="w-full text-sm font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Hủy
+            </button>
           </div>
-        </div>
-      ) : null}
+        </form>
+      </Modal>
       <ConfirmModal
         isOpen={isConfirmModalOpen}
-        title="Khóa tài khoản"
-        message="Bạn có chắc muốn khóa tài khoản giảng viên này?"
-        onConfirm={handleToggleStatus}
+        title={confirmModalData.title}
+        message={confirmModalData.message}
+        onConfirm={handleConfirmAction}
         onCancel={() => setIsConfirmModalOpen(false)}
-        confirmText="Khóa"
+        confirmText={confirmModalData.confirmText}
+        type={confirmModalData.type === 'delete' ? 'danger' : 'warning'}
       />
     </div>
   );

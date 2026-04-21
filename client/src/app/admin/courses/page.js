@@ -8,6 +8,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 import InputField from "../../components/InputField";
 import AdminPageTitle from "../components/AdminPageTitle";
 import AdminCard from "../components/AdminCard";
+import Modal from "../../components/Modal";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const DAY_LABELS = ["Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
@@ -91,7 +92,7 @@ export default function AdminCoursesPage() {
     const fetchOptions = async () => {
       try {
         const [ctRes, teacherRes, facilitiesRes] = await Promise.all([
-          fetch(`${API_BASE}/api/course-types`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_BASE}/api/course-types?active=true`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API_BASE}/api/admin/users/teachers`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API_BASE}/api/admin/facilities?active=true`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
@@ -409,221 +410,287 @@ export default function AdminCoursesPage() {
     </div>
   );
 }
-function CourseModal({ isOpen, onClose, data, setData, teachers, courseTypes, facilities, rooms, onSubmit, onValidate, validationResult, saving, validating }) {
+
+function CourseModal({
+  isOpen,
+  onClose,
+  data,
+  setData,
+  teachers,
+  courseTypes,
+  facilities,
+  rooms,
+  onSubmit,
+  onValidate,
+  validationResult,
+  saving,
+  validating,
+}) {
   const roomsForCoSo = useMemo(
     () => (rooms || []).filter((r) => String(r.coSoId) === String(data.CoSoId)),
     [rooms, data.CoSoId]
   );
-  if (!isOpen) return null;
-  const addSchedule = () => setData((p) => ({ ...p, lichHoc: [...(p.lichHoc || []), { thu: 1, gioBatDau: "18:00", gioKetThuc: "20:00", phonghoc: "" }] }));
-  const changeSchedule = (idx, field, value) => setData((p) => {
-    const next = [...(p.lichHoc || [])];
-    next[idx] = { ...next[idx], [field]: value };
-    return { ...p, lichHoc: next };
-  });
+
+  const addSchedule = () =>
+    setData((p) => ({
+      ...p,
+      lichHoc: [...(p.lichHoc || []), { thu: 1, gioBatDau: "18:00", gioKetThuc: "20:00", phonghoc: "" }],
+    }));
+
+  const changeSchedule = (idx, field, value) =>
+    setData((p) => {
+      const next = [...(p.lichHoc || [])];
+      next[idx] = { ...next[idx], [field]: value };
+      return { ...p, lichHoc: next };
+    });
+
   const removeSchedule = (idx) => setData((p) => ({ ...p, lichHoc: p.lichHoc.filter((_, i) => i !== idx) }));
+
   const fieldLabelClass = "mb-1.5 block text-sm font-semibold text-gray-900 dark:text-gray-100";
   const fieldHintClass = "mt-1.5 text-xs leading-relaxed text-gray-600 dark:text-gray-300";
-  const modalInputClass = "input w-full rounded-lg border-2 border-gray-300 bg-white px-3 py-2.5 text-[15px] font-medium text-gray-900 shadow-sm placeholder:text-gray-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-500/30";
+  const modalInputClass =
+    "input w-full rounded-lg border-2 border-gray-300 bg-white px-3 py-2.5 text-[15px] font-medium text-gray-900 shadow-sm placeholder:text-gray-400 transition focus:border-blue-600 focus:ring-2 focus:ring-blue-200 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-blue-400 dark:focus:ring-blue-500/30";
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4">
-      <div className="w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
-        <form onSubmit={onSubmit}>
-          <div className="px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{data._id ? "Cập nhật khóa học" : "Thêm khóa học"}</h3>
-            <button type="button" className="text-base font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white" onClick={onClose}>Đóng</button>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={data._id ? "Cập nhật khóa học" : "Thêm khóa học"}
+      maxWidth="max-w-4xl"
+      footer={
+        <>
+          <button
+            type="button"
+            onClick={() => onValidate()}
+            className="px-4 py-2.5 rounded-md bg-indigo-600 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={validating}
+          >
+            {validating ? "Đang kiểm tra..." : "Kiểm tra trùng lịch"}
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-md border-2 border-gray-300 text-base font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
+          >
+            Hủy
+          </button>
+          <button
+            form="course-form"
+            type="submit"
+            className="px-4 py-2.5 rounded-md bg-blue-600 text-base font-semibold text-white hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={saving}
+          >
+            {saving ? "Đang lưu..." : "Lưu khóa học"}
+          </button>
+        </>
+      }
+    >
+      <form id="course-form" onSubmit={onSubmit} className="space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className={fieldLabelClass}>Tên khóa học *</label>
+            <InputField
+              inputClassName={modalInputClass}
+              placeholder="Ví dụ: IELTS Foundation T7-CN"
+              name="tenkhoahoc"
+              value={data.tenkhoahoc}
+              onChange={(e) => setData((p) => ({ ...p, tenkhoahoc: e.target.value }))}
+            />
+            <p className={fieldHintClass}>Đặt tên ngắn gọn, dễ phân biệt theo trình độ hoặc lịch học.</p>
           </div>
-          <div className="px-6 py-5 space-y-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className={fieldLabelClass}>Tên khóa học *</label>
-                <InputField
-                  inputClassName={modalInputClass}
-                  placeholder="Ví dụ: IELTS Foundation T7-CN"
-                  name="tenkhoahoc"
-                  value={data.tenkhoahoc}
-                  onChange={(e) => setData((p) => ({ ...p, tenkhoahoc: e.target.value }))}
-                />
-                <p className={fieldHintClass}>Đặt tên ngắn gọn, dễ phân biệt theo trình độ hoặc lịch học.</p>
-              </div>
-              <div>
-                <label className={fieldLabelClass}>Loại khóa học *</label>
-                <InputField
-                  type="select"
-                  inputClassName={modalInputClass}
-                  name="LoaiKhoaHocID"
-                  value={data.LoaiKhoaHocID}
-                  onChange={(e) => setData((p) => ({ ...p, LoaiKhoaHocID: e.target.value }))}
-                  options={[
-                    { value: "", label: "Chọn loại khóa học" },
-                    ...(courseTypes || []).map((it, idx) => ({ value: it._id || `ct-modal-${idx}`, label: it.Tenloai })),
-                  ]}
-                />
-                <p className={fieldHintClass}>Loại khóa sẽ quyết định số buổi học và cấu trúc chương trình.</p>
-              </div>
-              <div>
-                <label className={fieldLabelClass}>Ngày khai giảng *</label>
-                <InputField
-                  type="date"
-                  inputClassName={modalInputClass}
-                  name="ngaykhaigiang"
-                  value={data.ngaykhaigiang}
-                  onChange={(e) => setData((p) => ({ ...p, ngaykhaigiang: e.target.value }))}
-                />
-                <p className={fieldHintClass}>Nên chọn trước ngày học buổi đầu tiên ít nhất 1-3 ngày.</p>
-              </div>
-              <div>
-                <label className={fieldLabelClass}>Giảng viên phụ trách *</label>
-                <InputField
-                  type="select"
-                  inputClassName={modalInputClass}
-                  name="giangvien"
-                  value={data.giangvien}
-                  onChange={(e) => setData((p) => ({ ...p, giangvien: e.target.value }))}
-                  options={[
-                    { value: "", label: "Chọn giảng viên" },
-                    ...(teachers || []).map((it, idx) => ({
-                      value: it.courseTeacherId || `gv-modal-${idx}`,
-                      label: it.hovaten || it.email,
-                    })),
-                  ]}
-                />
-                <p className={fieldHintClass}>Chọn giảng viên chính để hệ thống kiểm tra trùng lịch chính xác hơn.</p>
-              </div>
-              <div className="md:col-span-2">
-                <label className={fieldLabelClass}>Cơ sở *</label>
-                <InputField
-                  type="select"
-                  inputClassName={modalInputClass}
-                  name="CoSoId"
-                  value={data.CoSoId}
-                  onChange={(e) => {
-                    const nextCoSo = e.target.value;
-                    setData((p) => ({
-                      ...p,
-                      CoSoId: nextCoSo,
-                      lichHoc: (p.lichHoc || []).map((slot) => {
-                        if (!nextCoSo || !slot.phonghoc) return { ...slot, phonghoc: nextCoSo ? slot.phonghoc : "" };
-                        const ok = (rooms || []).some(
-                          (r) => String(r._id) === String(slot.phonghoc) && String(r.coSoId) === String(nextCoSo)
-                        );
-                        return { ...slot, phonghoc: ok ? slot.phonghoc : "" };
-                      }),
-                    }));
-                  }}
-                  options={[
-                    { value: "", label: "Chọn cơ sở" },
-                    ...(facilities || []).map((f, idx) => ({
-                      value: f._id || `cs-${idx}`,
-                      label: f.Tencoso || "Cơ sở",
-                    })),
-                  ]}
-                />
-                <p className={fieldHintClass}>Chỉ hiển thị phòng thuộc cơ sở đã chọn trong từng ca học.</p>
-              </div>
+          <div>
+            <label className={fieldLabelClass}>Loại khóa học *</label>
+            <InputField
+              type="select"
+              inputClassName={modalInputClass}
+              name="LoaiKhoaHocID"
+              value={data.LoaiKhoaHocID}
+              onChange={(e) => setData((p) => ({ ...p, LoaiKhoaHocID: e.target.value }))}
+              options={[
+                { value: "", label: "Chọn loại khóa học" },
+                ...(courseTypes || []).map((it, idx) => ({ value: it._id || `ct-modal-${idx}`, label: it.Tenloai })),
+              ]}
+            />
+            <p className={fieldHintClass}>Loại khóa sẽ quyết định số buổi học và cấu trúc chương trình.</p>
+          </div>
+          <div>
+            <label className={fieldLabelClass}>Ngày khai giảng *</label>
+            <InputField
+              type="date"
+              inputClassName={modalInputClass}
+              name="ngaykhaigiang"
+              value={data.ngaykhaigiang}
+              onChange={(e) => setData((p) => ({ ...p, ngaykhaigiang: e.target.value }))}
+            />
+            <p className={fieldHintClass}>Nên chọn trước ngày học buổi đầu tiên ít nhất 1-3 ngày.</p>
+          </div>
+          <div>
+            <label className={fieldLabelClass}>Giảng viên phụ trách *</label>
+            <InputField
+              type="select"
+              inputClassName={modalInputClass}
+              name="giangvien"
+              value={data.giangvien}
+              onChange={(e) => setData((p) => ({ ...p, giangvien: e.target.value }))}
+              options={[
+                { value: "", label: "Chọn giảng viên" },
+                ...(teachers || []).map((it, idx) => ({
+                  value: it.courseTeacherId || `gv-modal-${idx}`,
+                  label: it.hovaten || it.email,
+                })),
+              ]}
+            />
+            <p className={fieldHintClass}>Chọn giảng viên chính để hệ thống kiểm tra trùng lịch chính xác hơn.</p>
+          </div>
+          <div className="md:col-span-2">
+            <label className={fieldLabelClass}>Cơ sở *</label>
+            <InputField
+              type="select"
+              inputClassName={modalInputClass}
+              name="CoSoId"
+              value={data.CoSoId}
+              onChange={(e) => {
+                const nextCoSo = e.target.value;
+                setData((p) => ({
+                  ...p,
+                  CoSoId: nextCoSo,
+                  lichHoc: (p.lichHoc || []).map((slot) => {
+                    if (!nextCoSo || !slot.phonghoc) return { ...slot, phonghoc: nextCoSo ? slot.phonghoc : "" };
+                    const ok = (rooms || []).some(
+                      (r) => String(r._id) === String(slot.phonghoc) && String(r.coSoId) === String(nextCoSo)
+                    );
+                    return { ...slot, phonghoc: ok ? slot.phonghoc : "" };
+                  }),
+                }));
+              }}
+              options={[
+                { value: "", label: "Chọn cơ sở" },
+                ...(facilities || []).map((f, idx) => ({
+                  value: f._id || `cs-${idx}`,
+                  label: f.Tencoso || "Cơ sở",
+                })),
+              ]}
+            />
+            <p className={fieldHintClass}>Chỉ hiển thị phòng thuộc cơ sở đã chọn trong từng ca học.</p>
+          </div>
+        </div>
+        <div className="border-t-2 border-gray-200 pt-4 dark:border-gray-700">
+          <div className="flex justify-between items-center mb-2">
+            <div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">Lịch học cố định</div>
+              <p className={fieldHintClass}>Mỗi dòng là một ca học lặp lại hằng tuần.</p>
             </div>
-            <div className="border-t-2 border-gray-200 pt-4 dark:border-gray-700">
-              <div className="flex justify-between items-center mb-2">
+            <button
+              type="button"
+              className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-base font-semibold text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
+              onClick={addSchedule}
+            >
+              + Thêm lịch
+            </button>
+          </div>
+          {(data.lichHoc || []).map((slot, idx) => (
+            <div
+              key={idx}
+              className="rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/20 p-3 mb-2"
+            >
+              <div className="mb-2 text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">
+                Lịch #{idx + 1}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                 <div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">Lịch học cố định</div>
-                  <p className={fieldHintClass}>Mỗi dòng là một ca học lặp lại hằng tuần.</p>
+                  <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Thứ</label>
+                  <InputField
+                    type="select"
+                    inputClassName={modalInputClass}
+                    name="thu"
+                    value={slot.thu}
+                    onChange={(e) => changeSchedule(idx, "thu", Number(e.target.value))}
+                    options={DAY_LABELS.map((d, i) => ({ value: i, label: d }))}
+                  />
                 </div>
-                <button type="button" className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-base font-semibold text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/20 dark:text-blue-300" onClick={addSchedule}>+ Thêm lịch</button>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">
+                    Giờ bắt đầu
+                  </label>
+                  <InputField
+                    type="time"
+                    inputClassName={modalInputClass}
+                    name="gioBatDau"
+                    value={slot.gioBatDau}
+                    onChange={(e) => changeSchedule(idx, "gioBatDau", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">
+                    Giờ kết thúc
+                  </label>
+                  <InputField
+                    type="time"
+                    inputClassName={modalInputClass}
+                    name="gioKetThuc"
+                    value={slot.gioKetThuc}
+                    onChange={(e) => changeSchedule(idx, "gioKetThuc", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Phòng học</label>
+                  <InputField
+                    type="select"
+                    inputClassName={modalInputClass}
+                    name="phonghoc"
+                    value={slot.phonghoc}
+                    onChange={(e) => changeSchedule(idx, "phonghoc", e.target.value)}
+                    options={[
+                      { value: "", label: data.CoSoId ? "Chọn phòng học" : "Chọn cơ sở trước" },
+                      ...roomsForCoSo.map((r, rIdx) => ({
+                        value: r._id || `room-${rIdx}`,
+                        label: `${r.TenPhong} - ${r.CoSoName}`,
+                      })),
+                    ]}
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="button"
+                    className="w-full px-3 py-2.5 rounded-md border border-red-200 bg-red-50 text-red-700 text-base font-semibold hover:bg-red-100 dark:border-red-700 dark:bg-red-900/20 dark:text-red-300"
+                    onClick={() => removeSchedule(idx)}
+                  >
+                    Xóa
+                  </button>
+                </div>
               </div>
-              {(data.lichHoc || []).map((slot, idx) => (
-                <div key={idx} className="rounded-lg border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900/20 p-3 mb-2">
-                  <div className="mb-2 text-sm font-bold uppercase tracking-wide text-gray-700 dark:text-gray-300">Lịch #{idx + 1}</div>
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Thứ</label>
-                      <InputField
-                        type="select"
-                        inputClassName={modalInputClass}
-                        name="thu"
-                        value={slot.thu}
-                        onChange={(e) => changeSchedule(idx, "thu", Number(e.target.value))}
-                        options={DAY_LABELS.map((d, i) => ({ value: i, label: d }))}
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Giờ bắt đầu</label>
-                      <InputField
-                        type="time"
-                        inputClassName={modalInputClass}
-                        name="gioBatDau"
-                        value={slot.gioBatDau}
-                        onChange={(e) => changeSchedule(idx, "gioBatDau", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Giờ kết thúc</label>
-                      <InputField
-                        type="time"
-                        inputClassName={modalInputClass}
-                        name="gioKetThuc"
-                        value={slot.gioKetThuc}
-                        onChange={(e) => changeSchedule(idx, "gioKetThuc", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-xs font-semibold text-gray-800 dark:text-gray-200">Phòng học</label>
-                      <InputField
-                        type="select"
-                        inputClassName={modalInputClass}
-                        name="phonghoc"
-                        value={slot.phonghoc}
-                        onChange={(e) => changeSchedule(idx, "phonghoc", e.target.value)}
-                        options={[
-                          { value: "", label: data.CoSoId ? "Chọn phòng học" : "Chọn cơ sở trước" },
-                          ...roomsForCoSo.map((r, rIdx) => ({
-                            value: r._id || `room-${rIdx}`,
-                            label: `${r.TenPhong} - ${r.CoSoName}`,
-                          })),
-                        ]}
-                      />
-                    </div>
-                    <div className="flex items-end">
-                      <button type="button" className="w-full px-3 py-2.5 rounded-md border border-red-200 bg-red-50 text-red-700 text-base font-semibold hover:bg-red-100 dark:border-red-700 dark:bg-red-900/20 dark:text-red-300" onClick={() => removeSchedule(idx)}>Xóa</button>
-                    </div>
-                  </div>
-                  <p className={fieldHintClass}>Gợi ý: mỗi ca nên dài 90-120 phút và không trùng giờ của giảng viên.</p>
-                </div>
-              ))}
+              <p className={fieldHintClass}>Gợi ý: mỗi ca nên dài 90-120 phút và không trùng giờ của giảng viên.</p>
             </div>
-            {validationResult ? (
-              <div className="p-3 rounded-lg border-2 border-indigo-300 bg-indigo-50 dark:border-indigo-700 dark:bg-indigo-900/20 text-sm">
-                <div className="font-semibold text-indigo-900 dark:text-indigo-200">Kết quả kiểm tra lịch</div>
-                <div className="text-indigo-800 dark:text-indigo-300">Số bài học của loại khóa: {validationResult.lessonCount || 0}</div>
-                <div className="text-indigo-800 dark:text-indigo-300">Số xung đột: {(validationResult.conflicts || []).length}</div>
-                {(validationResult.conflicts || []).slice(0, 6).map((c, idx) => (
-                  <div key={`cf-${idx}`} className="text-indigo-800 dark:text-indigo-300 mt-1">
-                    {c.tomTat ||
-                      `${c.lyDo || "Xung đột lịch"}. ${DAY_LABELS[Number(c?.proposed?.thu)] || ""} — ${formatDateDdMmYyyy(c?.proposed?.ngayhoc, { empty: "-" })}`}
-                  </div>
-                ))}
-                {(validationResult.suggestedStartDates || []).length > 0 ? (
-                  <div className="text-indigo-800 dark:text-indigo-300">Ngày gợi ý: {(validationResult.suggestedStartDates || []).map((d) => formatDateDdMmYyyy(d, { empty: "-" })).join(", ")}</div>
-                ) : null}
+          ))}
+        </div>
+        {validationResult ? (
+          <div className="p-3 rounded-lg border-2 border-indigo-300 bg-indigo-50 dark:border-indigo-700 dark:bg-indigo-900/20 text-sm">
+            <div className="font-semibold text-indigo-900 dark:text-indigo-200">Kết quả kiểm tra lịch</div>
+            <div className="text-indigo-800 dark:text-indigo-300">
+              Số bài học của loại khóa: {validationResult.lessonCount || 0}
+            </div>
+            <div className="text-indigo-800 dark:text-indigo-300">
+              Số xung đột: {(validationResult.conflicts || []).length}
+            </div>
+            {(validationResult.conflicts || []).slice(0, 6).map((c, idx) => (
+              <div key={`cf-${idx}`} className="text-indigo-800 dark:text-indigo-300 mt-1">
+                {c.tomTat ||
+                  `${c.lyDo || "Xung đột lịch"}. ${DAY_LABELS[Number(c?.proposed?.thu)] || ""} — ${formatDateDdMmYyyy(
+                    c?.proposed?.ngayhoc,
+                    { empty: "-" }
+                  )}`}
+              </div>
+            ))}
+            {(validationResult.suggestedStartDates || []).length > 0 ? (
+              <div className="text-indigo-800 dark:text-indigo-300">
+                Ngày gợi ý:{" "}
+                {(validationResult.suggestedStartDates || []).map((d) => formatDateDdMmYyyy(d, { empty: "-" })).join(", ")}
               </div>
             ) : null}
           </div>
-          <div className="px-6 py-4 border-t-2 border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={() => onValidate()}
-              className="px-4 py-2.5 rounded-md bg-indigo-600 text-base font-semibold text-white hover:bg-indigo-700 disabled:opacity-70 disabled:cursor-not-allowed"
-              disabled={validating}
-            >
-              {validating ? "Đang kiểm tra..." : "Kiểm tra trùng lịch"}
-            </button>
-            <button type="button" onClick={onClose} className="px-4 py-2.5 rounded-md border-2 border-gray-300 text-base font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700">Hủy</button>
-            <button type="submit" className="px-4 py-2.5 rounded-md bg-blue-600 text-base font-semibold text-white hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed" disabled={saving}>
-              {saving ? "Đang lưu..." : "Lưu khóa học"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        ) : null}
+      </form>
+    </Modal>
   );
 }
 function StatCard({ title, value }) {

@@ -5,9 +5,11 @@ const {
     createFacility,
     updateFacility,
     toggleFacilityStatus,
+    deleteFacility,
     addRoomToFacility,
     updateRoom,
-    toggleRoomStatus
+    toggleRoomStatus,
+    deleteRoom
 } = require('../../controllers/admin/facilitiesController');
 const { protect, admin } = require('../../middlewares/authMiddleware');
 
@@ -28,6 +30,9 @@ router.put('/:id', updateFacility);
 // Đóng cửa/Mở cửa cơ sở (Soft Delete)
 router.patch('/:id/status', toggleFacilityStatus);
 
+// Xóa cơ sở
+router.delete('/:id', deleteFacility);
+
 // ================= PHÒNG HỌC (ROOMS) =================
 
 // Cài đặt phòng học mới vào 1 cơ sở
@@ -38,5 +43,8 @@ router.put('/rooms/:roomId', updateRoom);
 
 // Cất chức/khóa phòng học (Soft Delete)
 router.patch('/rooms/:roomId/status', toggleRoomStatus);
+
+// Xóa phòng học
+router.delete('/rooms/:roomId', deleteRoom);
 
 module.exports = router;

@@ -4,14 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNotification } from "../../../contexts/NotificationContext";
 import ConfirmModal from "../../../components/ConfirmModal";
+import Modal from "../../../components/Modal";
 import { toDateInputValue } from "../../../../lib/dateFormat";
 import PasswordStrength from "../../../components/PasswordStrength";
 import InputField from "../../../components/InputField";
 import AdminPageTitle from "../../components/AdminPageTitle";
 
-const PlusIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-5 h-5"}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>;
-const PencilIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>;
-const TrashIcon = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className || "w-4 h-4"}><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79M10.5 11.25v6m3-6v6M9 5.25h6" /></svg>;
+import { FiPlus, FiEdit2, FiTrash2, FiLock, FiUnlock } from "react-icons/fi";
 
 const emptyForm = {
   hovaten: "",
@@ -44,7 +43,7 @@ export default function AdminAccountsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [deletingUserId, setDeletingUserId] = useState(null);
+  const [confirmModalData, setConfirmModalData] = useState({ type: 'status', id: null, title: '', message: '', confirmText: '' });
 
   const [isCompactLayout, setIsCompactLayout] = useState(false);
   const [mobileFormOpen, setMobileFormOpen] = useState(false);
@@ -119,9 +118,74 @@ export default function AdminAccountsPage() {
     setFormData(emptyForm);
   };
 
-  const openCreateModal = () => {
-    handleCreateNew();
-    setMobileFormOpen(true);
+  const handleAddClick = () => {
+    if (selectedId) {
+      handleCreateNew();
+    } else {
+      if (isCompactLayout) setMobileFormOpen(true);
+    }
+  };
+
+  const handleConfirmAction = async () => {
+    if (!confirmModalData.id) return;
+    const { type, id } = confirmModalData;
+    
+    try {
+      if (type === 'delete') {
+        const response = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Failed");
+        setUsers((prev) => prev.filter((u) => u._id !== id));
+        if (selectedId === id) setSelectedId(null);
+        success("Đã xóa vĩnh viễn tài khoản quản trị.");
+      } else {
+        // Toggle status (lock/unlock)
+        const targetUser = users.find(u => u._id === id);
+        const newStatus = !targetUser.trangThaiHoatDong;
+        const response = await fetch(`${API_URL}/${id}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ trangThaiHoatDong: newStatus }),
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || "Failed");
+        setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, trangThaiHoatDong: newStatus } : u)));
+        if (newStatus) success("Đã mở khóa tài khoản quản trị.");
+        else warning("Đã khóa tài khoản quản trị.");
+      }
+      setIsConfirmModalOpen(false);
+    } catch (err) {
+      setFormError(err.message);
+      notifyError(`Lỗi: ${err.message}`);
+    }
+  };
+
+  const openDeleteConfirm = (user) => {
+    setConfirmModalData({
+      type: 'delete',
+      id: user._id,
+      title: 'Xóa quản trị viên',
+      message: `Bạn có chắc muốn xóa vĩnh viễn quản trị viên ${user.hovaten}? Hành động này không thể hoàn tác.`,
+      confirmText: 'Xóa vĩnh viễn'
+    });
+    setIsConfirmModalOpen(true);
+  };
+
+  const openStatusConfirm = (user) => {
+    const isLocking = user.trangThaiHoatDong;
+    setConfirmModalData({
+      type: 'status',
+      id: user._id,
+      title: isLocking ? 'Khóa tài khoản' : 'Mở khóa tài khoản',
+      message: isLocking 
+        ? `Bạn có chắc muốn khóa tài khoản quản trị ${user.hovaten}?` 
+        : `Bạn có chắc muốn mở khóa tài khoản quản trị ${user.hovaten}?`,
+      confirmText: isLocking ? 'Khóa' : 'Mở khóa'
+    });
+    setIsConfirmModalOpen(true);
   };
 
   const openEditModal = (id) => {
@@ -191,24 +255,6 @@ export default function AdminAccountsPage() {
     }
   };
 
-  const handleToggleStatus = async () => {
-    if (!deletingUserId) return;
-    try {
-      const response = await fetch(`${API_URL}/${deletingUserId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ trangThaiHoatDong: false }),
-      });
-      const result = await response.json();
-      if (!response.ok || !result.success) throw new Error(result.message || "Failed");
-      setUsers((prev) => prev.map((u) => (u._id === deletingUserId ? { ...u, trangThaiHoatDong: false } : u)));
-      setIsConfirmModalOpen(false);
-      warning("Đã khóa tài khoản admin.");
-    } catch (err) {
-      setFormError(err.message);
-      notifyError(`Lỗi: ${err.message}`);
-    }
-  };
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -223,8 +269,8 @@ export default function AdminAccountsPage() {
         <section className="admin-card overflow-hidden xl:col-span-8">
           <div className="admin-card-head flex items-center justify-between">
             <h2 className="font-semibold text-lg text-[color:var(--admin-sidebar-fg)]">Danh sách Admin</h2>
-            <button type="button" onClick={openCreateModal} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1 xl:hidden">
-              <PlusIcon /> Thêm Admin
+            <button type="button" onClick={handleAddClick} className="admin-btn-accent-sm admin-btn-accent flex items-center gap-1.5">
+              {selectedId ? <><FiTrash2 className="w-5 h-5 shrink-0" /> Xóa trống</> : <><FiPlus className="w-5 h-5 shrink-0" /> Thêm Admin</>}
             </button>
           </div>
           <div className="p-4 flex gap-3">
@@ -261,11 +307,30 @@ export default function AdminAccountsPage() {
                         e.stopPropagation();
                         openEditModal(u._id);
                       }}
-                      className="text-amber-500"
+                      className="text-blue-500 hover:text-blue-700"
                     >
-                      <PencilIcon />
+                      <FiEdit2 className="w-5 h-5" />
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); setDeletingUserId(u._id); setIsConfirmModalOpen(true); }} className="text-gray-400"><TrashIcon /></button>
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        openStatusConfirm(u);
+                      }} 
+                      className={`${u.trangThaiHoatDong ? 'text-blue-500 hover:text-blue-700' : 'text-emerald-500 hover:text-emerald-700'}`}
+                      title={u.trangThaiHoatDong ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
+                    >
+                      {u.trangThaiHoatDong ? <FiLock className="w-5 h-5" /> : <FiUnlock className="w-5 h-5" />}
+                    </button>
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        openDeleteConfirm(u);
+                      }} 
+                      className="text-red-500 hover:text-red-700"
+                      title="Xóa vĩnh viễn"
+                    >
+                      <FiTrash2 className="w-5 h-5" />
+                    </button>
                   </div></td>
                 </tr>
               ))}
@@ -310,70 +375,64 @@ export default function AdminAccountsPage() {
         </section>
       </div>
 
-      {mobileFormOpen ? (
-        <div className="fixed inset-0 z-[70] bg-black/40 flex items-center justify-center px-4">
-          <div className="w-full max-w-xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-            <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-base font-bold text-gray-900 dark:text-gray-100">
-                  {isCreateMode ? "Thêm Admin" : "Thông tin Admin"}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Điền thông tin rồi bấm lưu</div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setMobileFormOpen(false)}
-                className="px-3 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-200"
-              >
-                Đóng
-              </button>
-            </div>
-            <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">
-              <form onSubmit={handleSubmit} className="space-y-3">
-                <InputField label="Họ tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
-                <InputField
-                  label="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleFieldChange}
-                  disabled={!isCreateMode}
-                />
-                <InputField
-                  label="Số điện thoại"
-                  name="soDienThoai"
-                  value={formData.soDienThoai}
-                  onChange={handleFieldChange}
-                />
-                <InputField
-                  label="Địa chỉ"
-                  name="diachi"
-                  value={formData.diachi}
-                  onChange={handleFieldChange}
-                />
-                <InputField
-                  label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"}
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleFieldChange}
-                />
-                <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
-                {formError && <p className="text-sm text-red-500">{formError}</p>}
-                <button type="submit" className="admin-btn-accent w-full justify-center py-2">
-                  {isCreateMode ? "Tạo mới" : "Lưu"}
-                </button>
-              </form>
-            </div>
+      <Modal
+        isOpen={mobileFormOpen}
+        title={isCreateMode ? "Thêm Admin" : "Thông tin Admin"}
+        onClose={() => setMobileFormOpen(false)}
+        maxWidth="max-w-xl"
+      >
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <InputField label="Họ tên" name="hovaten" value={formData.hovaten} onChange={handleFieldChange} />
+          <InputField
+            label="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleFieldChange}
+            disabled={!isCreateMode}
+          />
+          <InputField
+            label="Số điện thoại"
+            name="soDienThoai"
+            value={formData.soDienThoai}
+            onChange={handleFieldChange}
+          />
+          <InputField
+            label="Địa chỉ"
+            name="diachi"
+            value={formData.diachi}
+            onChange={handleFieldChange}
+          />
+          <InputField
+            label={isCreateMode ? "Mật khẩu" : "Mật khẩu mới (tùy chọn)"}
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleFieldChange}
+          />
+          <PasswordStrength password={formData.password} showWhenEmpty={isCreateMode} />
+          {formError && <p className="text-sm text-red-500">{formError}</p>}
+          <div className="pt-4 flex flex-col gap-2">
+            <button type="submit" className="admin-btn-accent w-full justify-center py-2">
+              {isCreateMode ? "Tạo mới" : "Lưu"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileFormOpen(false)}
+              className="w-full text-sm font-medium py-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Hủy
+            </button>
           </div>
-        </div>
-      ) : null}
+        </form>
+      </Modal>
       <ConfirmModal
         isOpen={isConfirmModalOpen}
-        title="Khóa tài khoản"
-        message="Bạn có chắc muốn khóa tài khoản này?"
+        title={confirmModalData.title}
+        message={confirmModalData.message}
         onCancel={() => setIsConfirmModalOpen(false)}
-        onConfirm={handleToggleStatus}
-        confirmText="Khóa"
+        onConfirm={handleConfirmAction}
+        confirmText={confirmModalData.confirmText}
+        type={confirmModalData.type === 'delete' ? 'danger' : 'warning'}
       />
     </div>
   );

@@ -7,6 +7,7 @@ import { FiPaperclip } from "react-icons/fi";
 import InputField from "../../components/InputField";
 import AdminPageTitle from "../components/AdminPageTitle";
 import AdminCard from "../components/AdminCard";
+import Modal from "../../components/Modal";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -780,207 +781,186 @@ export default function AdminAnnouncementsPage() {
           </AdminCard>
         )}
 
-        {createOpen ? (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 px-4 py-4 pointer-events-auto">
-            <div className="w-full max-w-3xl max-h-[min(92vh,56rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-              <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="text-base font-bold text-gray-900 dark:text-gray-100">Thêm thông báo</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Tạo mới và gửi tới người nhận phù hợp</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setCreateOpen(false)}
-                  className="px-3 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
-                >
-                  Đóng
-                </button>
+        <Modal
+          isOpen={createOpen}
+          title="Thêm thông báo"
+          onClose={() => setCreateOpen(false)}
+          maxWidth="max-w-3xl"
+          footer={(
+            <>
+              <button
+                type="button"
+                onClick={() => setCreateOpen(false)}
+                className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                disabled={loading}
+              >
+                Hủy
+              </button>
+              <button
+                form="create-announcement-form"
+                type="submit"
+                disabled={loading}
+                className="px-4 py-2.5 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? "Đang gửi..." : "Gửi thông báo"}
+              </button>
+            </>
+          )}
+        >
+          <form id="create-announcement-form" onSubmit={submitCreate} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Đối tượng</label>
+                <InputField
+                  type="select"
+                  inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                  name="targetType"
+                  value={targetType}
+                  onChange={(e) => setTargetType(e.target.value)}
+                  options={[
+                    { value: "all", label: "Tất cả" },
+                    { value: "class", label: "Theo lớp (KhoaHoc)" },
+                    { value: "personal", label: "Theo cá nhân (email/họ tên)" },
+                  ]}
+                />
               </div>
 
-              <form onSubmit={submitCreate} className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Đối tượng</label>
-                    <InputField
-                      type="select"
-                      inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
-                      name="targetType"
-                      value={targetType}
-                      onChange={(e) => setTargetType(e.target.value)}
-                      options={[
-                        { value: "all", label: "Tất cả" },
-                        { value: "class", label: "Theo lớp (KhoaHoc)" },
-                        { value: "personal", label: "Theo cá nhân (email/họ tên)" },
-                      ]}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Vai trò nhận</label>
-                    <InputField
-                      type="select"
-                      inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
-                      name="roles"
-                      value={roles.join(",")}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        if (v === "student") setRoles(["student"]);
-                        else if (v === "teacher") setRoles(["teacher"]);
-                        else setRoles(["student", "teacher"]);
-                      }}
-                      options={[
-                        { value: "student,teacher", label: "Học viên + Giảng viên" },
-                        { value: "student", label: "Chỉ học viên" },
-                        { value: "teacher", label: "Chỉ giảng viên" },
-                      ]}
-                    />
-                  </div>
-                </div>
-
-                {targetType === "class" ? (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Chọn lớp</label>
-                    <InputField
-                      type="select"
-                      inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
-                      name="khoaHocId"
-                      value={khoaHocId}
-                      onChange={(e) => setKhoaHocId(e.target.value)}
-                      options={[
-                        { value: "", label: "-- Chọn --" },
-                        ...(courses || []).map((c) => ({
-                          value: c._id,
-                          label: `${c.tenkhoahoc} (${c.LoaiKhoaHocID?.Tenloai || "KhoaHoc"})`,
-                        })),
-                      ]}
-                    />
-                  </div>
-                ) : null}
-
-                {targetType === "personal" ? (
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      Tìm người nhận (email hoặc họ tên)
-                    </label>
-                    <InputField
-                      type="text"
-                      inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
-                      name="recipientQuery"
-                      value={recipientQuery}
-                      onChange={(e) => setRecipientQuery(e.target.value)}
-                      placeholder="Ví dụ: student01@gmail.com hoặc Nguyễn Văn A"
-                    />
-                  </div>
-                ) : null}
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Tiêu đề (tuỳ chọn)</label>
-                  <InputField
-                    type="text"
-                    inputClassName="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
-                    name="tieuDe"
-                    value={tieuDe}
-                    onChange={(e) => setTieuDe(e.target.value)}
-                    placeholder="Thông báo..."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Nội dung *</label>
-                  <InputField
-                    type="textarea"
-                    inputClassName="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm min-h-[120px]"
-                    name="noidung"
-                    value={noidung}
-                    onChange={(e) => setNoidung(e.target.value)}
-                    placeholder="Nhập nội dung thông báo..."
-                    rows={6}
-                    required
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <button
-                    type="button"
-                    onClick={() => setCreateOpen(false)}
-                    className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    disabled={loading}
-                  >
-                    Hủy
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-4 py-2.5 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
-                  >
-                    {loading ? "Đang gửi..." : "Gửi thông báo"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        ) : null}
-
-        {editOpen ? (
-          <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 px-4 py-4 pointer-events-auto">
-            <div className="w-full max-w-xl max-h-[min(92vh,48rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-              <div className="px-6 py-4 border-b dark:border-gray-700 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="text-base font-bold text-gray-900 dark:text-gray-100">Chỉnh sửa thông báo</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Receipt-level: 1 record gồm mảng recipients</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setEditOpen(false)}
-                  className="px-3 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
-                >
-                  Đóng
-                </button>
-              </div>
-              <div className="px-6 py-5 space-y-4 overflow-y-auto flex-1 min-h-0">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Tiêu đề</label>
-                  <InputField
-                    type="text"
-                    name="tieuDe"
-                    value={editForm.tieuDe}
-                    onChange={(e) => setEditForm((p) => ({ ...p, tieuDe: e.target.value }))}
-                    inputClassName="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Nội dung</label>
-                  <InputField
-                    type="textarea"
-                    name="noidung"
-                    value={editForm.noidung}
-                    onChange={(e) => setEditForm((p) => ({ ...p, noidung: e.target.value }))}
-                    inputClassName="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-sm min-h-[140px]"
-                    rows={6}
-                  />
-                </div>
-              </div>
-              <div className="px-6 py-4 border-t dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-900/20">
-                <button
-                  type="button"
-                  onClick={() => setEditOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  disabled={editLoading}
-                >
-                  Hủy
-                </button>
-                <button
-                  type="button"
-                  onClick={saveEdit}
-                  className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
-                  disabled={editLoading}
-                >
-                  {editLoading ? "Đang cập nhật..." : "Lưu"}
-                </button>
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Vai trò nhận</label>
+                <InputField
+                  type="select"
+                  inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                  name="roles"
+                  value={roles.join(",")}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (v === "student") setRoles(["student"]);
+                    else if (v === "teacher") setRoles(["teacher"]);
+                    else setRoles(["student", "teacher"]);
+                  }}
+                  options={[
+                    { value: "student,teacher", label: "Học viên + Giảng viên" },
+                    { value: "student", label: "Chỉ học viên" },
+                    { value: "teacher", label: "Chỉ giảng viên" },
+                  ]}
+                />
               </div>
             </div>
+
+            {targetType === "class" ? (
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Chọn lớp</label>
+                <InputField
+                  type="select"
+                  inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                  name="khoaHocId"
+                  value={khoaHocId}
+                  onChange={(e) => setKhoaHocId(e.target.value)}
+                  options={[
+                    { value: "", label: "-- Chọn --" },
+                    ...(courses || []).map((c) => ({
+                      value: c._id,
+                      label: `${c.tenkhoahoc} (${c.LoaiKhoaHocID?.Tenloai || "KhoaHoc"})`,
+                    })),
+                  ]}
+                />
+              </div>
+            ) : null}
+
+            {targetType === "personal" ? (
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                  Tìm người nhận (email hoặc họ tên)
+                </label>
+                <InputField
+                  type="text"
+                  inputClassName="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                  name="recipientQuery"
+                  value={recipientQuery}
+                  onChange={(e) => setRecipientQuery(e.target.value)}
+                  placeholder="Ví dụ: student01@gmail.com hoặc Nguyễn Văn A"
+                />
+              </div>
+            ) : null}
+
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Tiêu đề (tuỳ chọn)</label>
+              <InputField
+                type="text"
+                inputClassName="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+                name="tieuDe"
+                value={tieuDe}
+                onChange={(e) => setTieuDe(e.target.value)}
+                placeholder="Thông báo..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Nội dung *</label>
+              <InputField
+                type="textarea"
+                inputClassName="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm min-h-[120px]"
+                name="noidung"
+                value={noidung}
+                onChange={(e) => setNoidung(e.target.value)}
+                placeholder="Nhập nội dung thông báo..."
+                rows={6}
+                required
+              />
+            </div>
+          </form>
+        </Modal>
+
+        <Modal
+          isOpen={editOpen}
+          title="Chỉnh sửa thông báo"
+          onClose={() => setEditOpen(false)}
+          maxWidth="max-w-xl"
+          footer={(
+            <>
+              <button
+                type="button"
+                onClick={() => setEditOpen(false)}
+                className="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                disabled={editLoading}
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                onClick={saveEdit}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed"
+                disabled={editLoading}
+              >
+                {editLoading ? "Đang cập nhật..." : "Lưu"}
+              </button>
+            </>
+          )}
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Tiêu đề</label>
+              <InputField
+                type="text"
+                name="tieuDe"
+                value={editForm.tieuDe}
+                onChange={(e) => setEditForm((p) => ({ ...p, tieuDe: e.target.value }))}
+                inputClassName="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 dark:text-gray-200">Nội dung</label>
+              <InputField
+                type="textarea"
+                name="noidung"
+                value={editForm.noidung}
+                onChange={(e) => setEditForm((p) => ({ ...p, noidung: e.target.value }))}
+                inputClassName="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-sm min-h-[140px]"
+                rows={6}
+              />
+            </div>
           </div>
-        ) : null}
+        </Modal>
     </div>
   );
 }

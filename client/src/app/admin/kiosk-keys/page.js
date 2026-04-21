@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../../components/ConfirmModal";
+import Modal from "../../components/Modal";
 import AdminPageTitle from "../components/AdminPageTitle";
 import AdminCard from "../components/AdminCard";
 import { FiKey, FiLock, FiUnlock, FiRefreshCw, FiTrash2, FiCopy } from "react-icons/fi";
@@ -271,34 +272,37 @@ export default function AdminKioskKeysPage() {
         )}
       </AdminCard>
 
-      {fullKeyModal.open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full max-h-[min(92vh,42rem)] p-6 space-y-4 border dark:border-gray-700 overflow-y-auto">
-            <h3 className="font-semibold text-gray-900 dark:text-white">{fullKeyModal.title}</h3>
-            <textarea
-              readOnly
-              value={fullKeyModal.value}
-              className="w-full h-24 text-xs font-mono rounded-lg border dark:border-gray-600 bg-gray-50 dark:bg-gray-900 p-2 text-gray-900 dark:text-gray-100"
-            />
-            <div className="flex gap-2 justify-end">
-              <button
-                type="button"
-                onClick={() => copyText(fullKeyModal.value)}
-                className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border dark:border-gray-600 text-sm"
-              >
-                <FiCopy className="h-4 w-4" /> Sao chép
-              </button>
-              <button
-                type="button"
-                onClick={() => setFullKeyModal({ open: false, value: "", title: "" })}
-                className="admin-btn-accent text-sm"
-              >
-                Đã lưu
-              </button>
-            </div>
+      <Modal
+        isOpen={fullKeyModal.open}
+        title={fullKeyModal.title}
+        onClose={() => setFullKeyModal({ open: false, value: "", title: "" })}
+        footer={
+          <div className="flex gap-2 justify-end">
+            <button
+              type="button"
+              onClick={() => copyText(fullKeyModal.value)}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border dark:border-gray-600 text-sm"
+            >
+              <FiCopy className="h-4 w-4" /> Sao chép
+            </button>
+            <button
+              type="button"
+              onClick={() => setFullKeyModal({ open: false, value: "", title: "" })}
+              className="admin-btn-accent text-sm"
+            >
+              Đã lưu
+            </button>
           </div>
+        }
+      >
+        <div className="space-y-4">
+          <textarea
+            readOnly
+            value={fullKeyModal.value}
+            className="w-full h-24 text-xs font-mono rounded-lg border dark:border-gray-600 bg-gray-50 dark:bg-gray-900 p-2 text-gray-900 dark:text-gray-100"
+          />
         </div>
-      ) : null}
+      </Modal>
 
       <ConfirmModal
         isOpen={!!revokeTarget}

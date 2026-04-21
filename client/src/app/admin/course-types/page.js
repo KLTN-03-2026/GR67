@@ -3,8 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import ConfirmModal from "../../components/ConfirmModal";
+import Modal from "../../components/Modal";
 import { useNotification } from "../../contexts/NotificationContext";
-import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiArrowLeft, FiPaperclip } from "react-icons/fi";
+import { FiPlus, FiSearch, FiEdit2, FiTrash2, FiArrowLeft, FiPaperclip, FiLock, FiUnlock } from "react-icons/fi";
 import { formatDateDdMmYyyy } from "../../../lib/dateFormat";
 import InputField from "../../components/InputField";
 import AdminPageTitle from "../components/AdminPageTitle";
@@ -269,7 +270,7 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
                       <th scope="col" className="px-6 py-3">Mô tả</th>
                       <th scope="col" className="px-6 py-3">Chứng chỉ</th>
                       <th scope="col" className="px-6 py-3">Ngày tạo</th>
-                      <th scope="col" className="px-6 py-3 text-right">Hành Động</th>
+                      <th scope="col" className="px-6 py-3 text-right">Thao Tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -285,13 +286,39 @@ function ListCourseTypesView({ token, courseTypesApiUrl, creating, onCreate, onC
                           <td className="px-6 py-4 max-w-sm truncate">{ct.mota || ""}</td>
                           <td className="px-6 py-4">{String(ct.ChungChi || "").toUpperCase() || "—"}</td>
                           <td className="px-6 py-4">{ct.createdAt ? formatDateDdMmYyyy(ct.createdAt) : "—"}</td>
-                          <td className="px-6 py-4 text-right">
-                            <button onClick={() => onEdit(ct)} className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-yellow-400/90 hover:bg-yellow-400 text-white" title="Chỉnh sửa">
+                          <td className="px-6 py-4 text-right space-x-2">
+                            <button onClick={() => onEdit(ct)} className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-yellow-400 text-white hover:bg-yellow-500" title="Chỉnh sửa">
                               <FiEdit2 className="h-5 w-5" />
                             </button>
-                            <button onClick={() => openDelete(ct._id)} className="ml-2 inline-flex items-center justify-center w-9 h-9 rounded-md bg-red-500 hover:bg-red-600 text-white" title="Xóa">
-                              <FiTrash2 className="h-5 w-5" />
-                            </button>
+                            {(ct.inUse || ct.trangThaiHoatDong === false) ? (
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    const nextStatus = ct.trangThaiHoatDong === false; // toggle
+                                    const res = await fetch(`${courseTypesApiUrl}/${ct._id}/status`, {
+                                      method: "PATCH",
+                                      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                      body: JSON.stringify({ trangThaiHoatDong: nextStatus }),
+                                    });
+                                    const json = await res.json();
+                                    if (!res.ok || !json.success) throw new Error(json.message || "Lỗi cập nhật trạng thái");
+                                    setCourseTypes(prev => prev.map(item => item._id === ct._id ? json.data : item));
+                                    if (nextStatus) notify.success("Đã mở khóa loại khóa học");
+                                    else notify.warning("Đã khóa loại khóa học");
+                                  } catch (e) {
+                                    notify.error(e.message);
+                                  }
+                                }}
+                                className={`inline-flex items-center justify-center w-9 h-9 rounded-md ${ct.trangThaiHoatDong !== false ? 'bg-blue-500 hover:bg-blue-600' : 'bg-emerald-500 hover:bg-emerald-600'} text-white`}
+                                title={ct.trangThaiHoatDong !== false ? 'Khóa loại khóa học' : 'Mở khóa loại khóa học'}
+                              >
+                                {ct.trangThaiHoatDong !== false ? <FiLock className="h-5 w-5" /> : <FiUnlock className="h-5 w-5" />}
+                              </button>
+                            ) : (
+                              <button onClick={() => openDelete(ct._id)} className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-red-500 hover:bg-red-600 text-white" title="Xóa vĩnh viễn">
+                                <FiTrash2 className="h-5 w-5" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))
@@ -773,11 +800,19 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="px-5 py-4 border-b dark:border-gray-700 flex items-center justify-between">
                 <div className="text-sm font-semibold text-gray-900 dark:text-white">Danh sách bài giảng</div>
-                <button type="button" onClick={resetLessonForm} className="admin-btn-accent-sm admin-btn-accent">
-                  <FiPlus className="h-5 w-5 shrink-0" />
-                  Thêm mới
-                </button>
+                {!courseType?.inUse && (
+                  <button type="button" onClick={resetLessonForm} className="admin-btn-accent-sm admin-btn-accent">
+                    <FiPlus className="h-5 w-5 shrink-0" />
+                    Thêm mới
+                  </button>
+                )}
               </div>
+              {courseType?.inUse && (
+                <div className="mx-5 my-3 p-3 bg-blue-50 border border-blue-200 rounded-md text-sm text-blue-700 dark:bg-blue-900/40 dark:border-blue-800 dark:text-blue-300">
+                  <p className="font-semibold mb-1">Curriculum đã được khóa</p>
+                  Loại khóa học này đang có lớp học hoạt động. Bạn chỉ có thể chỉnh sửa tên và nội dung bài giảng, không thể thêm, xóa hoặc đổi thứ tự bài học.
+                </div>
+              )}
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -785,6 +820,7 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
                       <th className="px-6 py-3">Thứ tự</th>
                       <th className="px-6 py-3">Tên bài giảng</th>
                       <th className="px-6 py-3">Tài liệu</th>
+                      <th className="px-6 py-3">Trạng thái</th>
                       <th className="px-6 py-3 text-right">Hành động</th>
                     </tr>
                   </thead>
@@ -814,6 +850,32 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
                               </button>
                             )}
                           </td>
+                          <td className="px-6 py-4">
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                try {
+                                  const nextStatus = ls.trangThaiHoatDong === false; // toggle
+                                  const res = await fetch(`${courseTypesApiUrl}/${courseType._id}/lessons/${ls._id}/status`, {
+                                    method: "PATCH",
+                                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                                    body: JSON.stringify({ trangThaiHoatDong: nextStatus }),
+                                  });
+                                  const json = await res.json();
+                                  if (!res.ok || !json.success) throw new Error(json.message || "Lỗi cập nhật trạng thái");
+                                  setLessons(prev => prev.map(item => item._id === ls._id ? json.data : item));
+                                  if (nextStatus) notify.success("Đã mở khóa bài học");
+                                  else notify.warning("Đã khóa bài học");
+                                } catch (e) {
+                                  notify.error(e.message);
+                                }
+                              }}
+                              className={`inline-flex items-center justify-center w-9 h-9 rounded-md ${ls.trangThaiHoatDong !== false ? 'bg-blue-500 hover:bg-blue-600' : 'bg-emerald-500 hover:bg-emerald-600'} text-white`}
+                              title={ls.trangThaiHoatDong !== false ? 'Khóa bài học' : 'Mở khóa bài học'}
+                            >
+                              {ls.trangThaiHoatDong !== false ? <FiLock className="h-5 w-5" /> : <FiUnlock className="h-5 w-5" />}
+                            </button>
+                          </td>
                           <td className="px-6 py-4 text-right">
                             <button
                               type="button"
@@ -823,14 +885,16 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
                             >
                               <FiEdit2 className="h-5 w-5" />
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => openDeleteLesson(ls._id)}
-                              className="ml-2 inline-flex items-center justify-center w-9 h-9 rounded-md bg-red-500 hover:bg-red-600 text-white"
-                              title="Xóa"
-                            >
-                              <FiTrash2 className="h-5 w-5" />
-                            </button>
+                            {!courseType?.inUse && (
+                              <button
+                                type="button"
+                                onClick={() => openDeleteLesson(ls._id)}
+                                className="inline-flex items-center justify-center w-9 h-9 rounded-md bg-red-500 hover:bg-red-600 text-white"
+                                title="Xóa vĩnh viễn"
+                              >
+                                <FiTrash2 className="h-5 w-5" />
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))
@@ -965,11 +1029,12 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
                 min={1}
                 max={9999}
                 value={lessonForm.thutu}
+                disabled={courseType?.inUse}
                 onChange={(e) => {
                   setReorder409Message("");
                   setLessonForm((prev) => ({ ...prev, thutu: e.target.value }));
                 }}
-                inputClassName="w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                inputClassName={`w-full px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 ${courseType?.inUse ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               />
             </div>
           </div>
@@ -1181,29 +1246,6 @@ function EditCourseTypeView({ token, apiBase, courseTypesApiUrl, fileUploadApiUr
   );
 }
 
-function Modal({ isOpen, title, onClose, children, footer }) {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-4">
-      <div className="w-full max-w-2xl max-h-[min(92vh,50rem)] bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex flex-col">
-        <div className="px-6 py-5 border-b dark:border-gray-700 flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{title}</h3>
-          </div>
-          <button type="button" onClick={onClose} className="px-3 py-2 rounded-md text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
-            Đóng
-          </button>
-        </div>
-        <div className="px-6 py-5 overflow-y-auto flex-1 min-h-0">{children}</div>
-        {footer ? (
-          <div className="px-6 py-4 flex justify-end gap-3 border-t bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-            {footer}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
 
 function Dropzone({ disabled, onFiles }) {
   const [dragOver, setDragOver] = useState(false);
