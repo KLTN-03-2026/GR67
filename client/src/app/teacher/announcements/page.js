@@ -137,17 +137,6 @@ export default function Announcements() {
                       <div><span className="font-semibold text-gray-500">Khóa học:</span> {item.khoaHocId?.tenkhoahoc}</div>
                     )}
                   </div>
-
-                  <button
-                    className="px-4 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-medium rounded-lg shadow-sm flex items-center gap-2 transition-colors ml-auto"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!isRead) markAsRead(item._id);
-                      setSelectedAnnouncement(item);
-                    }}
-                  >
-                    Xem chi tiết
-                  </button>
                 </div>
               </div>
             );

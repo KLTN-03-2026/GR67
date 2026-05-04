@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function StudentSchedule() {
   const router = useRouter();
   const [view, setView] = useState("week");
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [scheduleData, setScheduleData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -50,9 +51,50 @@ export default function StudentSchedule() {
     return new Date(`${y}-${m}-${d}`);
   };
 
+  const handlePrev = () => {
+    const newDate = new Date(currentDate);
+    if (view === "day") {
+      newDate.setDate(newDate.getDate() - 1);
+    } else if (view === "week") {
+      newDate.setDate(newDate.getDate() - 7);
+    } else if (view === "month") {
+      newDate.setMonth(newDate.getMonth() - 1);
+    }
+    setCurrentDate(newDate);
+  };
+
+  const handleNext = () => {
+    const newDate = new Date(currentDate);
+    if (view === "day") {
+      newDate.setDate(newDate.getDate() + 1);
+    } else if (view === "week") {
+      newDate.setDate(newDate.getDate() + 7);
+    } else if (view === "month") {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    setCurrentDate(newDate);
+  };
+
+  const getDisplayDateRange = () => {
+    if (view === "day") {
+      return `${currentDate.getDate().toString().padStart(2, '0')}/${(currentDate.getMonth() + 1).toString().padStart(2, '0')}/${currentDate.getFullYear()}`;
+    }
+    if (view === "week") {
+      const firstDay = new Date(currentDate);
+      firstDay.setDate(currentDate.getDate() - currentDate.getDay() + 1); // thứ 2
+      const lastDay = new Date(firstDay);
+      lastDay.setDate(firstDay.getDate() + 6);
+      return `${firstDay.getDate().toString().padStart(2, '0')}/${(firstDay.getMonth() + 1).toString().padStart(2, '0')} - ${lastDay.getDate().toString().padStart(2, '0')}/${(lastDay.getMonth() + 1).toString().padStart(2, '0')}/${lastDay.getFullYear()}`;
+    }
+    if (view === "month") {
+      return `Tháng ${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+    }
+    return "";
+  };
+
   // Lọc dữ liệu theo view
   const getFilteredSchedule = () => {
-    const now = new Date();
+    const now = currentDate;
 
     if (view === "day") {
       return scheduleData.filter(d => {
@@ -86,10 +128,6 @@ export default function StudentSchedule() {
           date.getFullYear() === now.getFullYear()
         );
       });
-    }
-
-    if (view === "all") {
-      return scheduleData;
     }
 
     return scheduleData;
@@ -148,10 +186,13 @@ export default function StudentSchedule() {
         </div>
 
         <div className="flex bg-gray-100 rounded-lg p-1">
-          {["day", "week", "month", "all"].map((v) => (
+          {["day", "week", "month"].map((v) => (
             <button
               key={v}
-              onClick={() => setView(v)}
+              onClick={() => {
+                setView(v);
+                setCurrentDate(new Date());
+              }}
               className={`px-6 py-2 rounded-md text-sm font-semibold transition-all duration-200
                 ${view === v
                   ? "bg-blue-600 text-white shadow-sm"
@@ -161,7 +202,6 @@ export default function StudentSchedule() {
               {v === "day" && "Ngày"}
               {v === "week" && "Tuần"}
               {v === "month" && "Tháng"}
-              {v === "all" && "Tất cả"}
             </button>
           ))}
         </div>
@@ -169,11 +209,23 @@ export default function StudentSchedule() {
 
       {/* CONTENT */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="p-4 border-b bg-gray-50 font-medium text-gray-700">
-          {view === "day" && "Lịch học hôm nay"}
-          {view === "week" && "Lịch học trong tuần"}
-          {view === "month" && "Lịch học trong tháng"}
-          {view === "all" && "Tất cả lịch học"}
+        <div className="p-4 border-b bg-gray-50 font-medium text-gray-700 flex items-center justify-between">
+          <div>
+            {view === "day" && "Lịch học theo ngày"}
+            {view === "week" && "Lịch học theo tuần"}
+            {view === "month" && "Lịch học theo tháng"}
+          </div>
+          <div className="flex items-center gap-3">
+            <button onClick={handlePrev} className="p-1.5 bg-white border shadow-sm rounded hover:bg-blue-100 transition" title="Lùi lại">
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <span className="text-sm text-gray-700 min-w-[160px] text-center font-medium bg-white py-1.5 px-3 border shadow-sm rounded">
+              {getDisplayDateRange()}
+            </span>
+            <button onClick={handleNext} className="p-1.5 bg-white border shadow-sm rounded hover:bg-blue-100 transition" title="Chuyển tiếp">
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
         </div>
 
         {loading ? (

@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const LOAI_BAI_MAP = {
-  flashcard: { label: "Flashcard", icon: "🎴", color: "bg-blue-50 text-blue-800" },
-  quiz: { label: "Trắc nghiệm (Quiz)", icon: "📋", color: "bg-green-50 text-green-800" },
-  trueFalse: { label: "Đúng/Sai", icon: "⚖️", color: "bg-purple-50 text-purple-800" },
-  shortAnswer: { label: "Trả lời ngắn", icon: "✍️", color: "bg-orange-50 text-orange-800" },
-  multiSelect: { label: "Chọn nhiều đáp án", icon: "☑️", color: "bg-teal-50 text-teal-800" },
-  mixedNoFlashcard: { label: "Hỗn hợp", icon: "🎲", color: "bg-yellow-50 text-yellow-800" }
+  flashcard: { label: "Flashcard", icon: "🎴", color: "bg-blue-50 text-blue-800 dark:bg-blue-500/20 dark:text-blue-200" },
+  quiz: { label: "Trắc nghiệm (Quiz)", icon: "📋", color: "bg-green-50 text-green-800 dark:bg-green-500/20 dark:text-green-200" },
+  trueFalse: { label: "Đúng/Sai", icon: "⚖️", color: "bg-purple-50 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200" },
+  shortAnswer: { label: "Trả lời ngắn", icon: "✍️", color: "bg-orange-50 text-orange-800 dark:bg-orange-500/20 dark:text-orange-200" },
+  multiSelect: { label: "Chọn nhiều đáp án", icon: "☑️", color: "bg-teal-50 text-teal-800 dark:bg-teal-500/20 dark:text-teal-200" },
+  mixedNoFlashcard: { label: "Hỗn hợp", icon: "🎲", color: "bg-yellow-50 text-yellow-800 dark:bg-yellow-500/20 dark:text-yellow-200" }
 };
 
 export default function PracticeList() {
@@ -101,9 +101,9 @@ export default function PracticeList() {
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Luyện Tập Tổng Hợp</h1>
-        <p className="text-gray-600 mb-6">Chọn bài luyện tập để rèn luyện kỹ năng. Các bài tập được phân loại theo hình thức làm bài.</p>
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Luyện Tập Tổng Hợp</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-6">Chọn bài luyện tập để rèn luyện kỹ năng. Các bài tập được phân loại theo hình thức làm bài.</p>
         
         {/* Thanh công cụ tìm kiếm & lọc */}
         <div className="flex flex-col md:flex-row gap-4 mb-2">
@@ -119,56 +119,56 @@ export default function PracticeList() {
               placeholder="Tìm kiếm theo Tên bài, Khóa học, hoặc Thể loại..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
-          
+
           <div className="w-full md:w-64">
-             <select
-               value={selectedType}
-               onChange={(e) => setSelectedType(e.target.value)}
-               className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer font-medium text-gray-700"
-             >
-               <option value="all">Tất cả thể loại</option>
-               {Object.entries(LOAI_BAI_MAP).map(([key, info]) => (
-                 <option key={key} value={key}>{info.label}</option>
-               ))}
-             </select>
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer font-medium text-gray-700 dark:text-gray-300"
+            >
+              <option value="all">Tất cả thể loại</option>
+              {Object.entries(LOAI_BAI_MAP).map(([key, info]) => (
+                <option key={key} value={key}>{info.label}</option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
 
       {Object.keys(groupedPractices).length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm p-8 text-center border border-gray-100">
-          <p className="text-gray-500 text-lg">Không tìm thấy bài luyện tập nào phù hợp với tìm kiếm của bạn.</p>
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-8 text-center border border-gray-100 dark:border-gray-800">
+          <p className="text-gray-500 dark:text-gray-400 text-lg">Không tìm thấy bài luyện tập nào phù hợp với tìm kiếm của bạn.</p>
         </div>
       ) : (
         <div className="space-y-10">
           {Object.entries(groupedPractices).map(([type, items]) => {
             const typeInfo = LOAI_BAI_MAP[type] || { label: type, icon: "📄", color: "bg-gray-50 text-gray-800" };
-            
+
             return (
               <div key={type} className="space-y-4 pt-2">
-                <div className="flex items-center gap-2 border-b pb-2">
+                <div className="flex items-center gap-2 border-b dark:border-gray-800 pb-2">
                   <span className="text-2xl">{typeInfo.icon}</span>
-                  <h2 className="text-xl font-bold text-gray-800">{typeInfo.label}</h2>
-                  <span className="ml-2 px-2 py-1 bg-gray-100 rounded-full text-xs font-semibold text-gray-600">
+                  <h2 className="text-xl font-bold text-gray-800 dark:text-white">{typeInfo.label}</h2>
+                  <span className="ml-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-semibold text-gray-600 dark:text-gray-400">
                     {items.length} bài
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {items.map((practice) => (
-                    <div key={practice._id} className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow overflow-hidden flex flex-col">
-                      <div className={`px-4 py-2 ${typeInfo.color} font-medium text-sm border-b`}>
+                    <div key={practice._id} className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+                      <div className={`px-4 py-2 ${typeInfo.color} font-medium text-sm border-b dark:border-gray-800`}>
                         {typeInfo.label}
                       </div>
                       <div className="p-5 flex-1 flex flex-col">
-                        <h3 className="font-bold text-gray-800 text-lg mb-2 line-clamp-2">{practice.tenBai}</h3>
-                        <p className="text-sm text-gray-500 mb-4 line-clamp-2 min-h-[40px]">
+                        <h3 className="font-bold text-gray-800 dark:text-white text-lg mb-2 line-clamp-2">{practice.tenBai}</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2 min-h-[40px]">
                           {practice.moTa || "Không có mô tả"}
                         </p>
-                        
+
                         <div className="mt-auto space-y-3">
                           <div className="flex items-center text-sm text-gray-600">
                             <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -181,10 +181,10 @@ export default function PracticeList() {
                             </div>
                           )}
                           <div className="flex items-center text-xs text-gray-400 mt-1">
-                             Tạo lúc: {new Date(practice.createdAt).toLocaleDateString('vi-VN')}
+                            Tạo lúc: {new Date(practice.createdAt).toLocaleDateString('vi-VN')}
                           </div>
                         </div>
-                        
+
                         <button
                           onClick={() => router.push(`/student/practice/${practice._id}`)}
                           className="mt-5 w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm"

@@ -264,7 +264,7 @@ export default function TeacherDashboard() {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[80vh]">
             <div className="flex justify-between items-center p-5 border-b bg-gray-50">
               <h3 className="font-bold text-xl text-gray-800">Danh sách bài tập chờ chấm</h3>
-              <button 
+              <button
                 onClick={() => setShowPendingModal(false)}
                 className="text-gray-500 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors"
                 title="Đóng"
@@ -276,8 +276,8 @@ export default function TeacherDashboard() {
               {stats.pendingAssignmentsDetail && stats.pendingAssignmentsDetail.length > 0 ? (
                 <div className="space-y-4">
                   {stats.pendingAssignmentsDetail.map((item, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       onClick={() => router.push(`/teacher/courses/detail-ass?id=${item.assignmentId}`)}
                       className="flex justify-between items-center p-4 border border-gray-100 rounded-lg hover:border-blue-300 hover:shadow-md cursor-pointer transition-all bg-white group"
                     >
@@ -306,7 +306,7 @@ export default function TeacherDashboard() {
               )}
             </div>
             <div className="p-4 border-t bg-gray-50 text-right">
-              <button 
+              <button
                 onClick={() => setShowPendingModal(false)}
                 className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100"
               >
