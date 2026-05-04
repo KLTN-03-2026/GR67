@@ -45,6 +45,13 @@ const createFacility = async (req, res) => {
             return res.status(400).json({ message: 'Vui lòng nhập Tên cơ sở và Địa chỉ' });
         }
 
+        const existing = await Coso.findOne({ 
+            Tencoso: { $regex: new RegExp("^" + Tencoso.trim() + "$", "i") } 
+        });
+        if (existing) {
+            return res.status(400).json({ message: 'Tên cơ sở đã tồn tại' });
+        }
+
         const newFacility = new Coso({ Tencoso, diachi, mota });
         await newFacility.save();
 
@@ -60,6 +67,16 @@ const updateFacility = async (req, res) => {
     try {
         const facilityId = req.params.id;
         const { Tencoso, diachi, mota } = req.body;
+
+        if (Tencoso) {
+            const existing = await Coso.findOne({ 
+                Tencoso: { $regex: new RegExp("^" + Tencoso.trim() + "$", "i") },
+                _id: { $ne: facilityId }
+            });
+            if (existing) {
+                return res.status(400).json({ message: 'Tên cơ sở đã tồn tại' });
+            }
+        }
 
         const facility = await Coso.findByIdAndUpdate(
             facilityId,

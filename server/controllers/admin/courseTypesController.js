@@ -79,6 +79,13 @@ const createCourseType = async (req, res) => {
       return res.status(400).json({ success: false, message: "Tên loại khóa học là bắt buộc" });
     }
 
+    const existing = await LoaiKhoaHoc.findOne({ 
+      Tenloai: { $regex: new RegExp("^" + resolvedName + "$", "i") } 
+    });
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Tên loại khóa học này đã tồn tại" });
+    }
+
     const created = await LoaiKhoaHoc.create({
       Tenloai: resolvedName,
       mota: (mota || "").trim(),
@@ -99,6 +106,14 @@ const updateCourseType = async (req, res) => {
     const resolvedName = (Tenloai || "").trim();
     if (!resolvedName) {
       return res.status(400).json({ success: false, message: "Tên loại khóa học là bắt buộc" });
+    }
+
+    const existing = await LoaiKhoaHoc.findOne({ 
+      Tenloai: { $regex: new RegExp("^" + resolvedName + "$", "i") },
+      _id: { $ne: req.params.id }
+    });
+    if (existing) {
+      return res.status(400).json({ success: false, message: "Tên loại khóa học này đã tồn tại" });
     }
 
     const updated = await LoaiKhoaHoc.findByIdAndUpdate(

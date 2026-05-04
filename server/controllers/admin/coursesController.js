@@ -814,6 +814,14 @@ exports.createCourse = async (req, res) => {
     if (!teacherId) return res.status(400).json({ success: false, message: "Giảng viên được chọn không hợp lệ hoặc không tồn tại." });
     const name = (tenkhoahoc || "").trim();
     if (!name) return res.status(400).json({ success: false, message: "Vui lòng nhập tên khóa học." });
+
+    const existingName = await KhoaHoc.findOne({ 
+      tenkhoahoc: { $regex: new RegExp("^" + name + "$", "i") } 
+    });
+    if (existingName) {
+      return res.status(400).json({ success: false, message: "Tên khóa học đã tồn tại" });
+    }
+
     const start = new Date(ngaykhaigiang);
     if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "Ngày khai giảng không hợp lệ." });
 
@@ -1024,6 +1032,15 @@ exports.updateCourse = async (req, res) => {
 
     const name = (tenkhoahoc || "").trim();
     if (!name) return res.status(400).json({ success: false, message: "Vui lòng nhập tên khóa học." });
+
+    const existingName = await KhoaHoc.findOne({ 
+      tenkhoahoc: { $regex: new RegExp("^" + name + "$", "i") },
+      _id: { $ne: courseId }
+    });
+    if (existingName) {
+      return res.status(400).json({ success: false, message: "Tên khóa học đã tồn tại" });
+    }
+
     const start = new Date(ngaykhaigiang);
     if (Number.isNaN(start.getTime())) return res.status(400).json({ success: false, message: "Ngày khai giảng không hợp lệ." });
 
