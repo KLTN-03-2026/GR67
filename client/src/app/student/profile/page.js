@@ -19,6 +19,14 @@ export default function Profile() {
     address: '',
   });
 
+  const [originalData, setOriginalData] = useState({
+    email: '',
+    Numberphone: '',
+    FullName: '',
+    dateOfBirth: '',
+    address: '',
+  });
+
   // State mật khẩu
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -67,13 +75,15 @@ export default function Profile() {
         const data = await res.json();
         const userData = data.userId;
 
-        setFormData({
+        const fetchedData = {
           email: userData?.email || '',
           Numberphone: userData?.soDienThoai || '',
           FullName: userData?.hovaten || '',
           dateOfBirth: userData?.ngaysinh ? toDateInputValue(userData.ngaysinh) : '',
           address: userData?.diachi || '',
-        });
+        };
+        setFormData(fetchedData);
+        setOriginalData(fetchedData);
 
       } catch (err) {
         console.error("Lỗi load profile:", err);
@@ -85,20 +95,27 @@ export default function Profile() {
 
   useEffect(() => {
     if (user && !formData.email) {
-      setFormData({
+      const initialData = {
         email: user.email || '',
         FullName: user.FullName || user.name || '',
         Numberphone: user.Numberphone || '',
         dateOfBirth: user.dateOfBirth ? toDateInputValue(user.dateOfBirth) : "",
         address: user.address || ''
-      });
+      };
+      setFormData(initialData);
+      setOriginalData(initialData);
     }
   }, [user]);
 
   const handlePersonalInfoChange = (field, value) => {
+    let newValue = value;
+    if (field === 'FullName') {
+      newValue = value.replace(/[0-9]/g, '');
+    }
+
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: newValue
     }));
 
     // Validate phone realtime
@@ -153,11 +170,12 @@ export default function Profile() {
         })
       });
       const data = await response.json();
-      
+
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Cập nhật thất bại");
       }
 
+      setOriginalData(formData);
       setIsEditing(false);
       showToast('Cập nhật thông tin thành công!');
     } catch (error) {
@@ -254,7 +272,13 @@ export default function Profile() {
                   <p className="text-sm text-gray-500 mt-1">Các thông tin cơ bản liên hệ và lý lịch</p>
                 </div>
                 <button
-                  onClick={() => setIsEditing(!isEditing)}
+                  onClick={() => {
+                    if (isEditing) {
+                      setFormData(originalData);
+                      setErrors({ phone: "", dateOfBirth: "" });
+                    }
+                    setIsEditing(!isEditing);
+                  }}
                   className={`mt-4 sm:mt-0 px-5 py-2 rounded-lg text-sm font-bold shadow-sm transition-all flex items-center gap-2 ${isEditing
                     ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow'
                     : 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 border border-blue-200'
@@ -392,7 +416,11 @@ export default function Profile() {
               {isEditing && (
                 <div className="flex justify-end space-x-3 pt-6 border-t border-gray-100 animate-slide-in-up" style={{ animationDelay: '100ms' }}>
                   <button
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      setFormData(originalData);
+                      setErrors({ phone: "", dateOfBirth: "" });
+                      setIsEditing(false);
+                    }}
                     className="px-5 py-2.5 rounded-lg text-sm font-semibold text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-800 transition-colors shadow-sm"
                   >
                     Hủy bỏ
@@ -400,11 +428,10 @@ export default function Profile() {
                   <button
                     onClick={handlePersonalInfoSubmit}
                     disabled={!!errors.phone || !!errors.dateOfBirth}
-                    className={`px-5 py-2.5 rounded-lg text-sm font-semibold text-white shadow-md transition-all flex items-center gap-2 ${
-                      (errors.phone || errors.dateOfBirth)
-                        ? 'bg-blue-300 cursor-not-allowed shadow-none' 
-                        : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200'
-                    }`}
+                    className={`px-5 py-2.5 rounded-lg text-sm font-semibold text-white shadow-md transition-all flex items-center gap-2 ${(errors.phone || errors.dateOfBirth)
+                      ? 'bg-blue-300 cursor-not-allowed shadow-none'
+                      : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200'
+                      }`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                     Lưu thông tin
@@ -530,11 +557,10 @@ export default function Profile() {
 
       {/* Toast Notification */}
       {toast.show && (
-        <div className={`fixed bottom-8 right-8 z-50 px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 animate-slide-in-up transition-all ${
-          toast.type === 'success' 
-            ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-blue-200/50' 
-            : 'bg-red-50 text-red-700 border border-red-200 shadow-red-200/50'
-        }`}>
+        <div className={`fixed bottom-8 right-8 z-50 px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 animate-slide-in-up transition-all ${toast.type === 'success'
+          ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-blue-200/50'
+          : 'bg-red-50 text-red-700 border border-red-200 shadow-red-200/50'
+          }`}>
           {toast.type === 'success' ? (
             <div className="p-1 bg-blue-100 rounded-full text-blue-600">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
