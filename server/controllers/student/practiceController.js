@@ -17,7 +17,7 @@ exports.getPracticeList = async (req, res) => {
     const khoaHocIds = dangKyKhoaHocs.map((dk) => dk.KhoaHocID);
 
     // Lấy bài luyện tập thuộc các khóa học này
-    const practiceList = await LuyenTap.find({ khoaHocID: { $in: khoaHocIds } })
+    const practiceList = await LuyenTap.find({ $or: [{ khoaHocID: { $in: khoaHocIds } }, { khoaHocID: null }] })
       .populate('khoaHocID', 'tenKhoaHoc')
       .sort({ createdAt: -1 });
 

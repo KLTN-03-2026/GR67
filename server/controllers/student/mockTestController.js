@@ -3,11 +3,25 @@ const DeThiMauPhan = require('../../models/DeThiMauPhan');
 const DeThiMauPhanNhom = require('../../models/DeThiMauPhanNhom');
 const DeThiMauCauHoi = require('../../models/DeThiMauCauHoi');
 const KetQuaDeThi = require('../../models/KetQuaDeThi');
+const HocVien = require('../../models/HocVien');
+const DangKyKhoaHoc = require('../../models/DangKyKhoaHoc');
 
 // 1. Get List of Mock Tests
 exports.getMockTests = async (req, res) => {
   try {
-    const tests = await DeThiMau.find().sort({ chungChi: 1, createdAt: -1 });
+    // Identify student and their enrolled courses
+    const student = await HocVien.findOne({ userId: req.user._id });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Không tìm thấy học viên' });
+    }
+    const hocvienId = student._id;
+    const dangKyKhoaHocs = await DangKyKhoaHoc.find({ hocvienId }).select('KhoaHocID');
+    const khoaHocIds = dangKyKhoaHocs.map((dk) => dk.KhoaHocID);
+
+    // Fetch mock tests that belong to the student's courses or are global (khoaHocID null)
+    const tests = await DeThiMau.find({ $or: [{ khoaHocID: { $in: khoaHocIds } }, { khoaHocID: null }] })
+      .populate('khoaHocID', 'tenKhoaHoc')
+      .sort({ chungChi: 1, createdAt: -1 });
     res.status(200).json({ success: true, count: tests.length, data: tests });
   } catch (error) {
     console.error('Lỗi khi lấy danh sách đề thi:', error);
