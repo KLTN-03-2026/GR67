@@ -170,14 +170,14 @@ export default function TeacherDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Lịch dạy sắp tới */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
           <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
             <h2 className="text-xl font-bold text-gray-800">Lịch Dạy Sắp Tới</h2>
             <Link href="/teacher/schedule" className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
               Xem tất cả
             </Link>
           </div>
-          <div className="p-6">
+          <div className="p-6 flex-1">
             {upcomingClasses.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <p>Không có buổi học nào sắp tới.</p>
@@ -210,11 +210,11 @@ export default function TeacherDashboard() {
         </div>
 
         {/* Truy cập nhanh */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col h-full">
           <div className="px-6 py-5 border-b border-gray-100">
             <h2 className="text-xl font-bold text-gray-800">Truy Cập Nhanh</h2>
           </div>
-          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 h-full" style={{ maxHeight: "400px" }}>
+          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
             <button
               onClick={() => router.push('/teacher/courses/overview')}
               className="flex flex-col items-center justify-center p-6 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"

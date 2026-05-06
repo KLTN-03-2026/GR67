@@ -5,6 +5,8 @@ const GiangVien = require('../../models/GiangVien');
 const KhoaHoc = require('../../models/KhoaHoc');
 const HocVien = require('../../models/HocVien');
 const NguoiDung = require('../../models/NguoiDung');
+const ThongBao = require('../../models/ThongBao');
+const BuoiHoc = require('../../models/BuoiHoc');
 
 // GET /teacher/courses/leave-requests
 exports.getLeaveRequests = async (req, res) => {
@@ -114,10 +116,34 @@ exports.approveLeaveRequest = async (req, res) => {
       id,
       { trangthai_duyet: "approved" },
       { new: true }
-    );
+    ).populate({
+      path: 'dangkykhoahocID',
+      populate: [
+        { path: 'KhoaHocID', select: 'tenkhoahoc' },
+        { path: 'hocvienId' }
+      ]
+    });
 
     if (!updated) {
       return res.status(404).json({ success: false, message: "Không tìm thấy đơn" });
+    }
+
+    // Gửi thông báo cho sinh viên
+    try {
+      const studentUserId = updated.dangkykhoahocID?.hocvienId?.userId;
+      const courseName = updated.dangkykhoahocID?.KhoaHocID?.tenkhoahoc || 'khóa học';
+      if (studentUserId) {
+        const thongBao = new ThongBao({
+          tieuDe: 'Đơn xin phép được duyệt',
+          noidung: `Đơn xin nghỉ học của bạn tại lớp ${courseName} đã được giảng viên phê duyệt.`,
+          targetType: 'personal',
+          userID: [studentUserId],
+          createdBy: req.user._id,
+        });
+        await thongBao.save();
+      }
+    } catch (notifErr) {
+      console.error('Lỗi khi tạo thông báo:', notifErr);
     }
 
     res.json({ success: true });
@@ -137,10 +163,34 @@ exports.rejectLeaveRequest = async (req, res) => {
       id,
       { trangthai_duyet: "rejected" },
       { new: true }
-    );
+    ).populate({
+      path: 'dangkykhoahocID',
+      populate: [
+        { path: 'KhoaHocID', select: 'tenkhoahoc' },
+        { path: 'hocvienId' }
+      ]
+    });
 
     if (!request) {
       return res.status(404).json({ success: false, message: "Không tìm thấy đơn" });
+    }
+
+    // Gửi thông báo cho sinh viên
+    try {
+      const studentUserId = request.dangkykhoahocID?.hocvienId?.userId;
+      const courseName = request.dangkykhoahocID?.KhoaHocID?.tenkhoahoc || 'khóa học';
+      if (studentUserId) {
+        const thongBao = new ThongBao({
+          tieuDe: 'Đơn xin phép bị từ chối',
+          noidung: `Đơn xin nghỉ học của bạn tại lớp ${courseName} không được duyệt. Vui lòng liên hệ giảng viên hoặc tham gia lớp học theo quy định.`,
+          targetType: 'personal',
+          userID: [studentUserId],
+          createdBy: req.user._id,
+        });
+        await thongBao.save();
+      }
+    } catch (notifErr) {
+      console.error('Lỗi khi tạo thông báo:', notifErr);
     }
 
     res.json({ success: true, message: "Đã từ chối đơn" });
@@ -160,17 +210,32 @@ exports.getCourses = async (req, res) => {
     }
 
     const courses = await KhoaHoc.find({ giangvien: giangVien._id });
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
 
     const formattedCourses = await Promise.all(
       courses.map(async (course, index) => {
         const studentsCount = await DangKyKhoaHoc.countDocuments({ KhoaHocID: course._id });
 
-        const status = new Date(course.ngaykhaigiang) > new Date() ? "Sắp khai giảng" : "Đang mở";
+        const lastSession = await BuoiHoc.findOne({ KhoaHocID: course._id }).sort({ ngayhoc: -1 });
+
+        let status = new Date(course.ngaykhaigiang) > new Date() ? "Sắp khai giảng" : "Đang mở";
+
+        if (lastSession) {
+          const lastDate = new Date(lastSession.ngayhoc);
+          lastDate.setHours(0, 0, 0, 0);
+          if (lastDate < now) {
+            status = "Đã hoàn thành";
+          }
+        }
 
         let iconBg, iconColor;
         if (status === "Đang mở") {
           iconBg = "bg-blue-100";
           iconColor = "text-blue-500";
+        } else if (status === "Đã hoàn thành") {
+          iconBg = "bg-gray-100";
+          iconColor = "text-gray-500";
         } else {
           iconBg = "bg-green-100";
           iconColor = "text-green-500";
@@ -190,6 +255,15 @@ exports.getCourses = async (req, res) => {
         };
       })
     );
+
+    formattedCourses.sort((a, b) => {
+      if (a.status === "Đã hoàn thành" && b.status !== "Đã hoàn thành") return 1;
+      if (a.status !== "Đã hoàn thành" && b.status === "Đã hoàn thành") return -1;
+      // Sort by start date (descending) for items with the same status
+      const dateA = new Date(a.startDate.split('/').reverse().join('-'));
+      const dateB = new Date(b.startDate.split('/').reverse().join('-'));
+      return dateB - dateA;
+    });
 
     res.status(200).json({ success: true, data: formattedCourses });
   } catch (error) {

@@ -7,7 +7,7 @@ export default function AddAssignment() {
     const router = useRouter();
     const [courseName, setCourseName] = useState("");
     const [loading, setLoading] = useState(false);
-
+    
     const [formData, setFormData] = useState({
         tieude: "",
         hannop: "",
@@ -15,7 +15,7 @@ export default function AddAssignment() {
         diem: 100,
         mota: ""
     });
-
+    
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
 
@@ -38,7 +38,7 @@ export default function AddAssignment() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-
+        
         if (!formData.tieude || !formData.hannop) {
             setError("Vui lòng nhập đầy đủ tiêu đề và hạn nộp.");
             return;
@@ -63,7 +63,7 @@ export default function AddAssignment() {
             submissionData.append("loai", formData.loai);
             submissionData.append("diem", formData.diem);
             submissionData.append("mota", formData.mota);
-
+            
             if (file) {
                 submissionData.append("file", file);
             }
@@ -128,36 +128,36 @@ export default function AddAssignment() {
                             {error}
                         </div>
                     )}
-
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col gap-2">
                             <label className="font-semibold text-gray-700 text-sm">Tiêu Đề <span className="text-red-500">*</span></label>
-                            <input
-                                type="text"
+                            <input 
+                                type="text" 
                                 name="tieude"
                                 value={formData.tieude}
                                 onChange={handleChange}
-                                placeholder="Nhập tiêu đề..."
-                                className="p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                                placeholder="Nhập tiêu đề..." 
+                                className="p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" 
                                 required
                             />
                         </div>
-
+                        
                         <div className="flex flex-col gap-2">
                             <label className="font-semibold text-gray-700 text-sm">Hạn Nộp <span className="text-red-500">*</span></label>
-                            <input
-                                type="datetime-local"
+                            <input 
+                                type="datetime-local" 
                                 name="hannop"
                                 value={formData.hannop}
                                 onChange={handleChange}
-                                className="p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                                className="p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" 
                                 required
                             />
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <label className="font-semibold text-gray-700 text-sm">Loại Bài Tập</label>
-                            <select
+                            <select 
                                 name="loai"
                                 value={formData.loai}
                                 onChange={handleChange}
@@ -169,53 +169,53 @@ export default function AddAssignment() {
                                 <option value="presentation">Bài thuyết trình</option>
                             </select>
                         </div>
-
+                        
                         <div className="flex flex-col gap-2">
                             <label className="font-semibold text-gray-700 text-sm">Điểm số tối đa</label>
-                            <input
-                                type="number"
+                            <input 
+                                type="number" 
                                 name="diem"
                                 value={formData.diem}
                                 onChange={handleChange}
                                 min="1"
-                                className="p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
+                                className="p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none" 
                             />
                         </div>
 
                         <div className="md:col-span-2 flex flex-col gap-2">
                             <label className="font-semibold text-gray-700 text-sm">Nội Dung Mô Tả</label>
-                            <textarea
-                                rows="4"
+                            <textarea 
+                                rows="4" 
                                 name="mota"
                                 value={formData.mota}
                                 onChange={handleChange}
-                                placeholder="Mô tả chi tiết yêu cầu bài tập..."
+                                placeholder="Mô tả chi tiết yêu cầu bài tập..." 
                                 className="p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none"
                             ></textarea>
                         </div>
-
+                        
                         <div className="md:col-span-2 flex flex-col gap-2">
                             <label className="font-semibold text-gray-700 text-sm">File Đính Kèm (Không bắt buộc)</label>
                             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
-                                <input
-                                    type="file"
-                                    id="file-upload"
-                                    className="hidden"
+                                <input 
+                                    type="file" 
+                                    id="file-upload" 
+                                    className="hidden" 
                                     onChange={handleFileChange}
                                 />
                                 <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-2 text-gray-600 w-full h-full">
                                     <svg width="30" height="30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                                     </svg>
-                                    <span>{file ? file.name : "Nhấn để chọn tệp tin từ máy tính"}</span>
+                                    <span>{file ? file.name : "Nhấn để mọn tệp tin từ máy tính"}</span>
                                     {file && <span className="text-xs text-green-600 font-medium">Đã chọn 1 file ({(file.size / 1024 / 1024).toFixed(2)} MB)</span>}
                                 </label>
                             </div>
                         </div>
                     </div>
-
-                    <button
-                        type="submit"
+                    
+                    <button 
+                        type="submit" 
                         disabled={loading}
                         className={`mt-8 bg-green-700 hover:bg-green-800 text-white px-8 py-3 rounded-lg font-bold transition-all w-full md:w-auto flex items-center justify-center gap-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
                     >

@@ -63,15 +63,22 @@ export default function Students() {
         const data = await res.json();
         if (data.success) {
           // Map dữ liệu thật về format của giao diện cũ
-          const mappedData = data.data.map(student => ({
-            id: student.id,
-            name: student.name, // Placeholder cho tên viết tắt nếu cần
-            fullName: student.name,
-            email: student.email,
-            phone: student.phone,
-            status: student.status === "Đã hủy" ? "inactive" : "active",
-            attendance: Math.max(0, 100 - (student.absentDays * 5)) // Giả lập % điểm danh dựa trên số ngày vắng
-          }));
+          const mappedData = data.data.map(student => {
+            const totalRecordedDays = student.attendedDays + student.absentDays;
+            const attendancePercentage = totalRecordedDays > 0 
+                ? Math.round((student.attendedDays / totalRecordedDays) * 100) 
+                : 0; // Nếu chưa học buổi nào thì mặc định 0%
+
+            return {
+              id: student.id,
+              name: student.name,
+              fullName: student.name,
+              email: student.email,
+              phone: student.phone,
+              status: student.status === "Đã hủy" ? "inactive" : "active",
+              attendance: attendancePercentage
+            };
+          });
           setStudentsData(mappedData);
         } else {
           setError(data.message || "Không thể tải danh sách học viên");

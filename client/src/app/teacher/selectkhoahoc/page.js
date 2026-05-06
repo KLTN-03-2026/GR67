@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 // Component hiển thị danh sách khóa học, có dùng useSearchParams
 function CourseListContent() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("Tất cả");
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,9 +55,11 @@ function CourseListContent() {
     }
   };
 
-  const filteredCourses = courses.filter(course =>
-    course.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCourses = courses.filter(course => {
+    const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "Tất cả" || course.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   if (loading) {
     return (
@@ -93,14 +96,25 @@ function CourseListContent() {
               {redirect ? "Bạn cần chọn một khóa học thao tác tính năng này" : "Quản lý nội dung, học viên và theo dõi tiến độ"}
             </p>
           </div>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Tìm tên khóa học..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full md:w-64 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          <div className="flex flex-col sm:flex-row gap-3">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-white"
+            >
+              <option value="Tất cả">Tất cả trạng thái</option>
+              <option value="Đang mở">Đang mở</option>
+              <option value="Đã hoàn thành">Đã hoàn thành</option>
+            </select>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Tìm tên khóa học..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full md:w-64 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
           </div>
         </div>
       </div>

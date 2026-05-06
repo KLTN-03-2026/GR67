@@ -36,6 +36,11 @@ function SidebarLink({ href, icon, text, collapsed, onNavigate, activePath }) {
     }
 
     const [hrefPath, hrefQueryString] = href.split("?");
+    
+    if (hrefPath === '/teacher') {
+      return pathname === '/teacher';
+    }
+
     if (!pathname.startsWith(hrefPath)) return false;
     if (pathname === hrefPath) {
       const hrefParams = new URLSearchParams(hrefQueryString || "");
