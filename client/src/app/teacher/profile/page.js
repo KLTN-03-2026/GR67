@@ -313,8 +313,8 @@ export default function Profile() {
                     <input
                       type="email"
                       value={personalInfo.email}
-                      onChange={(e) => handlePersonalInfoChange('email', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all text-gray-800"
+                      disabled
+                      className="w-full px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed text-gray-500 transition-all"
                     />
                   ) : (
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-transparent group-hover:border-emerald-100 group-hover:bg-emerald-50/30 transition-all">

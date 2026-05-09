@@ -46,7 +46,7 @@ export default function Announcements() {
       });
       // Cập nhật lại local state
       setAnnouncements(prev => prev.map(a =>
-        a._id === id ? { ...a, readByUserIds: [...a.readByUserIds, user?.id || user?._id] } : a
+        a._id === id ? { ...a, readByUserIds: [...(a.readByUserIds || []), user?.id || user?._id] } : a
       ));
     } catch (error) {
       console.error("Lỗi đánh dấu đã đọc:", error);
@@ -102,9 +102,10 @@ export default function Announcements() {
             return (
               <div
                 key={item._id}
-                className={`p-6 transition-colors ${!isRead ? 'bg-blue-50/30' : 'bg-white hover:bg-gray-50'} ${item.link ? 'cursor-pointer' : ''}`}
+                className={`p-6 transition-colors cursor-pointer ${!isRead ? 'bg-blue-50/30' : 'bg-white hover:bg-gray-50'}`}
                 onClick={() => {
                   if (!isRead) markAsRead(item._id);
+                  setSelectedAnnouncement(item);
                 }}
               >
                 <div className="flex justify-between items-start mb-2">
@@ -137,6 +138,17 @@ export default function Announcements() {
                       <div><span className="font-semibold text-gray-500">Khóa học:</span> {item.khoaHocId?.tenkhoahoc}</div>
                     )}
                   </div>
+
+                  <button
+                    className="px-4 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-medium rounded-lg shadow-sm flex items-center gap-2 transition-colors ml-auto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isRead) markAsRead(item._id);
+                      setSelectedAnnouncement(item);
+                    }}
+                  >
+                    Xem chi tiết
+                  </button>
                 </div>
               </div>
             );
